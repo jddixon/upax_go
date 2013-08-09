@@ -1,4 +1,6 @@
 upax_go/ftlog/TODO
 
 2013-08-08
-    * 
+    * doTestBodyLine needs better tests of paths
+        - rnglib should generate random POSIX paths
+        - and random email addresses
