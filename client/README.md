@@ -1,7 +1,7 @@
 Upax Client
 ===========
 
-A Upax client is an XLattice Node and so has a unique 32-byte nodeID;
+A Upax client is an XLattice Node and so has a unique 20 or 32-byte nodeID;
 two RSA keys, one for encryption/decryption and one for digital 
 signatures; some number of listening Acceptors, which accept connections;
 and may some local persistent storage - file space, the local file system.
@@ -31,3 +31,6 @@ Clients retrieve data from the network by issuing a GET with a
 content key.  If the data is present, its metadata plus the data file
 will be returned.
 
+A client may also retrieve data from Upax mirrors.  These maintain
+a copy of the Upax cluster's commit log and copies of at least some
+of the files stored in the Upax cluster.
