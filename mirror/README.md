@@ -1,7 +1,7 @@
 Upax Mirror
 ===========
 
-A Upax mirror is an XLattice Node and so has a unique 32-byte nodeID;
+A Upax mirror is an XLattice Node and so has a unique 20 or 32-byte nodeID;
 two RSA keys, one for encryption/decryption and one for digital 
 signatures; some number of listening Acceptors, which accept connections;
 and may some local persistent storage - file space, the local file system.
@@ -21,3 +21,4 @@ data store.  If a data file requested is not present in the mirror's
 store, it will fetch a copy from another mirror or a server and then
 return that copy to the client.  The effect of this is that data files
 will tend to migrate to where they are used.
+

@@ -1,5 +1,14 @@
 upax_go/ftlog/TODO
 
+2013-08-09
+    * LogEntry.String() and Parse() support simple conversion 
+        between in-memory objects and string files; need a
+        Protobuf spec
+        - but then need to be sure of ability to recover from 
+            file corruption
+        - same spect can of course be used to pass log entries
+            between servers
+        
 2013-08-08
     * doTestBodyLine needs better tests of paths
         - rnglib should generate random POSIX paths
