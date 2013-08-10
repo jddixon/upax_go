@@ -28,7 +28,7 @@ func (s *XLSuite) TestPathRE(c *C) {
 	// XXX STUB XXX
 }
 func (s *XLSuite) doTestRegexes(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
-	t := int64(rng.Int())
+	t := rng.Int63()
 	var length int
 	if usingSHA1 {
 		length = 20
