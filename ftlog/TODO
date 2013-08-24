@@ -6,7 +6,7 @@ upax_go/ftlog/TODO
         Protobuf spec
         - but then need to be sure of ability to recover from 
             file corruption
-        - same spect can of course be used to pass log entries
+        - same spec can of course be used to pass log entries
             between servers
         
 2013-08-08

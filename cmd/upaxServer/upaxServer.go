@@ -35,7 +35,7 @@ func main() {
 
 	// FIXUPS ///////////////////////////////////////////////////////
 	if *testing {
-		if *lfs == DEFAULT_LFS || lft == "" {
+		if *lfs == DEFAULT_LFS || *lfs == "" {
 			*lfs = "./tmp"
 		} else {
 			*lfs = path.Join("tmp", *lfs)

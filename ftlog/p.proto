@@ -1,4 +1,4 @@
-package node;
+package ftlog;
 
 message UpaxMsg {
     enum Op {
@@ -14,26 +14,26 @@ message UpaxMsg {
 
         LogEntry    = 9;    
     }
-    optional uint64 msgN        = 1;    // Nth msg on this cnx, starting at 1
-    optional bytes  id          = 2;
-    optional bytes  salt        = 3;
-    optional bytes  sig         = 4;
-    optional uint64 yourSeqN	= 5;
-    optional bytes  yourID		= 6;
-    optional uint64 errCode     = 7;
-    optional string errDesc     = 8;
-    optional bytes  hash        = 9;
-    optional bytes  payload     = 10;
-    optional bytes  commsKey    = 11;   // hello
-    optional bytes  sigKey      = 12;   // hello
-    optional string myEnd       = 13;   // hello, optional
+    optional uint64 MsgN        = 1;    // Nth msg on this cnx, starting at 1
+    optional bytes  ID          = 2;
+    optional bytes  Salt        = 3;
+    optional bytes  Sig         = 4;
+    optional uint64 YourSeqN	= 5;
+    optional bytes  YourID		= 6;
+    optional uint64 ErrCode     = 7;
+    optional string ErrDesc     = 8;
+    optional bytes  Hash        = 9;
+    optional bytes  Payload     = 10;
+    optional bytes  CommsKey    = 11;   // hello
+    optional bytes  SigKey      = 12;   // hello
+    optional string MyEnd       = 13;   // hello, optional
 
     // for LogEntry
-    optional index      int     = 32;
-    optional timestamp  int64   = 33;
-    optional contentKey bytes   = 34;
-    optional owner      bytes   = 35;
-    optional src        string  = 36;
-    optional path       string  = 37;
+    optional int64  Index       = 32;
+    optional int64  Timestamp	= 33;
+    optional bytes  ContentKey	= 34;
+    optional bytes  Owner	    = 35;
+    optional string Src	        = 36;
+    optional string Path	    = 37;
 }
 
