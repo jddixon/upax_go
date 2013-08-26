@@ -1,7 +1,7 @@
 package ftlog;
 
 message UpaxMsg {
-    enum Op {
+    enum Cmd {
         // 1 through 8 are as in XLatticeMsg
         Hello       = 1;    // first msg, initiates comms cycle
         Bye         = 2;    // ends comms cycle
@@ -14,26 +14,27 @@ message UpaxMsg {
 
         LogEntry    = 9;    
     }
-    optional uint64 MsgN        = 1;    // Nth msg on this cnx, starting at 1
-    optional bytes  ID          = 2;
-    optional bytes  Salt        = 3;
-    optional bytes  Sig         = 4;
-    optional uint64 YourSeqN	= 5;
-    optional bytes  YourID		= 6;
-    optional uint64 ErrCode     = 7;
-    optional string ErrDesc     = 8;
-    optional bytes  Hash        = 9;
-    optional bytes  Payload     = 10;
-    optional bytes  CommsKey    = 11;   // hello
-    optional bytes  SigKey      = 12;   // hello
-    optional string MyEnd       = 13;   // hello, optional
+    optional Cmd    Op          = 1;
+    optional uint64 MsgN        = 2;    // Nth msg on this cnx, starting at 1
+    optional bytes  ID          = 3;
+    optional bytes  Salt        = 4;
+    optional bytes  Sig         = 5;
+    optional uint64 YourSeqN    = 6;
+    optional bytes  YourID      = 7;
+    optional uint64 ErrCode     = 8;
+    optional string ErrDesc     = 9;
+    optional bytes  Hash        = 10;
+    optional bytes  Payload     = 11;
+    optional bytes  CommsKey    = 12;   // hello
+    optional bytes  SigKey      = 13;   // hello
+    optional string MyEnd       = 14;   // hello, optional
 
     // for LogEntry
     optional int64  Index       = 32;
-    optional int64  Timestamp	= 33;
-    optional bytes  ContentKey	= 34;
-    optional bytes  Owner	    = 35;
-    optional string Src	        = 36;
-    optional string Path	    = 37;
+    optional int64  Timestamp   = 33;
+    optional bytes  ContentKey  = 34;
+    optional bytes  Owner       = 35;
+    optional string Src         = 36;
+    optional string Path        = 37;
 }
 
