@@ -1,4 +1,21 @@
 github.com/jddixon/upax_go/TODO
 
-2013-08-07
-    * 
+2013-09-13
+    * modify code so that Upax servers and clients use xlReg 
+        to initiate communications (xlattice_go/reg/helloAndReply.go
+        - attrs has two role bits, 00 = client, 01 = mirror, 10 = server
+
+    * p.proto drops Hello, which is replaced by PeerHelloAndReply
+        sequence, xlattice_go/msg/helloAndReply.go
+
+    * begin the game with serialization of the UpaxNode to and from
+        LFS
+        - UpaxNode is serialized in reverse order, so 
+            BaseNode | Node | UpaxNode
+        - serialization is written to/loaded from LFS/.xlattice/config
+        - by default, if that file exists it is loaded and configuration
+            attributes are taken from the file
+
+    * upaxNode/New has p []xn.Peer as a parameter, this should most
+        certainly be a pointer or slice of pointers instead; fix
+        and also fix xn.New, which is where the problem really is
