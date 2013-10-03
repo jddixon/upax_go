@@ -5,7 +5,10 @@ A distributed content-keyed data storage system.
 
 In the short term, the implementation will have three parts: server,
 client, and fault-tolerant log (ftlog).  All of these will be written
-in Go and will make use of the xlattice_go communications library.
+in Go and will make use of the 
+[xlattice_go](https://github.com/jddixon/xlattice_go) communications library.
+(More extensive information on XLattice, although somewhat dated, 
+is available at the XLattice [website](http://www.xlattice.org).)
 
 Upax accepts and stores data files of arbitrary size.  These are
 identified by their SHA3-256 content key.  Early versions of Upax
