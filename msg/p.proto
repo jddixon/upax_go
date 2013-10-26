@@ -1,10 +1,8 @@
-package ftlog;
+package msg;
 
 message UpaxMsg {
     enum Cmd {
         // 1 through 8 are as in XLatticeMsg
-        Hello       = 1;    // first msg, initiates comms cycle
-        Bye         = 2;    // ends comms cycle
         KeepAlive   = 3;    // seqn, id, opt salt, opt sig
         Ack         = 4;    // above plus yourSeqN, yourID
         Error       = 5;    // above plus errCode, errDesc

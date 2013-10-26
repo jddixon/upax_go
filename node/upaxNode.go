@@ -11,28 +11,28 @@ import (
 	"strings"
 )
 
+type RoleBits uint64
+
 const (
-	// role bits
-	UPAX_MIRROR = 1 << iota			// the zeroth bit
-	UPAX_SERVER 
-	WHATEVER
+	UPAX_CLIENT	RoleBits = 1 << iota
+	UPAX_MIRROR
+	UPAX_SERVER
 )
 
 type UpaxNode struct {
-	Attrs	uint64					// must specify server or mirror
-	Acc		xt.AcceptorI
-	ckPriv	*rsa.PrivateKey
-	skPriv	*rsa.PrivateKey
+	Attrs  uint64 // must specify server or mirror
+	Acc    xt.AcceptorI
+	ckPriv *rsa.PrivateKey
+	skPriv *rsa.PrivateKey
 	xn.Node
 }
 
 // Constructor must specify LFS, which must have restricted access,
 // because private keys will be stored there.
-		
-type NodeOptions struct {
-	Lfs		string
-}
 
+type NodeOptions struct {
+	Lfs string
+}
 
 func New(name string, id *xi.NodeID, lfs string,
 	commsKey, sigKey *rsa.PrivateKey,
@@ -42,10 +42,10 @@ func New(name string, id *xi.NodeID, lfs string,
 	n, err := xn.New(name, id, lfs, commsKey, sigKey, o, e, p)
 
 	if err == nil {
-		uNode = &UpaxNode{ 
-			ckPriv:		commsKey,
-			skPriv:		sigKey,
-			Node:		*n,
+		uNode = &UpaxNode{
+			ckPriv: commsKey,
+			skPriv: sigKey,
+			Node:   *n,
 		}
 	}
 	return
@@ -65,7 +65,6 @@ func (un *UpaxNode) Strings() []string {
 func (un *UpaxNode) String() string {
 	return strings.Join(un.Strings(), "\n")
 }
-
 
 func Parse(s string) (uNode *UpaxNode, rest []string, err error) {
 

@@ -2,7 +2,7 @@
 // source: p.proto
 // DO NOT EDIT!
 
-package ftlog
+package msg
 
 import proto "code.google.com/p/goprotobuf/proto"
 import json "encoding/json"
@@ -16,8 +16,6 @@ var _ = math.Inf
 type UpaxMsg_Cmd int32
 
 const (
-	UpaxMsg_Hello     UpaxMsg_Cmd = 1
-	UpaxMsg_Bye       UpaxMsg_Cmd = 2
 	UpaxMsg_KeepAlive UpaxMsg_Cmd = 3
 	UpaxMsg_Ack       UpaxMsg_Cmd = 4
 	UpaxMsg_Error     UpaxMsg_Cmd = 5
@@ -28,8 +26,6 @@ const (
 )
 
 var UpaxMsg_Cmd_name = map[int32]string{
-	1: "Hello",
-	2: "Bye",
 	3: "KeepAlive",
 	4: "Ack",
 	5: "Error",
@@ -39,8 +35,6 @@ var UpaxMsg_Cmd_name = map[int32]string{
 	9: "LogEntry",
 }
 var UpaxMsg_Cmd_value = map[string]int32{
-	"Hello":     1,
-	"Bye":       2,
 	"KeepAlive": 3,
 	"Ack":       4,
 	"Error":     5,
@@ -71,7 +65,7 @@ func (x *UpaxMsg_Cmd) UnmarshalJSON(data []byte) error {
 }
 
 type UpaxMsg struct {
-	Op               *UpaxMsg_Cmd `protobuf:"varint,1,opt,enum=ftlog.UpaxMsg_Cmd" json:"Op,omitempty"`
+	Op               *UpaxMsg_Cmd `protobuf:"varint,1,opt,enum=msg.UpaxMsg_Cmd" json:"Op,omitempty"`
 	MsgN             *uint64      `protobuf:"varint,2,opt" json:"MsgN,omitempty"`
 	ID               []byte       `protobuf:"bytes,3,opt" json:"ID,omitempty"`
 	Salt             []byte       `protobuf:"bytes,4,opt" json:"Salt,omitempty"`
@@ -239,5 +233,5 @@ func (m *UpaxMsg) GetPath() string {
 }
 
 func init() {
-	proto.RegisterEnum("ftlog.UpaxMsg_Cmd", UpaxMsg_Cmd_name, UpaxMsg_Cmd_value)
+	proto.RegisterEnum("msg.UpaxMsg_Cmd", UpaxMsg_Cmd_name, UpaxMsg_Cmd_value)
 }

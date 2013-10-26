@@ -1,6 +1,17 @@
 github.com/jddixon/upax_go/TODO
 
-2013-09-13
+2013-10-27
+    * in tests as in production first communications of a new 
+        cluster are with xlReg on port 44444, default 127.0.0.1
+        - cluster name defaults to "upax"
+        - size defaults to 5
+        - epCount is 2 (cluster-cluster, client-cluster)
+        - default LFS is /var/app/upax for production, 
+            ./tmp/SERVER_NAME for test, where SERVER_NAME is
+            locally unique
+        - expected xlReg version is 0.2.0 or better
+
+2013-09-13  *** OBSOLETE ***
     * modify code so that Upax servers and clients use xlReg 
         to initiate communications (xlattice_go/reg/helloAndReply.go
         - attrs has two role bits, 00 = client, 01 = mirror, 10 = server
