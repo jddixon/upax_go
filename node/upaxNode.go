@@ -14,7 +14,7 @@ import (
 type RoleBits uint64
 
 const (
-	UPAX_CLIENT	RoleBits = 1 << iota
+	UPAX_CLIENT RoleBits = 1 << iota
 	UPAX_MIRROR
 	UPAX_SERVER
 )

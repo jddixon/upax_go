@@ -13,7 +13,7 @@ func (s *XLSuite) TestAttrBits(c *C) {
 
 	// A silly test, and wasteful: we use three bits to distinguish
 	// three states.
-	// 
+	//
 	// Client is 01, mirror is 10, server is 100.
 	c.Assert(UPAX_CLIENT, Equals, RoleBits(1))
 	c.Assert(UPAX_MIRROR, Equals, RoleBits(2))

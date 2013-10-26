@@ -1,4 +1,4 @@
-package node
+package cluster
 
 import (
 	"crypto/rand"
@@ -28,10 +28,6 @@ const (
 )
 
 // UTILITY FUNCTIONS FOR THIS PACKAGE ///////////////////////////////
-
-// XXX With the reorganization of the package and changed scheme for
-// providing unique nodeIDs (xlReg), much of whese functions are not
-// going to be used here.
 
 func (s *XLSuite) makeAnID(c *C, rng *xr.PRNG) (id []byte) {
 	id = make([]byte, xc.SHA3_LEN)
