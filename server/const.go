@@ -1,6 +1,6 @@
-package node
+package server
 
-// upax_go/node/const.go
+// upax_go/server/const.go
 
 const (
 	VERSION      = "0.1.0"

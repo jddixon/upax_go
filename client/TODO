@@ -1,0 +1,9 @@
+upax_go/client/TODO
+
+2013-10-26
+    * given a cluster name or ID plus registry credentials, a client
+        should first obtain from the registry configuration 
+        information on the cluster, which will include the IP addresses
+        (endPoints) and public keys of cluster members
+    * for testing purposes, expect the registry to be on port 44444
+    * in production applications, expect the registry to be on 55555
