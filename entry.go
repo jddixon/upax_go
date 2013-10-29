@@ -1,6 +1,6 @@
-package ftlog
+package upax_go
 
-// upax_go/ftlog/entry.go
+// upax_go/entry.go
 
 import (
 	"encoding/hex"

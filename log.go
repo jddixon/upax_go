@@ -1,6 +1,6 @@
-package ftlog
+package upax_go
 
-// upax_go/ftlog/log.go
+// upax_go/log.go
 
 import ()
 

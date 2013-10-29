@@ -1,4 +1,4 @@
-package server
+package upax_go
 
 import (
 	. "launchpad.net/gocheck"

@@ -9,6 +9,45 @@ github.com/jddixon/upax_go/TODO
             into it
 
 2013-10-26
+    CLUSTER (was cluster/TODO)
+    * expect cluster names to look like reversed fully qualified
+        domain names such as org.xlattice.upax.ABCDEF
+    * for testing, expect to find the registry on 127.0.0.1:44444,
+        but registry credentials will be needed to get the
+        registry's public keys
+    * to test upax clusters
+        - generated a random cluster name, then loop on the 
+            registry asking for its clusterID until the 
+            registry says that it is unknown
+        - then create the cluster with K a random number 3..7
+            and epCount=2
+        - this behavior requires an admin client which will do this
+        - cluster creation will have created K simple nodes; use
+            these to create K upax servers
+            * LFS for each is tmp/CLUSTER_NAME/SERVER_NAME
+            * server creation should build a u16x16 file system
+                under the LFS, including 
+                    .xlattice/node.config
+                    U/      0750
+                    U/in    0750
+                    U/tmp   0700
+                    U/L     0600
+                    U/x     0640, where x represents a hex digit
+            * each server runs in a separate goroutine
+
+        - create K2 (3..7? but chosen separately) clients; each
+            of which runs in a separate goroutine
+            * learns cluster configuration from the registry
+            * then pumps K3 items into a randomly chosen server
+            * sends back to the test master a list of K3 content
+                keys
+
+        - when all K2 clients are done, test master verifies that
+            all K2 * K3 items are in the cluster
+        - after some reasonable period of time, all K2 * K3 items
+            should be on all K servers (in the current 
+            implementation)
+
     * in tests as in production first communications of a new
         cluster are with xlReg on port 44444, default 127.0.0.1
         - cluster name defaults to "upax"
@@ -21,8 +60,27 @@ github.com/jddixon/upax_go/TODO
 
     * upax_go/node looks to be useless
 
+    CLIENT (was client/TODO)
+    * given a cluster name or ID plus registry credentials, a client
+        should first obtain from the registry configuration 
+        information on the cluster, which will include the IP addresses
+        (endPoints) and public keys of cluster members
+    * for testing purposes, expect the registry to be on port 44444
+    * in production applications, expect the registry to be on 55555
 
-
+2013-08-09 was: upax_go/ftlog/TODO
+    * LogEntry.String() and Parse() support simple conversion 
+        between in-memory objects and string files; need a
+        Protobuf spec
+        - but then need to be sure of ability to recover from 
+            file corruption
+        - same spec can of course be used to pass log entries
+            between servers
+        
+2013-08-08
+    * doTestBodyLine needs better tests of paths
+        - rnglib should generate random POSIX paths
+        - and random email addresses
 2013-09-13  *** OBSOLETE ***
     * modify code so that Upax servers and clients use xlReg 	        * OBS
         to initiate communications (xlattice_go/reg/helloAndReply.go	* OBS

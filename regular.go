@@ -1,4 +1,4 @@
-package ftlog
+package upax_go
 
 import (
 	"regexp"
