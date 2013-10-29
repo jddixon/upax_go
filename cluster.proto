@@ -1,0 +1,41 @@
+package upax_go;
+
+// upax_go/cluster.proto
+
+// This protocol is used for server-server communications within the 
+// cluster.  Servers are expected to set up communications using 
+// xlattice_go helloAndReply sequence, and then switch to this protocol.
+// Servers must send periodic keep-alives to keep the connection up.
+
+message UpaxClusterMsg {
+    enum Cmd {
+        // 1 through 8 are as in XLatticeMsg
+        KeepAlive   = 3;    // seqn, id, opt salt, opt sig
+        Ack         = 4;    // above plus yourSeqN, yourID
+        Error       = 5;    // above plus errCode, errDesc
+        Get         = 6;    // like KeepAlive plus hash
+        Put         = 7;    // above plus payload
+        IHave       = 8;    // like KeepAlive plus payload = list of hashes
+
+        LogEntry    = 9;    
+    }
+    optional Cmd    Op          = 1;
+    optional uint64 MsgN        = 2;    // Nth msg on this cnx, starting at 1
+    optional bytes  ID          = 3;
+    optional bytes  Sig         = 5;
+    optional uint64 YourSeqN    = 6;
+    optional bytes  YourID      = 7;
+    optional uint64 ErrCode     = 8;
+    optional string ErrDesc     = 9;
+    optional bytes  Hash        = 10;
+    optional bytes  Payload     = 11;
+
+    // for LogEntry
+    optional int64  Index       = 32;
+    optional int64  Timestamp   = 33;
+    optional bytes  ContentKey  = 34;
+    optional bytes  Owner       = 35;
+    optional string Src         = 36;
+    optional string Path        = 37;
+}
+

@@ -4,11 +4,10 @@ package upax_go
 
 import (
 	"fmt"
-	xn "github.com/jddixon/xlattice_go/node"
+	//xn "github.com/jddixon/xlattice_go/node"
 )
 
 var _ = fmt.Print
 
 type UpaxServer struct {
-
 }

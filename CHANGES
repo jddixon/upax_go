@@ -1,5 +1,9 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.2.0
+    2013-10-29
+        * flattened directory structure, differentiated
+            server-server and server-client protocols               SLOC   883 
 0.1.0
     2013-10-26
         * rearranaged initial sketch                                SLOC   839 

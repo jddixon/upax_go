@@ -1,6 +1,13 @@
 package upax_go;
 
-message UpaxMsg {
+// upax_go/client.proto
+
+// This protocol is for client-server communications.  The client 
+// initiates a communications round using an xlattice_go helloAndReply
+// and then switches to this protocol.  Client-server connections are
+// expected to be ephemeral.
+
+message UpaxClientMsg {
     enum Cmd {
         // 1 through 8 are as in XLatticeMsg
         KeepAlive   = 3;    // seqn, id, opt salt, opt sig
@@ -10,7 +17,7 @@ message UpaxMsg {
         Put         = 7;    // above plus payload
         IHave       = 8;    // like KeepAlive plus payload = list of hashes
 
-        LogEntry    = 9;    
+        Bye         = 10;   // client; server acks
     }
     optional Cmd    Op          = 1;
     optional uint64 MsgN        = 2;    // Nth msg on this cnx, starting at 1
@@ -23,9 +30,6 @@ message UpaxMsg {
     optional string ErrDesc     = 9;
     optional bytes  Hash        = 10;
     optional bytes  Payload     = 11;
-    optional bytes  CommsKey    = 12;   // hello
-    optional bytes  SigKey      = 13;   // hello
-    optional string MyEnd       = 14;   // hello, optional
 
     // for LogEntry
     optional int64  Index       = 32;
