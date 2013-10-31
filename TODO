@@ -1,7 +1,7 @@
 github.com/jddixon/upax_go/TODO
 
 2013-10-27
-    * we must have a regCred.dat for the server running on the test
+    * we must have a regCred.dat for the server running on the test      * DONE
         system in ./
     * a booting server without an LFS must find and parse ./regCred.dat
         to continue
