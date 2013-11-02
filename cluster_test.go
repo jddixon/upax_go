@@ -97,8 +97,7 @@ func (s *XLSuite) TestCluster(c *C) {
 		c.Assert(err, IsNil)
 	}
 
-	// Actually create the K1 servers -------------------------------
-	// XXX rename uc to us eventually
+	// create K1 client nodes ---------------------------------------
 	uc := make([]*reg.UserClient, K1)
 	for i := 0; i < K1; i++ {
 		var ep *xt.TcpEndPoint
@@ -114,18 +113,27 @@ func (s *XLSuite) TestCluster(c *C) {
 		c.Assert(uc[i], NotNil)
 		c.Assert(uc[i].ClusterID, NotNil)
 	}
-	// Start the K1 servers running ---------------------------------
+	// Start the K1 client nodes running ----------------------------
 	for i := 0; i < K1; i++ {
 		err = uc[i].Run()
 		c.Assert(err, IsNil)
 	}
 
-	// wait until all clients are done ------------------------------
+	// wait until all clientNodes are done --------------------------
 	for i := 0; i < K1; i++ {
 		<-uc[i].ClientNode.DoneCh
 	}
 
-	// When all servers are ready, create K2 clients.  Each client
+	// convert the client nodes to UpaxServers ----------------------
+	us := make([]*UpaxServer, K1)
+	for i := 0; i < K1; i++ {
+		err = uc[i].PersistClusterMember()
+		c.Assert(err, IsNil)
+		us[i], err = NewUpaxServer(ckPriv[i], skPriv[i], &uc[i].ClusterMember)
+	}
+	// XXX STUB
+
+	// When all UpaxServers are ready, create K2 clients.  Each client
 	// creates K3 separate datums of differnt length (L1..L2) and
 	// content.  Each client signals when done.
 
@@ -136,10 +144,11 @@ func (s *XLSuite) TestCluster(c *C) {
 
 	// XXX STUB
 
-	// After a reasonable deltaT, verify that all servers have a ccopy
+	// After a reasonable deltaT, verify that all servers have a copy
 	// of each and every datum.
 
 	// XXX STUB
 
 	_, _, _, _, _ = K1, K2, M, LMin, LMax
+	_ = us
 }

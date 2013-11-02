@@ -5,39 +5,29 @@ package upax_go
 import (
 	"crypto/rsa"
 	"fmt"
-	xn "github.com/jddixon/xlattice_go/node"
-	xi "github.com/jddixon/xlattice_go/nodeID"
+	"github.com/jddixon/xlattice_go/reg"
 )
 
 var _ = fmt.Print
 
 type UpaxServer struct {
-	ClusterName, ServerName string
-	ClusterID               *xi.NodeID
-	ckPriv, skPriv          *rsa.PrivateKey
-	xn.Node
+	ckPriv, skPriv *rsa.PrivateKey
+	reg.ClusterMember
 }
 
-func NewUpaxServer(clusterName, serverName string, clusterID *xi.NodeID,
-	ckPriv, skPriv *rsa.PrivateKey, node *xn.Node) (us *UpaxServer, err error) {
+func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
+	us *UpaxServer, err error) {
 
-	if clusterName == "" {
-		clusterName = "upax"
-	}
-	if serverName == "" {
-		err = EmptyName
-	} else if ckPriv == nil || ckPriv == nil {
+	if ckPriv == nil || ckPriv == nil {
 		err = NilRSAKey
-	} else if node == nil {
-		err = NilNode
+	} else if cm == nil {
+		err = NilClusterMember
 	}
 	if err == nil {
 		us = &UpaxServer{
-			ClusterName: clusterName,
-			ServerName:  serverName,
-			ckPriv:      ckPriv,
-			skPriv:      skPriv,
-			Node:        *node,
+			ckPriv:        ckPriv,
+			skPriv:        skPriv,
+			ClusterMember: *cm,
 		}
 	}
 	return
