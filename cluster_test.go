@@ -88,13 +88,15 @@ func (s *XLSuite) TestCluster(c *C) {
 			serverPaths[i] = filepath.Join(clusterPath, serverNames[i])
 			found, err = xf.PathExists(serverPaths[i])
 			c.Assert(err, IsNil)
-			ckPriv[i], err = rsa.GenerateKey(rand.Reader, 1024) // cheap keys
-			c.Assert(err, IsNil)
-			skPriv[i], err = rsa.GenerateKey(rand.Reader, 1024) // cheap keys
-			c.Assert(err, IsNil)
 		}
 		err = os.MkdirAll(serverPaths[i], 0750)
 		c.Assert(err, IsNil)
+		ckPriv[i], err = rsa.GenerateKey(rand.Reader, 1024) // cheap keys
+		c.Assert(err, IsNil)
+		c.Assert(ckPriv[i], NotNil)
+		skPriv[i], err = rsa.GenerateKey(rand.Reader, 1024) // cheap keys
+		c.Assert(err, IsNil)
+		c.Assert(skPriv[i], NotNil)
 	}
 
 	// create K1 client nodes ---------------------------------------
@@ -130,7 +132,15 @@ func (s *XLSuite) TestCluster(c *C) {
 		err = uc[i].PersistClusterMember()
 		c.Assert(err, IsNil)
 		us[i], err = NewUpaxServer(ckPriv[i], skPriv[i], &uc[i].ClusterMember)
+		c.Assert(err, IsNil)
+		c.Assert(us[i], NotNil)
 	}
+	// verify files are present and then start the servers ----------
+
+	// XXX STUB
+
+	// verify servers are running -------------------------
+
 	// XXX STUB
 
 	// When all UpaxServers are ready, create K2 clients.  Each client
