@@ -1,6 +1,6 @@
 package upax_go;
 
-// upax_go/cluster.proto
+// upax_go/s.proto
 
 // This protocol is used for server-server communications within the 
 // cluster.  Servers are expected to set up communications using 
@@ -8,18 +8,20 @@ package upax_go;
 // Servers must send periodic keep-alives to keep the connection up.
 
 message UpaxClusterMsg {
-    enum Cmd {
-        // 1 through 8 are as in XLatticeMsg
-        KeepAlive   = 3;    // seqn, id, opt salt, opt sig
-        Ack         = 4;    // above plus yourSeqN, yourID
-        Error       = 5;    // above plus errCode, errDesc
-        Get         = 6;    // like KeepAlive plus hash
-        Put         = 7;    // above plus payload
-        IHave       = 8;    // like KeepAlive plus payload = list of hashes
+    enum Tag {
+        KeepAlive   = 0;    // seqn, id, opt salt, opt sig
+        Ack         = 1;    // above plus yourSeqN, yourID
 
-        LogEntry    = 9;    
+        Get         = 2;    // like KeepAlive plus hash
+        Data        = 3;    // reply to Get; LogEntry plus payload
+        Error       = 4;    // errCode, errDesc
+        
+        IHave       = 5;    // like KeepAlive plus payload = list of hashes
+        Put         = 6;    // LogEntry plus payload
+
+        Bye         = 7;   
     }
-    optional Cmd    Op          = 1;
+    optional Tag    Op          = 1;
     optional uint64 MsgN        = 2;    // Nth msg on this cnx, starting at 1
     optional bytes  ID          = 3;
     optional bytes  Sig         = 5;
