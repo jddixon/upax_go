@@ -8,12 +8,16 @@ import (
 	"github.com/jddixon/xlattice_go/reg"
 	"github.com/jddixon/xlattice_go/u"
 	xf "github.com/jddixon/xlattice_go/util/lfs"
+	"log"
 	"path/filepath"
 )
 
 var _ = fmt.Print
 
 type UpaxServer struct {
+	LogFile string
+	Logger  *log.Logger
+
 	uDir           u.UI
 	ckPriv, skPriv *rsa.PrivateKey
 	reg.ClusterMember
@@ -23,8 +27,11 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
 	us *UpaxServer, err error) {
 
 	var (
-		lfs  string
-		uDir u.UI
+		lfs     string
+		f       *os.File
+		logFile string
+		logger  *log.Logger
+		uDir    u.UI
 	)
 	if ckPriv == nil || ckPriv == nil {
 		err = NilRSAKey
@@ -38,6 +45,13 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
 		// that exists before proceeding.
 
 		lfs = cm.GetLFS()
+		// This should be passed in opt.Logger
+		logFile = filepath.Join(lfs, "log")
+		f, err = os.OpenFile(*logFile,
+			os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0640)
+		if err == nil {
+			logger = log.New(f, "", log.Ldate|log.Ltime)
+		}
 		pathToCfg := filepath.Join(
 			filepath.Join(lfs, ".xlattice"), "cluster.member.config")
 		var found bool
@@ -46,6 +60,10 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
 			err = ClusterConfigNotFound
 		}
 	}
+	if f != nil {
+		defer f.Close()
+	}
+
 	if err == nil {
 		// DEBUG
 		fmt.Printf("creating directory tree in %s\n", lfs)
@@ -56,6 +74,8 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
 	}
 	if err == nil {
 		us = &UpaxServer{
+			LogFile:       logFile,
+			Logger:        logger,
 			uDir:          uDir,
 			ckPriv:        ckPriv,
 			skPriv:        skPriv,
