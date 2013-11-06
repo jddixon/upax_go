@@ -16,35 +16,38 @@ var _ = math.Inf
 type UpaxClusterMsg_Tag int32
 
 const (
-	UpaxClusterMsg_KeepAlive UpaxClusterMsg_Tag = 0
-	UpaxClusterMsg_Ack       UpaxClusterMsg_Tag = 1
-	UpaxClusterMsg_Get       UpaxClusterMsg_Tag = 2
-	UpaxClusterMsg_Data      UpaxClusterMsg_Tag = 3
-	UpaxClusterMsg_Error     UpaxClusterMsg_Tag = 4
-	UpaxClusterMsg_IHave     UpaxClusterMsg_Tag = 5
-	UpaxClusterMsg_Put       UpaxClusterMsg_Tag = 6
-	UpaxClusterMsg_Bye       UpaxClusterMsg_Tag = 7
+	UpaxClusterMsg_ItsMe     UpaxClusterMsg_Tag = 0
+	UpaxClusterMsg_KeepAlive UpaxClusterMsg_Tag = 1
+	UpaxClusterMsg_Ack       UpaxClusterMsg_Tag = 2
+	UpaxClusterMsg_Get       UpaxClusterMsg_Tag = 3
+	UpaxClusterMsg_Data      UpaxClusterMsg_Tag = 4
+	UpaxClusterMsg_Error     UpaxClusterMsg_Tag = 5
+	UpaxClusterMsg_IHave     UpaxClusterMsg_Tag = 6
+	UpaxClusterMsg_Put       UpaxClusterMsg_Tag = 7
+	UpaxClusterMsg_Bye       UpaxClusterMsg_Tag = 8
 )
 
 var UpaxClusterMsg_Tag_name = map[int32]string{
-	0: "KeepAlive",
-	1: "Ack",
-	2: "Get",
-	3: "Data",
-	4: "Error",
-	5: "IHave",
-	6: "Put",
-	7: "Bye",
+	0: "ItsMe",
+	1: "KeepAlive",
+	2: "Ack",
+	3: "Get",
+	4: "Data",
+	5: "Error",
+	6: "IHave",
+	7: "Put",
+	8: "Bye",
 }
 var UpaxClusterMsg_Tag_value = map[string]int32{
-	"KeepAlive": 0,
-	"Ack":       1,
-	"Get":       2,
-	"Data":      3,
-	"Error":     4,
-	"IHave":     5,
-	"Put":       6,
-	"Bye":       7,
+	"ItsMe":     0,
+	"KeepAlive": 1,
+	"Ack":       2,
+	"Get":       3,
+	"Data":      4,
+	"Error":     5,
+	"IHave":     6,
+	"Put":       7,
+	"Bye":       8,
 }
 
 func (x UpaxClusterMsg_Tag) Enum() *UpaxClusterMsg_Tag {

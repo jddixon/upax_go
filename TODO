@@ -1,5 +1,11 @@
 github.com/jddixon/upax_go/TODO
 
+2013-11-05
+    * need additional state for intra-cluster communications: call it   * DONE
+        ID_VERIFIED                                                     * DONE
+        - this requires another message signed by the cluster member
+            which sent the Hello
+
 2013-10-27
     * we must have a regCred.dat for the server running on the test     * DONE
         system in ./                                                    * DONE
@@ -25,15 +31,15 @@ github.com/jddixon/upax_go/TODO
         - cluster creation will have created K simple nodes; use		* DONE
             these to create K upax servers		                        * DONE
             * LFS for each is tmp/CLUSTER_NAME/SERVER_NAME		        * DONE
-            * server creation should build a u16x16 file system
-                under the LFS, including 
+            * server creation should build a u16x16 file system         * DONE
+                under the LFS, including                                * DONE
                     .xlattice/node.config                               * DONE
-                    U/      0750
-                    U/in    0770
-                    U/tmp   0700
+                    U/      0750                                        * DONE
+                    U/in    0770                                        * DONE
+                    U/tmp   0700                                        * DONE
                     U/L     0600
-                    U/x     0640, where x represents a hex digit
-            * each server runs in a separate goroutine
+                    U/x     0740, where x represents a hex digit        * DONE
+            * each server runs in a separate goroutine                  * DONE
 
         - create K2 (3..7? but chosen separately) clients; each
             of which runs in a separate goroutine

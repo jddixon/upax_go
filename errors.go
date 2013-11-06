@@ -5,10 +5,14 @@ import (
 )
 
 var (
+	BadDigSig             = e.New("bad digital signature")
 	ClusterConfigNotFound = e.New("cluster config not found")
 	EmptyName             = e.New("empty name parameter")
 	NilClusterMember      = e.New("nil cluster member parameter")
 	NilID                 = e.New("nil ID parameter")
 	NilNode               = e.New("nil node parameter")
 	NilRSAKey             = e.New("nil RSA private key parameter")
+	NilServer             = e.New("nil UpaxServer parameter")
+	NilUDir               = e.New("nil uDir parameter")
+	NotClusterMember      = e.New("not a cluster member")
 )
