@@ -9,9 +9,9 @@ package upax_go;
 
 message UpaxClusterMsg {
     enum Tag {
-        ItsMe       = 0;    // seqn, id, opt salt, sig
-        KeepAlive   = 1;    // seqn
-        Ack         = 2;    // above plus yourSeqN
+        ItsMe       = 0;    // msgN, id, opt salt, sig
+        KeepAlive   = 1;    // msgN
+        Ack         = 2;    // above plus yourMsgN
 
         Get         = 3;    // like KeepAlive plus hash
         Data        = 4;    // reply to Get; LogEntry plus payload
@@ -25,8 +25,10 @@ message UpaxClusterMsg {
     optional Tag    Op          = 1;
     optional uint64 MsgN        = 2;    // Nth msg on this cnx, starting at 1
     optional bytes  ID          = 3;
+    optional bytes  Salt        = 4;
     optional bytes  Sig         = 5;
-    optional uint64 YourSeqN    = 6;
+
+    optional uint64 YourMsgN    = 6;
     optional bytes  YourID      = 7;
     optional uint64 ErrCode     = 8;
     optional string ErrDesc     = 9;

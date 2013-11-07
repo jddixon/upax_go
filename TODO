@@ -1,5 +1,9 @@
 github.com/jddixon/upax_go/TODO
 
+2013-11-07
+    * verify that registering cluster member closes the connection
+        to the registry when done
+
 2013-11-05
     * need additional state for intra-cluster communications: call it   * DONE
         ID_VERIFIED                                                     * DONE

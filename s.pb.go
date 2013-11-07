@@ -74,8 +74,9 @@ type UpaxClusterMsg struct {
 	Op               *UpaxClusterMsg_Tag `protobuf:"varint,1,opt,enum=upax_go.UpaxClusterMsg_Tag" json:"Op,omitempty"`
 	MsgN             *uint64             `protobuf:"varint,2,opt" json:"MsgN,omitempty"`
 	ID               []byte              `protobuf:"bytes,3,opt" json:"ID,omitempty"`
+	Salt             []byte              `protobuf:"bytes,4,opt" json:"Salt,omitempty"`
 	Sig              []byte              `protobuf:"bytes,5,opt" json:"Sig,omitempty"`
-	YourSeqN         *uint64             `protobuf:"varint,6,opt" json:"YourSeqN,omitempty"`
+	YourMsgN         *uint64             `protobuf:"varint,6,opt" json:"YourMsgN,omitempty"`
 	YourID           []byte              `protobuf:"bytes,7,opt" json:"YourID,omitempty"`
 	ErrCode          *uint64             `protobuf:"varint,8,opt" json:"ErrCode,omitempty"`
 	ErrDesc          *string             `protobuf:"bytes,9,opt" json:"ErrDesc,omitempty"`
@@ -115,6 +116,13 @@ func (m *UpaxClusterMsg) GetID() []byte {
 	return nil
 }
 
+func (m *UpaxClusterMsg) GetSalt() []byte {
+	if m != nil {
+		return m.Salt
+	}
+	return nil
+}
+
 func (m *UpaxClusterMsg) GetSig() []byte {
 	if m != nil {
 		return m.Sig
@@ -122,9 +130,9 @@ func (m *UpaxClusterMsg) GetSig() []byte {
 	return nil
 }
 
-func (m *UpaxClusterMsg) GetYourSeqN() uint64 {
-	if m != nil && m.YourSeqN != nil {
-		return *m.YourSeqN
+func (m *UpaxClusterMsg) GetYourMsgN() uint64 {
+	if m != nil && m.YourMsgN != nil {
+		return *m.YourMsgN
 	}
 	return 0
 }
