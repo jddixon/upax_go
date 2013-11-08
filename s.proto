@@ -9,18 +9,21 @@ package upax_go;
 
 message UpaxClusterMsg {
     enum Tag {
+        // Valid tags for messages from peers.  In this package this
+        // should be a dense sequence starting at zero.
+
         ItsMe       = 0;    // msgN, id, opt salt, sig
         KeepAlive   = 1;    // msgN
-        Ack         = 2;    // above plus yourMsgN
+        Get         = 2;    // msgN plus hash
+        IHave       = 3;    // msgN plus payload = list of hashes
+        Put         = 4;    // LogEntry plus payload
+        Bye         = 5;   
 
-        Get         = 3;    // like KeepAlive plus hash
-        Data        = 4;    // reply to Get; LogEntry plus payload
-        Error       = 5;    // errCode, errDesc
-        
-        IHave       = 6;    // like KeepAlive plus payload = list of hashes
-        Put         = 7;    // LogEntry plus payload
+        // Valid tags for replies to peers.
+        Ack         = 10;    // msgN, yourMsgN
+        Data        = 11;    // msgN; LogEntry plus payload
+        Error       = 12;    // mgnN; errCode, errDesc
 
-        Bye         = 8;   
     }
     optional Tag    Op          = 1;
     optional uint64 MsgN        = 2;    // Nth msg on this cnx, starting at 1

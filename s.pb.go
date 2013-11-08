@@ -18,36 +18,36 @@ type UpaxClusterMsg_Tag int32
 const (
 	UpaxClusterMsg_ItsMe     UpaxClusterMsg_Tag = 0
 	UpaxClusterMsg_KeepAlive UpaxClusterMsg_Tag = 1
-	UpaxClusterMsg_Ack       UpaxClusterMsg_Tag = 2
-	UpaxClusterMsg_Get       UpaxClusterMsg_Tag = 3
-	UpaxClusterMsg_Data      UpaxClusterMsg_Tag = 4
-	UpaxClusterMsg_Error     UpaxClusterMsg_Tag = 5
-	UpaxClusterMsg_IHave     UpaxClusterMsg_Tag = 6
-	UpaxClusterMsg_Put       UpaxClusterMsg_Tag = 7
-	UpaxClusterMsg_Bye       UpaxClusterMsg_Tag = 8
+	UpaxClusterMsg_Get       UpaxClusterMsg_Tag = 2
+	UpaxClusterMsg_IHave     UpaxClusterMsg_Tag = 3
+	UpaxClusterMsg_Put       UpaxClusterMsg_Tag = 4
+	UpaxClusterMsg_Bye       UpaxClusterMsg_Tag = 5
+	UpaxClusterMsg_Ack       UpaxClusterMsg_Tag = 10
+	UpaxClusterMsg_Data      UpaxClusterMsg_Tag = 11
+	UpaxClusterMsg_Error     UpaxClusterMsg_Tag = 12
 )
 
 var UpaxClusterMsg_Tag_name = map[int32]string{
-	0: "ItsMe",
-	1: "KeepAlive",
-	2: "Ack",
-	3: "Get",
-	4: "Data",
-	5: "Error",
-	6: "IHave",
-	7: "Put",
-	8: "Bye",
+	0:  "ItsMe",
+	1:  "KeepAlive",
+	2:  "Get",
+	3:  "IHave",
+	4:  "Put",
+	5:  "Bye",
+	10: "Ack",
+	11: "Data",
+	12: "Error",
 }
 var UpaxClusterMsg_Tag_value = map[string]int32{
 	"ItsMe":     0,
 	"KeepAlive": 1,
-	"Ack":       2,
-	"Get":       3,
-	"Data":      4,
-	"Error":     5,
-	"IHave":     6,
-	"Put":       7,
-	"Bye":       8,
+	"Get":       2,
+	"IHave":     3,
+	"Put":       4,
+	"Bye":       5,
+	"Ack":       10,
+	"Data":      11,
+	"Error":     12,
 }
 
 func (x UpaxClusterMsg_Tag) Enum() *UpaxClusterMsg_Tag {

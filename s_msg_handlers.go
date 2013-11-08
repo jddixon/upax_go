@@ -63,10 +63,11 @@ func doItsMeMsg(h *ClusterInHandler) {
 	// This implementation only accepts a token.
 
 	peerMsg := h.msgIn
-	peerMsgN := peerMsg.GetMsgN()
 	peerID := peerMsg.GetID()
 	salt := peerMsg.GetSalt()
 	sig := peerMsg.GetSig()
+
+	_, _, _, _ = nodeID, peerID, salt, sig
 
 	// expect peerMsgN to be 1
 	err = checkMsgN(h)
@@ -219,11 +220,9 @@ func doByeMsg(h *ClusterInHandler) {
 	}()
 
 	// Examine incoming message -------------------------------------
-	byeMsg := h.msgIn
-
-	// Take appropriate action --------------------------------------
 	err = checkMsgN(h)
 
+	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Prepare reply to client --------------------------------------
 		op := UpaxClusterMsg_Ack

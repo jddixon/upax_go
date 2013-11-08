@@ -3,6 +3,15 @@ github.com/jddixon/upax_go/TODO
 2013-11-07
     * verify that registering cluster member closes the connection
         to the registry when done
+    * current target for cluster_test.go is that we start up the K1
+        servers and
+        - they send ItsMe, get back an Ack, then send Bye, get back
+            an Ack, sleep say 100ms, and signal done
+        - then they add 10x KeepAlive/Ack sequences at 20ms intervals
+            with done after the Bye/Ack pair
+        - then we add the K2 clients
+    * starting server must open log file LFS/U/L 0600 at beginning of 
+        run, close at end.
 
 2013-11-05
     * need additional state for intra-cluster communications: call it   * DONE
@@ -22,28 +31,6 @@ github.com/jddixon/upax_go/TODO
     CLUSTER (was cluster/TODO)
     * expect cluster names to look like reversed fully qualified
         domain names such as org.xlattice.upax.ABCDEF
-    * for testing, expect to find the registry on 127.0.0.1:44444,		* DONE
-        but registry credentials will be needed to get the		        * DONE
-        registry's public keys		                                    * DONE
-    * to test upax clusters		                                        * DONE
-        - generated a random cluster name, then loop on the 		    * DONE
-            registry asking for its clusterID until the 		        * DONE
-            registry says that it is unknown		                    * DONE
-        - then create the cluster with K a random number 3..7		    * DONE
-            and epCount=2		                                        * DONE
-        - this behavior requires an admin client which will do this		* DONE
-        - cluster creation will have created K simple nodes; use		* DONE
-            these to create K upax servers		                        * DONE
-            * LFS for each is tmp/CLUSTER_NAME/SERVER_NAME		        * DONE
-            * server creation should build a u16x16 file system         * DONE
-                under the LFS, including                                * DONE
-                    .xlattice/node.config                               * DONE
-                    U/      0750                                        * DONE
-                    U/in    0770                                        * DONE
-                    U/tmp   0700                                        * DONE
-                    U/L     0600
-                    U/x     0740, where x represents a hex digit        * DONE
-            * each server runs in a separate goroutine                  * DONE
 
         - create K2 (3..7? but chosen separately) clients; each
             of which runs in a separate goroutine

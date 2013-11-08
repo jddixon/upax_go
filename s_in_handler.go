@@ -33,11 +33,11 @@ const (
 )
 
 const (
-	// the number of valid states upon receiving a message from a client
+	// the number of valid states upon receiving a message from a peer
 	IN_STATE_COUNT = BYE_RCVD + 1
 
-	// the tags that ClusterInHandler will accept from a peer
-	MIN_TAG = uint(UpaxClientMsg_KeepAlive)
+	// The tags that ClusterInHandler will accept from a peer.
+	MIN_TAG = uint(UpaxClusterMsg_ItsMe)
 	MAX_TAG = uint(UpaxClusterMsg_Bye)
 
 	MSG_HANDLER_COUNT = MAX_TAG + 1
@@ -124,7 +124,7 @@ func SetUpSessionKey(h *ClusterInHandler) (err error) {
 // Convert a protobuf op into a zero-based tag for use in the ClusterInHandler's
 // dispatch table.
 func op2tag(op UpaxClusterMsg_Tag) uint {
-	return uint(op-UpaxClusterMsg_ItsMe) / 2
+	return uint(op - UpaxClusterMsg_ItsMe)
 }
 
 // Given a handler associating an open new connection with a registry,

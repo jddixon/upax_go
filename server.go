@@ -9,6 +9,7 @@ import (
 	"github.com/jddixon/xlattice_go/u"
 	xf "github.com/jddixon/xlattice_go/util/lfs"
 	"log"
+	"os"
 	"path/filepath"
 )
 
@@ -47,7 +48,7 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
 		lfs = cm.GetLFS()
 		// This should be passed in opt.Logger
 		logFile = filepath.Join(lfs, "log")
-		f, err = os.OpenFile(*logFile,
+		f, err = os.OpenFile(logFile,
 			os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0640)
 		if err == nil {
 			logger = log.New(f, "", log.Ldate|log.Ltime)
