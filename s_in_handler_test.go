@@ -26,6 +26,7 @@ func (s *XLSuite) TestInHandler(c *C) {
 
 	c.Assert(op2tag(UpaxClusterMsg_Ack), Equals, uint(10))
 	c.Assert(op2tag(UpaxClusterMsg_Data), Equals, uint(11))
-	c.Assert(op2tag(UpaxClusterMsg_Error), Equals, uint(12))
+	c.Assert(op2tag(UpaxClusterMsg_NotFound), Equals, uint(12))
+	c.Assert(op2tag(UpaxClusterMsg_Error), Equals, uint(13))
 
 }

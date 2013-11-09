@@ -14,5 +14,7 @@ var (
 	NilRSAKey             = e.New("nil RSA private key parameter")
 	NilServer             = e.New("nil UpaxServer parameter")
 	NilUDir               = e.New("nil uDir parameter")
+	NoDigSig              = e.New("no digital signature found")
+	NoSigFields           = e.New("no dig sig data fields found")
 	NotClusterMember      = e.New("not a cluster member")
 )

@@ -6,7 +6,9 @@ package upax_go
 // intra-cluster communications.
 
 import (
-	// "crypto/rsa"
+	cr "crypto"
+	"crypto/rsa"
+	"crypto/sha1"
 	"errors"
 	"fmt"
 	// xc "github.com/jddixon/xlattice_go/crypto"
@@ -32,13 +34,22 @@ func checkMsgN(h *ClusterInHandler) (err error) {
 	return
 }
 func sendAck(h *ClusterInHandler) {
+	h.myMsgN++
 	op := UpaxClusterMsg_Ack
 	h.msgOut = &UpaxClusterMsg{
-		Op:   &op,
-		MsgN: &h.myMsgN,
+		Op:       &op,
+		MsgN:     &h.myMsgN,
 		YourMsgN: &h.peerMsgN,
 	}
+}
+func sendNotFound(h *ClusterInHandler) {
 	h.myMsgN++
+	op := UpaxClusterMsg_NotFound
+	h.msgOut = &UpaxClusterMsg{
+		Op:       &op,
+		MsgN:     &h.myMsgN,
+		YourMsgN: &h.peerMsgN,
+	}
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -66,8 +77,8 @@ func doItsMeMsg(h *ClusterInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		peerMsg *UpaxClusterMsg
-		peerID, salt, sig []byte
+		peerMsg  *UpaxClusterMsg
+		peerID   []byte
 		peerInfo *reg.MemberInfo
 	)
 	// expect peerMsgN to be 1
@@ -75,8 +86,6 @@ func doItsMeMsg(h *ClusterInHandler) {
 	if err == nil {
 		peerMsg = h.msgIn
 		peerID = peerMsg.GetID()
-		salt = peerMsg.GetSalt()
-		sig = peerMsg.GetSig()
 
 		// use the peerID to get their memberInfo
 		for i := 0; i < len(h.us.Members); i++ {
@@ -92,19 +101,29 @@ func doItsMeMsg(h *ClusterInHandler) {
 	}
 	if err == nil {
 		peerSK := h.peerInfo.GetSigPublicKey()
+		salt := peerMsg.GetSalt()
+		sig := peerMsg.GetSig()
 
 		// use the public key to verify their digsig on the fields
-		// present in canonical order: seqn, id, salt
-
-		// XXX WORKING HERE
-
-		// if the digSig verification fails,
-		// err = BadDigSig
-
-		_ = peerSK			// DEBUG
+		// present in canonical order: id, salt
+		if sig == nil {
+			err = NoDigSig
+		} else {
+			if peerID == nil && salt == nil {
+				err = NoSigFields
+			} else {
+				d := sha1.New()
+				if peerID != nil {
+					d.Write(peerID)
+				}
+				if salt != nil {
+					d.Write(salt)
+				}
+				hash := d.Sum(nil)
+				err = rsa.VerifyPKCS1v15(peerSK, cr.SHA1, hash, sig)
+			}
+		}
 	}
-	 _, _, _ = peerID, salt, sig	// DEBUG
-
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// The appropriate action is to hang a token for this client off
@@ -113,10 +132,10 @@ func doItsMeMsg(h *ClusterInHandler) {
 
 	}
 	if err == nil {
-		// Prepare reply to client --------------------------------------
+		// Send reply to client -------------------------------------
 		sendAck(h)
 
-		// Set exit state -----------------------------------------------
+		// Set exit state -------------------------------------------
 		h.exitState = ID_VERIFIED
 	}
 }
@@ -135,18 +154,18 @@ func doKeepAliveMsg(h *ClusterInHandler) {
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Prepare reply to client --------------------------------------
+		// Send reply to client -------------------------------------
 		sendAck(h)
 
-		// Set exit state -----------------------------------------------
-		h.exitState = ID_VERIFIED
+		// Set exit state -------------------------------------------
+		h.exitState = ID_VERIFIED // the base state
 	}
 }
 
 // 2. GET AND DATA ==================================================
 
 // Handle a Get msg.  If we have the data, we return it as a DataMsg
-// (payload plus log entry); otherwise we will return a non-fatal
+// (payload plus log entry); otherwise we will return NotFound, a non-fatal
 // error message.
 
 func doGetMsg(h *ClusterInHandler) {
@@ -157,15 +176,22 @@ func doGetMsg(h *ClusterInHandler) {
 	// Examine incoming message -------------------------------------
 	var (
 		getMsg *UpaxClusterMsg
+		found  bool
 	)
 	err = checkMsgN(h)
 	if err == nil {
 		getMsg = h.msgIn
 	}
-	_ = getMsg
+	_, _ = found, getMsg // DEBUG
 
 	// Take appropriate action --------------------------------------
+	if err == nil {
+		// determine whether the data requested is present; if it is
+		// we will send a DataMsg, with logEntry and payload fields
 
+		// if the data is not present, send NotFound
+
+	}
 	if err == nil {
 		// Set exit state -----------------------------------------------
 		// h.exitState = CREATE_REQUEST_RCVD
@@ -188,14 +214,13 @@ func doIHaveMsg(h *ClusterInHandler) {
 	if err == nil {
 		iHaveMsg = h.msgIn
 	}
+	if err == nil {
+	}
 	_ = iHaveMsg
 
 	// Take appropriate action --------------------------------------
-
 	if err == nil {
-	}
-	if err == nil {
-		// Prepare reply to client ----------------------------------
+		// Send reply to client -------------------------------------
 		sendAck(h)
 
 		// Set exit state -------------------------------------------
@@ -223,7 +248,7 @@ func doPutMsg(h *ClusterInHandler) {
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Prepare reply to client ----------------------------------
+		// Send reply to client ----------------------------------
 		sendAck(h)
 
 		// Set exit state -------------------------------------------
@@ -244,7 +269,7 @@ func doByeMsg(h *ClusterInHandler) {
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Prepare reply to client ----------------------------------
+		// Send reply to client -------------------------------------
 		sendAck(h)
 
 		// Set exit state -------------------------------------------

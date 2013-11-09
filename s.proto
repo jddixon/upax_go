@@ -22,7 +22,8 @@ message UpaxClusterMsg {
         // Valid tags for replies to peers.
         Ack         = 10;    // msgN, yourMsgN
         Data        = 11;    // msgN; LogEntry plus payload
-        Error       = 12;    // mgnN; errCode, errDesc
+        NotFound    = 12;    // msgN, yourMsgN; a non-fatal error
+        Error       = 13;    // mgnN; errCode, errDesc
 
     }
     optional Tag    Op          = 1;

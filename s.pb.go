@@ -24,7 +24,8 @@ const (
 	UpaxClusterMsg_Bye       UpaxClusterMsg_Tag = 5
 	UpaxClusterMsg_Ack       UpaxClusterMsg_Tag = 10
 	UpaxClusterMsg_Data      UpaxClusterMsg_Tag = 11
-	UpaxClusterMsg_Error     UpaxClusterMsg_Tag = 12
+	UpaxClusterMsg_NotFound  UpaxClusterMsg_Tag = 12
+	UpaxClusterMsg_Error     UpaxClusterMsg_Tag = 13
 )
 
 var UpaxClusterMsg_Tag_name = map[int32]string{
@@ -36,7 +37,8 @@ var UpaxClusterMsg_Tag_name = map[int32]string{
 	5:  "Bye",
 	10: "Ack",
 	11: "Data",
-	12: "Error",
+	12: "NotFound",
+	13: "Error",
 }
 var UpaxClusterMsg_Tag_value = map[string]int32{
 	"ItsMe":     0,
@@ -47,7 +49,8 @@ var UpaxClusterMsg_Tag_value = map[string]int32{
 	"Bye":       5,
 	"Ack":       10,
 	"Data":      11,
-	"Error":     12,
+	"NotFound":  12,
+	"Error":     13,
 }
 
 func (x UpaxClusterMsg_Tag) Enum() *UpaxClusterMsg_Tag {

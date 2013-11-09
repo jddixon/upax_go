@@ -1,5 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
+2013-11-09
+    * FIX: Get and Put only handle files that fit within the buffer;
+        need code at both ends that will handle files of indefinite 
+        size.
+
 2013-11-07
     * verify that registering cluster member closes the connection
         to the registry when done
