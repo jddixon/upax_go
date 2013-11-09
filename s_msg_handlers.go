@@ -10,9 +10,9 @@ import (
 	"errors"
 	"fmt"
 	// xc "github.com/jddixon/xlattice_go/crypto"
-	xi "github.com/jddixon/xlattice_go/nodeID"
+	// xi "github.com/jddixon/xlattice_go/nodeID"
 	"github.com/jddixon/xlattice_go/reg"
-	//xu "github.com/jddixon/xlattice_go/util"
+	xu "github.com/jddixon/xlattice_go/util"
 )
 
 // Verify that the message number on the incoming message has been
@@ -30,6 +30,15 @@ func checkMsgN(h *ClusterInHandler) (err error) {
 		h.peerMsgN++
 	}
 	return
+}
+func sendAck(h *ClusterInHandler) {
+	op := UpaxClusterMsg_Ack
+	h.msgOut = &UpaxClusterMsg{
+		Op:   &op,
+		MsgN: &h.myMsgN,
+		YourMsgN: &h.peerMsgN,
+	}
+	h.myMsgN++
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -57,49 +66,55 @@ func doItsMeMsg(h *ClusterInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		nodeID *xi.NodeID
+		peerMsg *UpaxClusterMsg
+		peerID, salt, sig []byte
+		peerInfo *reg.MemberInfo
 	)
-	// XXX We should accept EITHER clientName + token OR clientID
-	// This implementation only accepts a token.
-
-	peerMsg := h.msgIn
-	peerID := peerMsg.GetID()
-	salt := peerMsg.GetSalt()
-	sig := peerMsg.GetSig()
-
-	_, _, _, _ = nodeID, peerID, salt, sig
-
 	// expect peerMsgN to be 1
 	err = checkMsgN(h)
-
 	if err == nil {
-		// use the peerID to get their public key
+		peerMsg = h.msgIn
+		peerID = peerMsg.GetID()
+		salt = peerMsg.GetSalt()
+		sig = peerMsg.GetSig()
 
-		// if not recognized,
-		// err = NotClusterMember
+		// use the peerID to get their memberInfo
+		for i := 0; i < len(h.us.Members); i++ {
+			memberInfo := h.us.Members[i]
+			if xu.SameBytes(peerID, memberInfo.GetNodeID().Value()) {
+				peerInfo = memberInfo
+				break
+			}
+		}
+		if h.peerInfo == nil {
+			err = NotClusterMember
+		}
 	}
 	if err == nil {
+		peerSK := h.peerInfo.GetSigPublicKey()
+
 		// use the public key to verify their digsig on the fields
-		// presesnt in canonical order: seqn, id, salt
+		// present in canonical order: seqn, id, salt
+
+		// XXX WORKING HERE
 
 		// if the digSig verification fails,
 		// err = BadDigSig
 
+		_ = peerSK			// DEBUG
 	}
+	 _, _, _ = peerID, salt, sig	// DEBUG
+
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// The appropriate action is to hang a token for this client off
 		// the ClusterInHandler.
+		h.peerInfo = peerInfo
 
 	}
 	if err == nil {
 		// Prepare reply to client --------------------------------------
-		op := UpaxClusterMsg_Ack
-		h.msgOut = &UpaxClusterMsg{
-			Op:   &op,
-			MsgN: &h.myMsgN,
-		}
-		h.myMsgN++
+		sendAck(h)
 
 		// Set exit state -----------------------------------------------
 		h.exitState = ID_VERIFIED
@@ -116,25 +131,12 @@ func doKeepAliveMsg(h *ClusterInHandler) {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
+	err = checkMsgN(h)
 
-	if err == nil {
-
-	}
-	if err == nil {
-
-	}
 	// Take appropriate action --------------------------------------
 	if err == nil {
-
-	}
-	if err == nil {
 		// Prepare reply to client --------------------------------------
-		op := UpaxClusterMsg_Ack
-		h.msgOut = &UpaxClusterMsg{
-			Op:   &op,
-			MsgN: &h.myMsgN,
-		}
-		h.myMsgN++
+		sendAck(h)
 
 		// Set exit state -----------------------------------------------
 		h.exitState = ID_VERIFIED
@@ -153,8 +155,13 @@ func doGetMsg(h *ClusterInHandler) {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
-	var ()
-	getMsg := h.msgIn
+	var (
+		getMsg *UpaxClusterMsg
+	)
+	err = checkMsgN(h)
+	if err == nil {
+		getMsg = h.msgIn
+	}
 	_ = getMsg
 
 	// Take appropriate action --------------------------------------
@@ -174,8 +181,13 @@ func doIHaveMsg(h *ClusterInHandler) {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
-	var ()
-	iHaveMsg := h.msgIn
+	var (
+		iHaveMsg *UpaxClusterMsg
+	)
+	err = checkMsgN(h)
+	if err == nil {
+		iHaveMsg = h.msgIn
+	}
 	_ = iHaveMsg
 
 	// Take appropriate action --------------------------------------
@@ -184,8 +196,10 @@ func doIHaveMsg(h *ClusterInHandler) {
 	}
 	if err == nil {
 		// Prepare reply to client ----------------------------------
+		sendAck(h)
+
 		// Set exit state -------------------------------------------
-		// h.exitState = JOIN_RCVD
+		h.exitState = ID_VERIFIED
 	}
 }
 
@@ -198,16 +212,22 @@ func doPutMsg(h *ClusterInHandler) {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
-	var ()
-	putMsg := h.msgIn
+	var (
+		putMsg *UpaxClusterMsg
+	)
+	err = checkMsgN(h)
+	if err == nil {
+		putMsg = h.msgIn
+	}
 	_ = putMsg
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Prepare reply to client --------------------------------------
+		// Prepare reply to client ----------------------------------
+		sendAck(h)
 
-		// Set exit state -----------------------------------------------
-		//h.exitState = JOIN_RCVD // the JOIN is intentional !
+		// Set exit state -------------------------------------------
+		h.exitState = ID_VERIFIED
 	}
 }
 
@@ -224,15 +244,10 @@ func doByeMsg(h *ClusterInHandler) {
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Prepare reply to client --------------------------------------
-		op := UpaxClusterMsg_Ack
-		h.msgOut = &UpaxClusterMsg{
-			Op:   &op,
-			MsgN: &h.myMsgN,
-		}
-		h.myMsgN++
+		// Prepare reply to client ----------------------------------
+		sendAck(h)
 
-		// Set exit state -----------------------------------------------
-		h.exitState = BYE_RCVD
+		// Set exit state -------------------------------------------
+		h.exitState = ID_VERIFIED
 	}
 }

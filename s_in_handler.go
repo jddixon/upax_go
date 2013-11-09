@@ -73,7 +73,7 @@ type ClusterInHandler struct {
 	us       *UpaxServer
 	uDir     u.UI
 	peerInfo *reg.MemberInfo
-	cluster  *reg.RegCluster
+	// cluster  *reg.RegCluster
 
 	myMsgN   uint64 // first message 1, then increment on each send
 	peerMsgN uint64 // expect this to be 1 on the first message
