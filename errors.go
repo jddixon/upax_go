@@ -15,6 +15,7 @@ var (
 	NilServer             = e.New("nil UpaxServer parameter")
 	NilUDir               = e.New("nil uDir parameter")
 	NoDigSig              = e.New("no digital signature found")
+	NoMembers             = e.New("nil or empty members parameter")
 	NoSigFields           = e.New("no dig sig data fields found")
 	NotClusterMember      = e.New("not a cluster member")
 )

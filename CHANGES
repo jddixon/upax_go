@@ -1,5 +1,12 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.2.2
+    2013-11-09
+        * intra server comms: s_in_hander, s_msg_handler in         SLOC  1564
+            skeletal form; DIR16x16 directory structure;
+            ItsMe/Ack, KeepAlive/Ack, Bye/Ack; Get/Data in
+            development
+        * added skeletal UpaxClient
 0.2.1
     2013-10-30
         * cluster_test creates and runs K1 clients                  SLOC   995
