@@ -85,12 +85,6 @@ type UpaxClusterMsg struct {
 	ErrDesc          *string             `protobuf:"bytes,9,opt" json:"ErrDesc,omitempty"`
 	Hash             []byte              `protobuf:"bytes,10,opt" json:"Hash,omitempty"`
 	Payload          []byte              `protobuf:"bytes,11,opt" json:"Payload,omitempty"`
-	Index            *int64              `protobuf:"varint,32,opt" json:"Index,omitempty"`
-	Timestamp        *int64              `protobuf:"varint,33,opt" json:"Timestamp,omitempty"`
-	ContentKey       []byte              `protobuf:"bytes,34,opt" json:"ContentKey,omitempty"`
-	Owner            []byte              `protobuf:"bytes,35,opt" json:"Owner,omitempty"`
-	Src              *string             `protobuf:"bytes,36,opt" json:"Src,omitempty"`
-	Path             *string             `protobuf:"bytes,37,opt" json:"Path,omitempty"`
 	XXX_unrecognized []byte              `json:"-"`
 }
 
@@ -175,42 +169,56 @@ func (m *UpaxClusterMsg) GetPayload() []byte {
 	return nil
 }
 
-func (m *UpaxClusterMsg) GetIndex() int64 {
+type UpaxClusterMsg_LogEntry struct {
+	Index            *int64  `protobuf:"varint,1,opt" json:"Index,omitempty"`
+	Timestamp        *int64  `protobuf:"varint,2,opt" json:"Timestamp,omitempty"`
+	ContentKey       []byte  `protobuf:"bytes,3,opt" json:"ContentKey,omitempty"`
+	Owner            []byte  `protobuf:"bytes,4,opt" json:"Owner,omitempty"`
+	Src              *string `protobuf:"bytes,5,opt" json:"Src,omitempty"`
+	Path             *string `protobuf:"bytes,6,opt" json:"Path,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *UpaxClusterMsg_LogEntry) Reset()         { *m = UpaxClusterMsg_LogEntry{} }
+func (m *UpaxClusterMsg_LogEntry) String() string { return proto.CompactTextString(m) }
+func (*UpaxClusterMsg_LogEntry) ProtoMessage()    {}
+
+func (m *UpaxClusterMsg_LogEntry) GetIndex() int64 {
 	if m != nil && m.Index != nil {
 		return *m.Index
 	}
 	return 0
 }
 
-func (m *UpaxClusterMsg) GetTimestamp() int64 {
+func (m *UpaxClusterMsg_LogEntry) GetTimestamp() int64 {
 	if m != nil && m.Timestamp != nil {
 		return *m.Timestamp
 	}
 	return 0
 }
 
-func (m *UpaxClusterMsg) GetContentKey() []byte {
+func (m *UpaxClusterMsg_LogEntry) GetContentKey() []byte {
 	if m != nil {
 		return m.ContentKey
 	}
 	return nil
 }
 
-func (m *UpaxClusterMsg) GetOwner() []byte {
+func (m *UpaxClusterMsg_LogEntry) GetOwner() []byte {
 	if m != nil {
 		return m.Owner
 	}
 	return nil
 }
 
-func (m *UpaxClusterMsg) GetSrc() string {
+func (m *UpaxClusterMsg_LogEntry) GetSrc() string {
 	if m != nil && m.Src != nil {
 		return *m.Src
 	}
 	return ""
 }
 
-func (m *UpaxClusterMsg) GetPath() string {
+func (m *UpaxClusterMsg_LogEntry) GetPath() string {
 	if m != nil && m.Path != nil {
 		return *m.Path
 	}

@@ -16,15 +16,23 @@ message UpaxClusterMsg {
         KeepAlive   = 1;    // msgN
         Get         = 2;    // msgN plus hash
         IHave       = 3;    // msgN plus payload = list of hashes
-        Put         = 4;    // LogEntry plus payload
-        Bye         = 5;   
+        Put         = 4;    // msgN, LogEntry, payload
+        Bye         = 5;    // msgN
 
         // Valid tags for replies to peers.
         Ack         = 10;    // msgN, yourMsgN
-        Data        = 11;    // msgN; LogEntry plus payload
+        Data        = 11;    // msgN, yourMsgN; LogEntry plus payload
         NotFound    = 12;    // msgN, yourMsgN; a non-fatal error
-        Error       = 13;    // mgnN; errCode, errDesc
+        Error       = 13;    // mgnN, yourMsgN; errCode, errDesc
 
+    }
+    message LogEntry {
+        optional int64  Index       = 1;
+	    optional int64  Timestamp   = 2;
+	    optional bytes  ContentKey  = 3;
+	    optional bytes  Owner       = 4;
+	    optional string Src         = 5;
+	    optional string Path        = 6;
     }
     optional Tag    Op          = 1;
     optional uint64 MsgN        = 2;    // Nth msg on this cnx, starting at 1
@@ -38,13 +46,4 @@ message UpaxClusterMsg {
     optional string ErrDesc     = 9;
     optional bytes  Hash        = 10;
     optional bytes  Payload     = 11;
-
-    // for LogEntry
-    optional int64  Index       = 32;
-    optional int64  Timestamp   = 33;
-    optional bytes  ContentKey  = 34;
-    optional bytes  Owner       = 35;
-    optional string Src         = 36;
-    optional string Path        = 37;
 }
-

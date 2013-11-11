@@ -8,35 +8,48 @@ package upax_go;
 // expected to be ephemeral.
 
 message UpaxClientMsg {
-    enum Cmd {
-        // 1 through 8 are as in XLatticeMsg
-        KeepAlive   = 3;    // seqn, id, opt salt, opt sig
-        Ack         = 4;    // above plus yourSeqN, yourID
-        Error       = 5;    // above plus errCode, errDesc
-        Get         = 6;    // like KeepAlive plus hash
-        Put         = 7;    // above plus payload
-        IHave       = 8;    // like KeepAlive plus payload = list of hashes
+    enum Tag {
+        // messages received by the server
+        Hello       = 0;    // msgN, token including DigSig
+        ItsMe       = 1;    // msgN, id, opt salt, sig
+        KeepAlive   = 2;    // msgN
+        Query       = 3;    // msgN, Hash; reply is Ack or NotFound
+        Get         = 4;    // msgN
+        Put         = 5;    // above plus payload
+        Bye         = 6;    // msgN
 
-        Bye         = 10;   // client; server acks
+        // replies sent by the server
+        Ack         = 10;   // msgN, yourmsgN
+        Data        = 11;   // msgN, LogEntry, payload
+        NotFound    = 12;   // msgN, yourmsgN
+        Error       = 13;   // msgN, yourmsgN, errCode, errDesc
+    } 
+    message Token {
+        optional string Name        = 1;
+        // no Attrs
+	    optional bytes  ID          = 3;    // 20 or 32 byte nodeID
+        optional bytes  CommsKey    = 4;
+        optional bytes  SigKey      = 5;
+        optional bytes  Salt        = 6;
+	    optional bytes  DigSig      = 7;    // over fields present, in order
+	}
+    message LogEntry {
+        optional int64  Index       = 1;
+	    optional int64  Timestamp   = 2;
+	    optional bytes  ContentKey  = 3;
+	    optional bytes  Owner       = 4;
+	    optional string Src         = 5;
+	    optional string Path        = 6;
     }
-    optional Cmd    Op          = 1;
+    optional Tag    Op          = 1;
     optional uint64 MsgN        = 2;    // Nth msg on this cnx, starting at 1
     optional bytes  ID          = 3;
     optional bytes  Salt        = 4;
     optional bytes  Sig         = 5;
-    optional uint64 YourSeqN    = 6;
+    optional uint64 YourMsgN    = 6;
     optional bytes  YourID      = 7;
     optional uint64 ErrCode     = 8;
     optional string ErrDesc     = 9;
     optional bytes  Hash        = 10;
     optional bytes  Payload     = 11;
-
-    // for LogEntry
-    optional int64  Index       = 32;
-    optional int64  Timestamp   = 33;
-    optional bytes  ContentKey  = 34;
-    optional bytes  Owner       = 35;
-    optional string Src         = 36;
-    optional string Path        = 37;
 }
-
