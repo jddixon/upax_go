@@ -20,7 +20,7 @@ import (
 // Verify that the message number on the incoming message has been
 // increased by one.
 //
-func checkSMsgN(h *ClusterInHandler) (err error) {
+func checkCMsgN(h *ClientInHandler) (err error) {
 	byeMsg := h.msgIn
 	peerMsgN := byeMsg.GetMsgN()
 	expectedMsgN := h.peerMsgN + 1
@@ -33,19 +33,19 @@ func checkSMsgN(h *ClusterInHandler) (err error) {
 	}
 	return
 }
-func sendSAck(h *ClusterInHandler) {
+func sendCAck(h *ClientInHandler) {
 	h.myMsgN++
-	op := UpaxClusterMsg_Ack
-	h.msgOut = &UpaxClusterMsg{
+	op := UpaxClientMsg_Ack
+	h.msgOut = &UpaxClientMsg{
 		Op:       &op,
 		MsgN:     &h.myMsgN,
 		YourMsgN: &h.peerMsgN,
 	}
 }
-func sendSNotFound(h *ClusterInHandler) {
+func sendCNotFound(h *ClientInHandler) {
 	h.myMsgN++
-	op := UpaxClusterMsg_NotFound
-	h.msgOut = &UpaxClusterMsg{
+	op := UpaxClientMsg_NotFound
+	h.msgOut = &UpaxClientMsg{
 		Op:       &op,
 		MsgN:     &h.myMsgN,
 		YourMsgN: &h.peerMsgN,
@@ -61,28 +61,31 @@ func sendSNotFound(h *ClusterInHandler) {
 // Dispatch table entry where a client message received is inappropriate
 // the the state of the connection.  For example, ...
 //
-func badSCombo(h *ClusterInHandler) {
+func badCCombo(h *ClientInHandler) {
 	h.errOut = reg.RcvdInvalidMsgForState
 }
 
 // 0. ITS_ME AND ACK ================================================
 
 // Handle an ItsMe msg: we return an Ack or closes the connection.
-// This should normally take the connection to an S_ID_VERIFIED state.
+// This should normally take the connection to an C_ID_VERIFIED state.
 //
-func doSItsMeMsg(h *ClusterInHandler) {
+func doCItsMeMsg(h *ClientInHandler) {
+
+	// XXX ALL peer TO BE REPLACED BY client
+
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		peerMsg  *UpaxClusterMsg
-		peerID   []byte
-		peerInfo *reg.MemberInfo
+		peerMsg    *UpaxClientMsg
+		peerID     []byte
+		clientInfo *reg.MemberInfo
 	)
 	// expect peerMsgN to be 1
-	err = checkSMsgN(h)
+	err = checkCMsgN(h)
 	if err == nil {
 		peerMsg = h.msgIn
 		peerID = peerMsg.GetID()
@@ -91,16 +94,16 @@ func doSItsMeMsg(h *ClusterInHandler) {
 		for i := 0; i < len(h.us.Members); i++ {
 			memberInfo := h.us.Members[i]
 			if bytes.Equal(peerID, memberInfo.GetNodeID().Value()) {
-				peerInfo = memberInfo
+				clientInfo = memberInfo
 				break
 			}
 		}
-		if h.peerInfo == nil {
-			err = NotClusterMember
+		if h.clientInfo == nil {
+			err = UnknownClient
 		}
 	}
 	if err == nil {
-		peerSK := h.peerInfo.GetSigPublicKey()
+		peerSK := h.clientInfo.GetSigPublicKey()
 		salt := peerMsg.GetSalt()
 		sig := peerMsg.GetSig()
 
@@ -127,16 +130,16 @@ func doSItsMeMsg(h *ClusterInHandler) {
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// The appropriate action is to hang a token for this client off
-		// the ClusterInHandler.
-		h.peerInfo = peerInfo
+		// the ClientInHandler.
+		h.clientInfo = clientInfo
 
 	}
 	if err == nil {
 		// Send reply to client -------------------------------------
-		sendSAck(h)
+		sendCAck(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED
+		h.exitState = C_ID_VERIFIED
 	}
 }
 
@@ -144,21 +147,21 @@ func doSItsMeMsg(h *ClusterInHandler) {
 
 // Handle a KeepAlive msg: we just return an Ack
 
-func doSKeepAliveMsg(h *ClusterInHandler) {
+func doCKeepAliveMsg(h *ClientInHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
-	err = checkSMsgN(h)
+	err = checkCMsgN(h)
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Send reply to client -------------------------------------
-		sendSAck(h)
+		sendCAck(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED // the base state
+		h.exitState = C_ID_VERIFIED // the base state
 	}
 }
 
@@ -168,17 +171,17 @@ func doSKeepAliveMsg(h *ClusterInHandler) {
 // (payload plus log entry); otherwise we will return NotFound, a non-fatal
 // error message.
 
-func doSGetMsg(h *ClusterInHandler) {
+func doCGetMsg(h *ClientInHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		getMsg *UpaxClusterMsg
+		getMsg *UpaxClientMsg
 		found  bool
 	)
-	err = checkSMsgN(h)
+	err = checkCMsgN(h)
 	if err == nil {
 		getMsg = h.msgIn
 	}
@@ -201,16 +204,16 @@ func doSGetMsg(h *ClusterInHandler) {
 // 3. I_HAVE AND ACK ================================================
 
 //
-func doSIHaveMsg(h *ClusterInHandler) {
+func doCIHaveMsg(h *ClientInHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		iHaveMsg *UpaxClusterMsg
+		iHaveMsg *UpaxClientMsg
 	)
-	err = checkSMsgN(h)
+	err = checkCMsgN(h)
 	if err == nil {
 		iHaveMsg = h.msgIn
 	}
@@ -221,26 +224,26 @@ func doSIHaveMsg(h *ClusterInHandler) {
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Send reply to client -------------------------------------
-		sendSAck(h)
+		sendCAck(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED
+		h.exitState = C_ID_VERIFIED
 	}
 }
 
 // 4. PUT AND ACK  ==================================================
 
 //
-func doSPutMsg(h *ClusterInHandler) {
+func doCPutMsg(h *ClientInHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		putMsg *UpaxClusterMsg
+		putMsg *UpaxClientMsg
 	)
-	err = checkSMsgN(h)
+	err = checkCMsgN(h)
 	if err == nil {
 		putMsg = h.msgIn
 	}
@@ -249,30 +252,30 @@ func doSPutMsg(h *ClusterInHandler) {
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Send reply to client ----------------------------------
-		sendSAck(h)
+		sendCAck(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED
+		h.exitState = C_ID_VERIFIED
 	}
 }
 
 // 5. BYE AND ACK ===================================================
 
-func doSByeMsg(h *ClusterInHandler) {
+func doCByeMsg(h *ClientInHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 
 	// Examine incoming message -------------------------------------
-	err = checkSMsgN(h)
+	err = checkCMsgN(h)
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Send reply to client -------------------------------------
-		sendSAck(h)
+		sendCAck(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED
+		h.exitState = C_ID_VERIFIED
 	}
 }

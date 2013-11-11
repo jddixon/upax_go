@@ -1,6 +1,6 @@
 package upax_go
 
-// upax_go/s_packets.go
+// upax_go/c_packets.go
 
 import (
 	"code.google.com/p/goprotobuf/proto"
@@ -15,10 +15,10 @@ import (
 var _ = fmt.Print
 
 const (
-	S_MSG_BUF_LEN = 128 * 1024
+	C_MSG_BUF_LEN = 128 * 1024
 )
 
-type ClusterCnxHandler struct {
+type ClientCnxHandler struct {
 	State int
 	Cnx   *xt.TcpConnection
 }
@@ -26,8 +26,8 @@ type ClusterCnxHandler struct {
 // Read data from the connection.  XXX This will not handle partial
 // reads correctly
 //
-func (h *ClusterCnxHandler) ReadData() (data []byte, err error) {
-	data = make([]byte, S_MSG_BUF_LEN)
+func (h *ClientCnxHandler) ReadData() (data []byte, err error) {
+	data = make([]byte, C_MSG_BUF_LEN)
 	count, err := h.Cnx.Read(data)
 	// DEBUG
 	//fmt.Printf("ReadData: count is %d, err is %v\n", count, err)
@@ -39,28 +39,28 @@ func (h *ClusterCnxHandler) ReadData() (data []byte, err error) {
 	return nil, err
 }
 
-func (h *ClusterCnxHandler) WriteData(data []byte) (err error) {
+func (h *ClientCnxHandler) WriteData(data []byte) (err error) {
 	count, err := h.Cnx.Write(data)
 	// XXX handle cases where not all bytes written
 	_ = count
 	return
 }
-func decodeClusterPacket(data []byte) (*UpaxClusterMsg, error) {
-	var m UpaxClusterMsg
+func decodeClientPacket(data []byte) (*UpaxClientMsg, error) {
+	var m UpaxClientMsg
 	err := proto.Unmarshal(data, &m)
 	// XXX do some filtering, eg for nil op
 	return &m, err
 }
 
-func encodeClusterPacket(msg *UpaxClusterMsg) (data []byte, err error) {
+func encodeClientPacket(msg *UpaxClientMsg) (data []byte, err error) {
 	return proto.Marshal(msg)
 }
 
-func clusterEncodePadEncrypt(msg *UpaxClusterMsg, engine cipher.BlockMode) (
+func clientEncodePadEncrypt(msg *UpaxClientMsg, engine cipher.BlockMode) (
 	ciphertext []byte, err error) {
 
 	var paddedData []byte
-	cData, err := encodeClusterPacket(msg)
+	cData, err := encodeClientPacket(msg)
 	if err == nil {
 		paddedData, err = xc.AddPKCS7Padding(cData, aes.BlockSize)
 	}
@@ -73,15 +73,15 @@ func clusterEncodePadEncrypt(msg *UpaxClusterMsg, engine cipher.BlockMode) (
 	return
 }
 
-func clusterDecryptUnpadDecode(ciphertext []byte, engine cipher.BlockMode) (
-	msg *UpaxClusterMsg, err error) {
+func clientDecryptUnpadDecode(ciphertext []byte, engine cipher.BlockMode) (
+	msg *UpaxClientMsg, err error) {
 
 	plaintext := make([]byte, len(ciphertext))
 	engine.CryptBlocks(plaintext, ciphertext) // dest <- src
 
 	unpaddedCData, err := xc.StripPKCS7Padding(plaintext, aes.BlockSize)
 	if err == nil {
-		msg, err = decodeClusterPacket(unpaddedCData)
+		msg, err = decodeClientPacket(unpaddedCData)
 	}
 	return
 }

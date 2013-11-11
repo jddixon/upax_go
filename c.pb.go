@@ -16,7 +16,7 @@ var _ = math.Inf
 type UpaxClientMsg_Tag int32
 
 const (
-	UpaxClientMsg_Hello     UpaxClientMsg_Tag = 0
+	UpaxClientMsg_Intro     UpaxClientMsg_Tag = 0
 	UpaxClientMsg_ItsMe     UpaxClientMsg_Tag = 1
 	UpaxClientMsg_KeepAlive UpaxClientMsg_Tag = 2
 	UpaxClientMsg_Query     UpaxClientMsg_Tag = 3
@@ -30,7 +30,7 @@ const (
 )
 
 var UpaxClientMsg_Tag_name = map[int32]string{
-	0:  "Hello",
+	0:  "Intro",
 	1:  "ItsMe",
 	2:  "KeepAlive",
 	3:  "Query",
@@ -43,7 +43,7 @@ var UpaxClientMsg_Tag_name = map[int32]string{
 	13: "Error",
 }
 var UpaxClientMsg_Tag_value = map[string]int32{
-	"Hello":     0,
+	"Intro":     0,
 	"ItsMe":     1,
 	"KeepAlive": 2,
 	"Query":     3,
