@@ -52,13 +52,12 @@ func init() {
 	// cMsgHandlers = make([][]interface{}, C_BYE_RCVD, C_MSG_HANDLER_COUNT)
 
 	cMsgHandlers = [][]interface{}{
-		//
-		// XXX NEEDS REWORKING -- either Intro or ItsMe in first line
-		//
 		// client messages permitted in C_HELLO_RCVD state
-		{doCItsMeMsg, badCCombo, badCCombo, badCCombo, badCCombo, badCCombo},
+		{doCIntroMsg, doCItsMeMsg, badCCombo, badCCombo, badCCombo,
+			badCCombo, badCCombo},
 		// client messages permitted in C_ID_VERIFIED state
-		{badCCombo, doCKeepAliveMsg, doCGetMsg, doCIHaveMsg, doCPutMsg, doCByeMsg},
+		{badCCombo, badCCombo, doCKeepAliveMsg, doCQueryMsg, doCGetMsg,
+			doCPutMsg, doCByeMsg},
 	}
 	var err error
 	serverVersion, err = xu.ParseDecimalVersion(VERSION)

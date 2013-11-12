@@ -65,14 +65,12 @@ func badCCombo(h *ClientInHandler) {
 	h.errOut = reg.RcvdInvalidMsgForState
 }
 
-// 0. ITS_ME AND ACK ================================================
+// 0. INTRO AND ACK ================================================
 
-// Handle an ItsMe msg: we return an Ack or closes the connection.
-// This should normally take the connection to an C_ID_VERIFIED state.
-//
-func doCItsMeMsg(h *ClientInHandler) {
+func doCIntroMsg(h *ClientInHandler) {
 
-	// XXX ALL peer TO BE REPLACED BY client
+	// XXX THIS IS JUST A COPY OF doCItsMe -- needs to be edited
+	// considerably !
 
 	var err error
 	defer func() {
@@ -80,20 +78,22 @@ func doCItsMeMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		peerMsg    *UpaxClientMsg
-		peerID     []byte
+		clientMsg  *UpaxClientMsg
+		clientID   []byte
 		clientInfo *reg.MemberInfo
 	)
-	// expect peerMsgN to be 1
+	// expect clientMsgN to be 1
 	err = checkCMsgN(h)
 	if err == nil {
-		peerMsg = h.msgIn
-		peerID = peerMsg.GetID()
+		clientMsg = h.msgIn
 
-		// use the peerID to get their memberInfo
+		// XXX THIS IS SIMPLY WRONG - NO SUCH FIELD
+		clientID = clientMsg.GetID()
+
+		// use the clientID to get their memberInfo
 		for i := 0; i < len(h.us.Members); i++ {
 			memberInfo := h.us.Members[i]
-			if bytes.Equal(peerID, memberInfo.GetNodeID().Value()) {
+			if bytes.Equal(clientID, memberInfo.GetNodeID().Value()) {
 				clientInfo = memberInfo
 				break
 			}
@@ -104,20 +104,20 @@ func doCItsMeMsg(h *ClientInHandler) {
 	}
 	if err == nil {
 		peerSK := h.clientInfo.GetSigPublicKey()
-		salt := peerMsg.GetSalt()
-		sig := peerMsg.GetSig()
+		salt := clientMsg.GetSalt()
+		sig := clientMsg.GetSig()
 
 		// use the public key to verify their digsig on the fields
 		// present in canonical order: id, salt
 		if sig == nil {
 			err = NoDigSig
 		} else {
-			if peerID == nil && salt == nil {
+			if clientID == nil && salt == nil {
 				err = NoSigFields
 			} else {
 				d := sha1.New()
-				if peerID != nil {
-					d.Write(peerID)
+				if clientID != nil {
+					d.Write(clientID)
 				}
 				if salt != nil {
 					d.Write(salt)
@@ -143,7 +143,85 @@ func doCItsMeMsg(h *ClientInHandler) {
 	}
 }
 
-// 1. KEEP-ALIVE AND ACK ============================================
+// 1. ITS_ME AND ACK ================================================
+
+// Handle an ItsMe msg: we return an Ack or closes the connection.
+// This should normally take the connection to an C_ID_VERIFIED state.
+//
+func doCItsMeMsg(h *ClientInHandler) {
+
+	// XXX ALL peer TO BE REPLACED BY client
+
+	var err error
+	defer func() {
+		h.errOut = err
+	}()
+	// Examine incoming message -------------------------------------
+	var (
+		clientMsg  *UpaxClientMsg
+		clientID   []byte
+		clientInfo *reg.MemberInfo
+	)
+	// expect clientMsgN to be 1
+	err = checkCMsgN(h)
+	if err == nil {
+		clientMsg = h.msgIn
+		clientID = clientMsg.GetID()
+
+		// use the clientID to get their memberInfo
+		for i := 0; i < len(h.us.Members); i++ {
+			memberInfo := h.us.Members[i]
+			if bytes.Equal(clientID, memberInfo.GetNodeID().Value()) {
+				clientInfo = memberInfo
+				break
+			}
+		}
+		if h.clientInfo == nil {
+			err = UnknownClient
+		}
+	}
+	if err == nil {
+		peerSK := h.clientInfo.GetSigPublicKey()
+		salt := clientMsg.GetSalt()
+		sig := clientMsg.GetSig()
+
+		// use the public key to verify their digsig on the fields
+		// present in canonical order: id, salt
+		if sig == nil {
+			err = NoDigSig
+		} else {
+			if clientID == nil && salt == nil {
+				err = NoSigFields
+			} else {
+				d := sha1.New()
+				if clientID != nil {
+					d.Write(clientID)
+				}
+				if salt != nil {
+					d.Write(salt)
+				}
+				hash := d.Sum(nil)
+				err = rsa.VerifyPKCS1v15(peerSK, cr.SHA1, hash, sig)
+			}
+		}
+	}
+	// Take appropriate action --------------------------------------
+	if err == nil {
+		// The appropriate action is to hang a token for this client off
+		// the ClientInHandler.
+		h.clientInfo = clientInfo
+
+	}
+	if err == nil {
+		// Send reply to client -------------------------------------
+		sendCAck(h)
+
+		// Set exit state -------------------------------------------
+		h.exitState = C_ID_VERIFIED
+	}
+} // GEEP
+
+// 2. KEEP-ALIVE AND ACK ============================================
 
 // Handle a KeepAlive msg: we just return an Ack
 
@@ -165,7 +243,37 @@ func doCKeepAliveMsg(h *ClientInHandler) {
 	}
 }
 
-// 2. GET AND DATA ==================================================
+// 3. QUERY AND ACK ================================================
+
+//
+func doCQueryMsg(h *ClientInHandler) {
+	var err error
+	defer func() {
+		h.errOut = err
+	}()
+	// Examine incoming message -------------------------------------
+	var (
+		queryMsg *UpaxClientMsg
+	)
+	err = checkCMsgN(h)
+	if err == nil {
+		queryMsg = h.msgIn
+	}
+	if err == nil {
+	}
+	_ = queryMsg
+
+	// Take appropriate action --------------------------------------
+	if err == nil {
+		// Send reply to client -------------------------------------
+		sendCAck(h)
+
+		// Set exit state -------------------------------------------
+		h.exitState = C_ID_VERIFIED
+	}
+} // GEEP
+
+// 4. GET AND DATA ==================================================
 
 // Handle a Get msg.  If we have the data, we return it as a DataMsg
 // (payload plus log entry); otherwise we will return NotFound, a non-fatal
@@ -201,37 +309,7 @@ func doCGetMsg(h *ClientInHandler) {
 	}
 }
 
-// 3. I_HAVE AND ACK ================================================
-
-//
-func doCIHaveMsg(h *ClientInHandler) {
-	var err error
-	defer func() {
-		h.errOut = err
-	}()
-	// Examine incoming message -------------------------------------
-	var (
-		iHaveMsg *UpaxClientMsg
-	)
-	err = checkCMsgN(h)
-	if err == nil {
-		iHaveMsg = h.msgIn
-	}
-	if err == nil {
-	}
-	_ = iHaveMsg
-
-	// Take appropriate action --------------------------------------
-	if err == nil {
-		// Send reply to client -------------------------------------
-		sendCAck(h)
-
-		// Set exit state -------------------------------------------
-		h.exitState = C_ID_VERIFIED
-	}
-}
-
-// 4. PUT AND ACK  ==================================================
+// 5. PUT AND ACK  ==================================================
 
 //
 func doCPutMsg(h *ClientInHandler) {
@@ -259,7 +337,7 @@ func doCPutMsg(h *ClientInHandler) {
 	}
 }
 
-// 5. BYE AND ACK ===================================================
+// 6. BYE AND ACK ===================================================
 
 func doCByeMsg(h *ClientInHandler) {
 	var err error

@@ -14,8 +14,8 @@ message UpaxClientMsg {
         ItsMe       = 1;    // msgN, id, opt salt, sig
         KeepAlive   = 2;    // msgN
         Query       = 3;    // msgN, Hash; reply is Ack or NotFound
-        Get         = 4;    // msgN
-        Put         = 5;    // above plus payload
+        Get         = 4;    // msgN, hash; reply is Data or NotFound
+        Put         = 5;    // msgN, logEntry, payload
         Bye         = 6;    // msgN
 
         // replies sent by the server
