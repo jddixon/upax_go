@@ -77,18 +77,19 @@ func (x *UpaxClientMsg_Tag) UnmarshalJSON(data []byte) error {
 }
 
 type UpaxClientMsg struct {
-	Op               *UpaxClientMsg_Tag `protobuf:"varint,1,opt,enum=upax_go.UpaxClientMsg_Tag" json:"Op,omitempty"`
-	MsgN             *uint64            `protobuf:"varint,2,opt" json:"MsgN,omitempty"`
-	ID               []byte             `protobuf:"bytes,3,opt" json:"ID,omitempty"`
-	Salt             []byte             `protobuf:"bytes,4,opt" json:"Salt,omitempty"`
-	Sig              []byte             `protobuf:"bytes,5,opt" json:"Sig,omitempty"`
-	YourMsgN         *uint64            `protobuf:"varint,6,opt" json:"YourMsgN,omitempty"`
-	YourID           []byte             `protobuf:"bytes,7,opt" json:"YourID,omitempty"`
-	ErrCode          *uint64            `protobuf:"varint,8,opt" json:"ErrCode,omitempty"`
-	ErrDesc          *string            `protobuf:"bytes,9,opt" json:"ErrDesc,omitempty"`
-	Hash             []byte             `protobuf:"bytes,10,opt" json:"Hash,omitempty"`
-	Payload          []byte             `protobuf:"bytes,11,opt" json:"Payload,omitempty"`
-	XXX_unrecognized []byte             `json:"-"`
+	Op               *UpaxClientMsg_Tag   `protobuf:"varint,1,opt,enum=upax_go.UpaxClientMsg_Tag" json:"Op,omitempty"`
+	MsgN             *uint64              `protobuf:"varint,2,opt" json:"MsgN,omitempty"`
+	ID               []byte               `protobuf:"bytes,3,opt" json:"ID,omitempty"`
+	Salt             []byte               `protobuf:"bytes,4,opt" json:"Salt,omitempty"`
+	Sig              []byte               `protobuf:"bytes,5,opt" json:"Sig,omitempty"`
+	YourMsgN         *uint64              `protobuf:"varint,6,opt" json:"YourMsgN,omitempty"`
+	YourID           []byte               `protobuf:"bytes,7,opt" json:"YourID,omitempty"`
+	ErrCode          *uint64              `protobuf:"varint,8,opt" json:"ErrCode,omitempty"`
+	ErrDesc          *string              `protobuf:"bytes,9,opt" json:"ErrDesc,omitempty"`
+	Hash             []byte               `protobuf:"bytes,10,opt" json:"Hash,omitempty"`
+	Payload          []byte               `protobuf:"bytes,11,opt" json:"Payload,omitempty"`
+	ClientInfo       *UpaxClientMsg_Token `protobuf:"bytes,12,opt" json:"ClientInfo,omitempty"`
+	XXX_unrecognized []byte               `json:"-"`
 }
 
 func (m *UpaxClientMsg) Reset()         { *m = UpaxClientMsg{} }
@@ -168,6 +169,13 @@ func (m *UpaxClientMsg) GetHash() []byte {
 func (m *UpaxClientMsg) GetPayload() []byte {
 	if m != nil {
 		return m.Payload
+	}
+	return nil
+}
+
+func (m *UpaxClientMsg) GetClientInfo() *UpaxClientMsg_Token {
+	if m != nil {
+		return m.ClientInfo
 	}
 	return nil
 }

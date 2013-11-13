@@ -10,7 +10,7 @@ package upax_go;
 message UpaxClientMsg {
     enum Tag {
         // messages received by the server
-        Intro       = 0;    // msgN, token including DigSig
+        Intro       = 0;    // msgN, token including DigSig; gets Ack or Error
         ItsMe       = 1;    // msgN, id, opt salt, sig
         KeepAlive   = 2;    // msgN
         Query       = 3;    // msgN, Hash; reply is Ack or NotFound
@@ -52,4 +52,5 @@ message UpaxClientMsg {
     optional string ErrDesc     = 9;
     optional bytes  Hash        = 10;
     optional bytes  Payload     = 11;
+    optional Token  ClientInfo  = 12;
 }

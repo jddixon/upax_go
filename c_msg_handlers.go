@@ -10,11 +10,13 @@ import (
 	cr "crypto"
 	"crypto/rsa"
 	"crypto/sha1"
+	"encoding/hex"
 	"errors"
 	"fmt"
-	// xc "github.com/jddixon/xlattice_go/crypto"
-	// xi "github.com/jddixon/xlattice_go/nodeID"
+	xc "github.com/jddixon/xlattice_go/crypto"
+	xi "github.com/jddixon/xlattice_go/nodeID"
 	"github.com/jddixon/xlattice_go/reg"
+	xu "github.com/jddixon/xlattice_go/u"
 )
 
 // Verify that the message number on the incoming message has been
@@ -67,10 +69,12 @@ func badCCombo(h *ClientInHandler) {
 
 // 0. INTRO AND ACK ================================================
 
+// IntroMsg consists of MsgN and Token; the token should contain
+// name, ID, commsKey, sigKey, salt, and a digital signature over
+// fields present in the token, excluding the token itself.  On
+// success the server replies with an IntroOK.
+//
 func doCIntroMsg(h *ClientInHandler) {
-
-	// XXX THIS IS JUST A COPY OF doCItsMe -- needs to be edited
-	// considerably !
 
 	var err error
 	defer func() {
@@ -78,61 +82,66 @@ func doCIntroMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		clientMsg  *UpaxClientMsg
-		clientID   []byte
-		clientInfo *reg.MemberInfo
+		clientMsg                         *UpaxClientMsg
+		name                              string
+		token                             *UpaxClientMsg_Token
+		rawID, ckRaw, skRaw, salt, digSig []byte
+		clientCK, clientSK                *rsa.PublicKey
+		clientID                          *xi.NodeID
+		clientInfo                        *reg.MemberInfo
 	)
 	// expect clientMsgN to be 1
 	err = checkCMsgN(h)
 	if err == nil {
 		clientMsg = h.msgIn
-
-		// XXX THIS IS SIMPLY WRONG - NO SUCH FIELD
-		clientID = clientMsg.GetID()
-
-		// use the clientID to get their memberInfo
-		for i := 0; i < len(h.us.Members); i++ {
-			memberInfo := h.us.Members[i]
-			if bytes.Equal(clientID, memberInfo.GetNodeID().Value()) {
-				clientInfo = memberInfo
-				break
-			}
-		}
-		if h.clientInfo == nil {
-			err = UnknownClient
+		token = clientMsg.GetClientInfo()
+		if token == nil {
+			err = NilToken
 		}
 	}
 	if err == nil {
-		peerSK := h.clientInfo.GetSigPublicKey()
-		salt := clientMsg.GetSalt()
-		sig := clientMsg.GetSig()
-
-		// use the public key to verify their digsig on the fields
-		// present in canonical order: id, salt
-		if sig == nil {
-			err = NoDigSig
-		} else {
-			if clientID == nil && salt == nil {
-				err = NoSigFields
-			} else {
-				d := sha1.New()
-				if clientID != nil {
-					d.Write(clientID)
-				}
-				if salt != nil {
-					d.Write(salt)
-				}
-				hash := d.Sum(nil)
-				err = rsa.VerifyPKCS1v15(peerSK, cr.SHA1, hash, sig)
-			}
+		name = token.GetName()
+		rawID = token.GetID()
+		ckRaw = token.GetCommsKey()
+		skRaw = token.GetSigKey()
+		salt = token.GetSalt()
+		digSig = token.GetDigSig()
+		if name == "" || rawID == nil || ckRaw == nil || skRaw == nil ||
+			salt == nil || digSig == nil {
+			err = MissingTokenField
 		}
+	}
+	if err == nil {
+		clientID, err = xi.New(rawID)
+		if err == nil {
+			clientCK, err = xc.RSAPubKeyFromWire(ckRaw)
+		}
+		if err == nil {
+			clientSK, err = xc.RSAPubKeyFromWire(ckRaw)
+		}
+	}
+	if err == nil {
+		// Use the public key to verify their digsig on the fields
+		// present in canonical order
+
+		d := sha1.New()
+		d.Write([]byte(name))
+		d.Write(rawID)
+		d.Write(ckRaw)
+		d.Write(skRaw)
+		d.Write(salt)
+		hash := d.Sum(nil)
+		err = rsa.VerifyPKCS1v15(clientSK, cr.SHA1, hash, digSig)
+	}
+	if err == nil {
+		clientInfo, err = reg.NewMemberInfo(name, clientID,
+			clientCK, clientSK, 0, nil)
 	}
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// The appropriate action is to hang a token for this client off
 		// the ClientInHandler.
 		h.clientInfo = clientInfo
-
 	}
 	if err == nil {
 		// Send reply to client -------------------------------------
@@ -150,7 +159,7 @@ func doCIntroMsg(h *ClientInHandler) {
 //
 func doCItsMeMsg(h *ClientInHandler) {
 
-	// XXX ALL peer TO BE REPLACED BY client
+	// XXX ALL client TO BE REPLACED BY client
 
 	var err error
 	defer func() {
@@ -159,19 +168,19 @@ func doCItsMeMsg(h *ClientInHandler) {
 	// Examine incoming message -------------------------------------
 	var (
 		clientMsg  *UpaxClientMsg
-		clientID   []byte
+		rawID      []byte
 		clientInfo *reg.MemberInfo
 	)
 	// expect clientMsgN to be 1
 	err = checkCMsgN(h)
 	if err == nil {
 		clientMsg = h.msgIn
-		clientID = clientMsg.GetID()
+		rawID = clientMsg.GetID()
 
-		// use the clientID to get their memberInfo
+		// use the rawID to get their memberInfo
 		for i := 0; i < len(h.us.Members); i++ {
 			memberInfo := h.us.Members[i]
-			if bytes.Equal(clientID, memberInfo.GetNodeID().Value()) {
+			if bytes.Equal(rawID, memberInfo.GetNodeID().Value()) {
 				clientInfo = memberInfo
 				break
 			}
@@ -181,7 +190,7 @@ func doCItsMeMsg(h *ClientInHandler) {
 		}
 	}
 	if err == nil {
-		peerSK := h.clientInfo.GetSigPublicKey()
+		clientSK := h.clientInfo.GetSigPublicKey()
 		salt := clientMsg.GetSalt()
 		sig := clientMsg.GetSig()
 
@@ -190,18 +199,18 @@ func doCItsMeMsg(h *ClientInHandler) {
 		if sig == nil {
 			err = NoDigSig
 		} else {
-			if clientID == nil && salt == nil {
+			if rawID == nil && salt == nil {
 				err = NoSigFields
 			} else {
 				d := sha1.New()
-				if clientID != nil {
-					d.Write(clientID)
+				if rawID != nil {
+					d.Write(rawID)
 				}
 				if salt != nil {
 					d.Write(salt)
 				}
 				hash := d.Sum(nil)
-				err = rsa.VerifyPKCS1v15(peerSK, cr.SHA1, hash, sig)
+				err = rsa.VerifyPKCS1v15(clientSK, cr.SHA1, hash, sig)
 			}
 		}
 	}
@@ -245,6 +254,8 @@ func doCKeepAliveMsg(h *ClientInHandler) {
 
 // 3. QUERY AND ACK ================================================
 
+// A faster implementation would check an in-memory Bloom filter,
+// trusting a negative reply but verifying any positive with a disk hit.
 //
 func doCQueryMsg(h *ClientInHandler) {
 	var err error
@@ -253,25 +264,36 @@ func doCQueryMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
+		found    bool
+		hash     []byte
 		queryMsg *UpaxClientMsg
 	)
 	err = checkCMsgN(h)
 	if err == nil {
 		queryMsg = h.msgIn
+		hash = queryMsg.GetHash()
+		if hash == nil {
+			err = NilHash
+		}
 	}
 	if err == nil {
+		strHash := hex.EncodeToString(hash)
+		found, err = h.us.uDir.Exists(strHash)
 	}
-	_ = queryMsg
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Send reply to client -------------------------------------
-		sendCAck(h)
+		if found {
+			sendCAck(h)
+		} else {
+			sendCNotFound(h)
+		}
 
 		// Set exit state -------------------------------------------
 		h.exitState = C_ID_VERIFIED
 	}
-} // GEEP
+}
 
 // 4. GET AND DATA ==================================================
 
@@ -286,26 +308,67 @@ func doCGetMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		getMsg *UpaxClientMsg
-		found  bool
+		getMsg    *UpaxClientMsg
+		hash      []byte
+		strHash   string
+		usingSHA1 bool
 	)
 	err = checkCMsgN(h)
 	if err == nil {
 		getMsg = h.msgIn
-	}
-	_, _ = found, getMsg // DEBUG
+		hash = getMsg.GetHash()
+		if hash == nil {
+			err = NilHash
+		} else {
+			strHash = hex.EncodeToString(hash)
 
+			// BEWARE: U uses hex lengths, double byte lengths
+			switch len(strHash) {
+			case xu.SHA1_LEN:
+				usingSHA1 = true
+			case xu.SHA3_LEN:
+				usingSHA1 = false
+			default:
+				err = BadHashLength
+			}
+		}
+	}
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// determine whether the data requested is present; if it is
-		// we will send a DataMsg, with logEntry and payload fields
+		var data []byte
 
-		// if the data is not present, send NotFound
+		if usingSHA1 {
+			data, err = h.us.uDir.GetData1(strHash)
+		} else {
+			data, err = h.us.uDir.GetData3(strHash)
+		}
+		if err == xu.FileNotFound {
+			err = nil
+			data = nil
+		}
+		if err == nil {
+			if data == nil {
+				sendCNotFound(h)
+			} else {
+				// we will send a DataMsg, with logEntry and payload fields
 
-	}
-	if err == nil {
-		// Set exit state -----------------------------------------------
-		// h.exitState = CREATE_REQUEST_RCVD
+				h.myMsgN++
+				op := UpaxClientMsg_Ack
+				h.msgOut = &UpaxClientMsg{
+					Op:   &op,
+					MsgN: &h.myMsgN,
+
+					// XXX LOG ENTRY MISSING!	<--------------------
+
+					Payload: data,
+				}
+
+			}
+		}
+		// Set exit state -------------------------------------------
+		if err == nil {
+			h.exitState = C_ID_VERIFIED
+		}
 	}
 }
 
@@ -354,6 +417,6 @@ func doCByeMsg(h *ClientInHandler) {
 		sendCAck(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = C_ID_VERIFIED
+		h.exitState = C_BYE_RCVD
 	}
 }
