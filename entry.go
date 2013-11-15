@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	xu "github.com/jddixon/xlattice_go/u"
 	"strconv"
 	"strings"
 	"time"
@@ -35,8 +36,8 @@ func NewLogEntry(t int64, key []byte, nodeID []byte,
 	}
 	if key == nil || nodeID == nil {
 		err = NilKeyOrNodeID
-	} else if (len(key) != 20 && len(key) != 32) ||
-		(len(nodeID) != 20 && len(nodeID) != 32) {
+	} else if (len(key) != xu.SHA1_LEN/2 && len(key) != xu.SHA3_LEN/2) ||
+		(len(nodeID) != xu.SHA1_LEN/2 && len(nodeID) != xu.SHA3_LEN/2) {
 		err = InvalidKeyOrNodeID
 	}
 	if err == nil {
@@ -88,7 +89,7 @@ func (e *LogEntry) TimeStamp() int64 {
 
 // Whether the key is an SHA1 key.
 func (e *LogEntry) UsingSHA1() bool {
-	return len(e.key) == 20
+	return len(e.key) == xu.SHA1_LEN/2
 }
 
 // SERIALIZATION AND DESERIALIZATION ////////////////////////////////

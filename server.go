@@ -3,8 +3,10 @@ package upax_go
 // upax_go/server.go
 
 import (
+	"bufio"
 	"crypto/rsa"
 	"fmt"
+	xn "github.com/jddixon/xlattice_go/node"
 	"github.com/jddixon/xlattice_go/reg"
 	"github.com/jddixon/xlattice_go/u"
 	xf "github.com/jddixon/xlattice_go/util/lfs"
@@ -15,11 +17,44 @@ import (
 
 var _ = fmt.Print
 
-type UpaxServer struct {
-	LogFile string
-	Logger  *log.Logger
+// We are guaranteed that the file exists and that m is not nil.
+//
+func loadEntries(pathToFTLog string, m *xn.IDMap, usingSHA1 bool) (
+	count int, err error) {
 
-	uDir           u.UI
+	f, err := os.OpenFile(pathToFTLog, os.O_RDONLY, 0600)
+	if err == nil {
+		defer f.Close()
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			var entry *LogEntry
+			line := scanner.Text()
+			entry, err = ParseLogEntry(line, usingSHA1)
+			if err != nil {
+				break
+			}
+			err = m.Insert(entry.key, entry)
+			if err != nil {
+				break
+			}
+			count++
+		}
+	}
+	return
+}
+
+type UpaxServer struct {
+	// conventional log, mostly for debugging
+	PathToDebugLog string
+	Logger         *log.Logger
+
+	// what we are here for: data managed by the server
+	uDir u.UI // content-keyed disk store
+
+	entries     *xn.IDMap // key []byte ==> *LogEntry, stored in U/L
+	ftLogFile   *os.File
+	pathToFTLog string
+
 	ckPriv, skPriv *rsa.PrivateKey
 	reg.ClusterMember
 }
@@ -28,11 +63,16 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
 	us *UpaxServer, err error) {
 
 	var (
-		lfs     string
-		f       *os.File
-		logFile string
-		logger  *log.Logger
-		uDir    u.UI
+		lfs       string   // path to local file system
+		f         *os.File // file for debugging log
+		pathToLog string
+		logger    *log.Logger
+
+		uDir        u.UI
+		pathToU     string
+		entries     *xn.IDMap
+		ftLogFile   *os.File
+		pathToFTLog string // conventionally lfs/U/L
 	)
 	if ckPriv == nil || ckPriv == nil {
 		err = NilRSAKey
@@ -47,8 +87,8 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
 
 		lfs = cm.GetLFS()
 		// This should be passed in opt.Logger
-		logFile = filepath.Join(lfs, "log")
-		f, err = os.OpenFile(logFile,
+		pathToLog = filepath.Join(lfs, "log")
+		f, err = os.OpenFile(pathToLog,
 			os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0640)
 		if err == nil {
 			logger = log.New(f, "", log.Ldate|log.Ltime)
@@ -70,17 +110,50 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember) (
 		fmt.Printf("creating directory tree in %s\n", lfs)
 		// END
 
-		pathToU := filepath.Join(lfs, "U")
+		pathToU = filepath.Join(lfs, "U")
 		uDir, err = u.New(pathToU, u.DIR16x16, 0)
 	}
 	if err == nil {
+		entries, err = xn.NewNewIDMap() // with default depth
+	}
+	if err == nil {
+		var found bool
+		pathToFTLog = filepath.Join(pathToU, "L")
+		found, err = xf.PathExists(pathToFTLog)
+		if err == nil {
+			if found {
+				fmt.Printf("ftLog file exists\n")
+
+				// open it 0400 for reading, load contents into memory,
+
+				// XXX STUB
+
+				// close it
+
+				// XXX STUB
+
+				// reopen it 0200 for appending
+				ftLogFile, err = os.OpenFile(pathToFTLog,
+					os.O_WRONLY|os.O_APPEND, 0200)
+			} else {
+				// open it for appending
+				ftLogFile, err = os.OpenFile(pathToFTLog,
+					os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0200)
+			}
+		}
+
+	}
+	if err == nil {
 		us = &UpaxServer{
-			LogFile:       logFile,
-			Logger:        logger,
-			uDir:          uDir,
-			ckPriv:        ckPriv,
-			skPriv:        skPriv,
-			ClusterMember: *cm,
+			PathToDebugLog: pathToLog,
+			Logger:         logger,
+			uDir:           uDir,
+			entries:        entries,
+			ftLogFile:      ftLogFile,
+			pathToFTLog:    pathToFTLog,
+			ckPriv:         ckPriv,
+			skPriv:         skPriv,
+			ClusterMember:  *cm,
 		}
 	}
 	return

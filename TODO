@@ -1,5 +1,22 @@
 github.com/jddixon/upax_go/TODO
 
+2013-11-14
+    * c_msg_handler: finish Get, handling LogEntry
+        - get read lock on IDMap
+    * c_msg_handler: finish Put, handling LogEntry,
+        - including append to U/L
+        - get write lock on IDMap
+    * U/L opened 0600
+    * dirty flag in associated data structure
+
+2013-11-12
+    * consider changing xlattice_go/u to
+        - hide the usingSHA1 distinction (eg GetData1 and GetData3      * DONE
+            hide behind GetData)                                        * DONE
+        - use binary keys, []byte instead of hex string                 * DONE
+    * server needs to load logEntries into memory at start of run,
+        append to disk log L immediately after writing into U
+
 2013-11-09
     * FIX: Get and Put only handle files that fit within the buffer;
         need code at both ends that will handle files of indefinite 
@@ -25,8 +42,6 @@ github.com/jddixon/upax_go/TODO
             which sent the Hello
 
 2013-10-27
-    * we must have a regCred.dat for the server running on the test     * DONE
-        system in ./                                                    * DONE
     * a booting server without an LFS must find and parse ./regCred.dat
         to continue
         - once such a server has created its LFS it writes regCred.dat
@@ -83,22 +98,3 @@ github.com/jddixon/upax_go/TODO
     * doTestBodyLine needs better tests of paths
         - rnglib should generate random POSIX paths
         - and random email addresses
-2013-09-13  *** OBSOLETE ***
-    * modify code so that Upax servers and clients use xlReg 	        * OBS
-        to initiate communications (xlattice_go/reg/helloAndReply.go	* OBS
-        - attrs has two role bits, 00 = client, 01 = mirror, 10 = server* OBS
-	
-    * p.proto drops Hello, which is replaced by PeerHelloAndReply	    * OBS
-        sequence, xlattice_go/msg/helloAndReply.go	                    * OBS
-	
-    * begin the game with serialization of the UpaxNode to and from	    * OBS
-        LFS	                                                            * OBS
-        - UpaxNode is serialized in reverse order, so 	                * OBS
-            BaseNode | Node | UpaxNode	                                * OBS
-        - serialization is written to/loaded from LFS/.xlattice/config	* OBS
-        - by default, if that file exists it is loaded and configuration* OBS
-            attributes are taken from the file	                        * OBS
-	
-    * upaxNode/New has p []xn.Peer as a parameter, this should most	    * OBS
-        certainly be a pointer or slice of pointers instead; fix	    * OBS
-        and also fix xn.New, which is where the problem really is	    * OBS
