@@ -17,6 +17,12 @@ import (
 var _ = fmt.Print
 
 func (s *XLSuite) TestCluster(c *C) {
+	rng := xr.MakeSimpleRNG()
+	s.doTestCluster(c, rng, true)		// usingSHA1
+	s.doTestCluster(c, rng, false)		// not
+}
+
+func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool ) {
 
 	// read regCred.dat to get keys etc for a registry --------------
 	dat, err := ioutil.ReadFile("regCred.dat")
@@ -32,8 +38,6 @@ func (s *XLSuite) TestCluster(c *C) {
 	// Devise a unique cluster name.  We rely on the convention -----
 	// that in Upax tests, the local file system for Upax servers is
 	// tmp/CLUSTER-NAME/SERVER-NAME.
-
-	rng := xr.MakeSimpleRNG()
 
 	clusterName := rng.NextFileName(8)
 	clusterPath := filepath.Join("tmp", clusterName)
@@ -131,7 +135,8 @@ func (s *XLSuite) TestCluster(c *C) {
 	for i := 0; i < K1; i++ {
 		err = uc[i].PersistClusterMember()
 		c.Assert(err, IsNil)
-		us[i], err = NewUpaxServer(ckPriv[i], skPriv[i], &uc[i].ClusterMember)
+		us[i], err = NewUpaxServer(
+			ckPriv[i], skPriv[i], &uc[i].ClusterMember, usingSHA1)
 		c.Assert(err, IsNil)
 		c.Assert(us[i], NotNil)
 	}

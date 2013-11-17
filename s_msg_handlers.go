@@ -175,22 +175,57 @@ func doSGetMsg(h *ClusterInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		getMsg *UpaxClusterMsg
 		found  bool
+		getMsg *UpaxClusterMsg
+		data, key		[]byte
+		logEntry *LogEntry		// not the message
 	)
 	err = checkSMsgN(h)
 	if err == nil {
 		getMsg = h.msgIn
+		key = getMsg.GetHash()
+		if key == nil {
+			err = NilHash
+		} 
 	}
-	_, _ = found, getMsg // DEBUG
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// determine whether the data requested is present; if it is
 		// we will send a DataMsg, with logEntry and payload fields
+		var whatever interface{}
+		whatever, err = h.us.entries.Find(key)
+		logEntry = whatever.(*LogEntry)
+		if err != nil {
+			found = logEntry != nil
+		}
+	}
+	if err == nil {
+		if found {
+			// fetch payload
+			data, err = h.us.uDir.GetData(key)
+			if err == nil {
+				// we will send log entry and payload
+				logEntryMsg := &UpaxClusterMsg_LogEntry{
+					Timestamp:		&logEntry.timestamp,
+					ContentKey:		logEntry.key,
+					Owner:			logEntry.nodeID,
+					Src:			&logEntry.src,
+					Path:			&logEntry.path,
+				}
+				h.myMsgN++
+				op := UpaxClusterMsg_Data
+				h.msgOut = &UpaxClusterMsg{
+					Op:       &op,
+					MsgN:     &h.myMsgN,
+					Entry:		logEntryMsg,
+					Payload:	data,
+				}
+			}
 
-		// if the data is not present, send NotFound
-
+		} else {
+			sendSNotFound(h)
+		}
 	}
 	if err == nil {
 		// Set exit state -----------------------------------------------
@@ -215,6 +250,10 @@ func doSIHaveMsg(h *ClusterInHandler) {
 		iHaveMsg = h.msgIn
 	}
 	if err == nil {
+
+		// XXX STUB XXX - check the list, filtering out those we
+		// already have; the list is then forwarded to the other
+		// side (the outHandler), which will get anything on the list.
 	}
 	_ = iHaveMsg
 
