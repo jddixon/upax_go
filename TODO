@@ -8,11 +8,15 @@ github.com/jddixon/upax_go/TODO
     * FIX nil pointer causes panic doTestCluster 22, cluster_test 136,
         client_ndoe 144, ...  This appears to be an obscure effect of
         xlReg being down.  Need better handling of this condition.
+    * accesses to IDMap entries need to be synchronized, but this 
+        should be done there (in xlattice_go/node/id_map.go), not in
+        using code
+    * also need an entryCount on IDMap, synchronized there
 
 2013-11-14
-    * c_msg_handler: finish Get, handling LogEntry
+    * s_msg_handler: finish Get, handling LogEntry
         - get read lock on IDMap
-    * c_msg_handler: finish Put, handling LogEntry,
+    * s_msg_handler: finish Put, handling LogEntry,
         - including append to U/L
         - get write lock on IDMap
     * U/L opened 0600                                                   * DONE

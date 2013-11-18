@@ -18,11 +18,11 @@ var _ = fmt.Print
 
 func (s *XLSuite) TestCluster(c *C) {
 	rng := xr.MakeSimpleRNG()
-	s.doTestCluster(c, rng, true)		// usingSHA1
-	s.doTestCluster(c, rng, false)		// not
+	s.doTestCluster(c, rng, true)  // usingSHA1
+	s.doTestCluster(c, rng, false) // not
 }
 
-func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool ) {
+func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// read regCred.dat to get keys etc for a registry --------------
 	dat, err := ioutil.ReadFile("regCred.dat")

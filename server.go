@@ -18,7 +18,7 @@ import (
 
 var _ = fmt.Print
 
-// Load serialized log entries into the IDMap from which they are 
+// Load serialized log entries into the IDMap from which they are
 // retrievable using the content key.  Conventionally the logEntry
 // file is in LFS/U/L, where LFS is the path to the local file system.
 //
@@ -59,10 +59,11 @@ type UpaxServer struct {
 	entries     *xn.IDMap // key []byte ==> *LogEntry, stored in U/L
 	ftLogFile   *os.File
 	pathToFTLog string
-	
-	entryCount	int		// number of entries, get lock if changing
-	entriesDirty bool	// get lock if changing
-	entriesMu	sync.RWMutex
+
+	// XXX Should synchronize IDMap internally, not here
+	entryCount   int  // number of entries, get lock if changing
+	entriesDirty bool // get lock if changing
+	entriesMu    sync.RWMutex
 
 	ckPriv, skPriv *rsa.PrivateKey
 	reg.ClusterMember
@@ -72,7 +73,7 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 	usingSHA1 bool) (us *UpaxServer, err error) {
 
 	var (
-		count		int
+		count     int
 		lfs       string   // path to local file system
 		f         *os.File // file for debugging log
 		pathToLog string
@@ -133,7 +134,7 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 		if err == nil {
 			if found {
 				fmt.Printf("ftLog file exists\n")
-				count, err = loadEntries(pathToFTLog, entries, usingSHA1) 
+				count, err = loadEntries(pathToFTLog, entries, usingSHA1)
 				if err == nil {
 					// reopen it 0600 for appending
 					ftLogFile, err = os.OpenFile(pathToFTLog,
@@ -155,7 +156,7 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 			entries:        entries,
 			ftLogFile:      ftLogFile,
 			pathToFTLog:    pathToFTLog,
-			entryCount:		count,
+			entryCount:     count,
 			ckPriv:         ckPriv,
 			skPriv:         skPriv,
 			ClusterMember:  *cm,

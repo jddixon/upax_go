@@ -175,10 +175,10 @@ func doSGetMsg(h *ClusterInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		found  bool
-		getMsg *UpaxClusterMsg
-		data, key		[]byte
-		logEntry *LogEntry		// not the message
+		found     bool
+		getMsg    *UpaxClusterMsg
+		data, key []byte
+		logEntry  *LogEntry // not the message
 	)
 	err = checkSMsgN(h)
 	if err == nil {
@@ -186,7 +186,7 @@ func doSGetMsg(h *ClusterInHandler) {
 		key = getMsg.GetHash()
 		if key == nil {
 			err = NilHash
-		} 
+		}
 	}
 
 	// Take appropriate action --------------------------------------
@@ -207,19 +207,19 @@ func doSGetMsg(h *ClusterInHandler) {
 			if err == nil {
 				// we will send log entry and payload
 				logEntryMsg := &UpaxClusterMsg_LogEntry{
-					Timestamp:		&logEntry.timestamp,
-					ContentKey:		logEntry.key,
-					Owner:			logEntry.nodeID,
-					Src:			&logEntry.src,
-					Path:			&logEntry.path,
+					Timestamp:  &logEntry.timestamp,
+					ContentKey: logEntry.key,
+					Owner:      logEntry.nodeID,
+					Src:        &logEntry.src,
+					Path:       &logEntry.path,
 				}
 				h.myMsgN++
 				op := UpaxClusterMsg_Data
 				h.msgOut = &UpaxClusterMsg{
-					Op:       &op,
-					MsgN:     &h.myMsgN,
-					Entry:		logEntryMsg,
-					Payload:	data,
+					Op:      &op,
+					MsgN:    &h.myMsgN,
+					Entry:   logEntryMsg,
+					Payload: data,
 				}
 			}
 
@@ -277,21 +277,65 @@ func doSPutMsg(h *ClusterInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		putMsg *UpaxClusterMsg
+		data, key []byte
+		entryMsg  *UpaxClusterMsg_LogEntry
+		logEntry  *LogEntry
+		putMsg    *UpaxClusterMsg
 	)
 	err = checkSMsgN(h)
 	if err == nil {
 		putMsg = h.msgIn
+		entryMsg = putMsg.GetEntry()
+		if entryMsg == nil {
+			err = NilLogEntry
+		}
 	}
-	_ = putMsg
+	if err == nil {
+		data = putMsg.GetPayload()
+		if data == nil {
+			err = NilPayload
+		}
+	}
+	if err == nil {
+		t := entryMsg.GetTimestamp()
+		key = entryMsg.GetContentKey()
+		nodeID := entryMsg.GetOwner()
+		src := entryMsg.GetSrc()
+		path := entryMsg.GetPath()
 
+		// XXX CHECK FOR MISSING FIELDS
+
+		logEntry, err = NewLogEntry(t, key, nodeID, src, path)
+	}
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Send reply to client ----------------------------------
-		sendSAck(h)
+		var (
+			found    bool
+			whatever interface{}
+		)
+		whatever, err = h.us.entries.Find(key)
+		if err == nil {
+			if whatever != nil {
+				found = logEntry.Equal(whatever)
+			}
+			if !found {
+				var hash []byte
+				_, hash, err = h.us.uDir.PutData(data, key)
+				if err == nil && !bytes.Equal(hash, key) {
+					err = BadHash
+				}
+			}
+		}
+		if err == nil && !found {
+			err = h.us.entries.Insert(key, logEntry)
+		}
+		if err == nil {
+			// Send reply to client ----------------------------------
+			sendSAck(h)
 
-		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED
+			// Set exit state ---------------------------------------
+			h.exitState = S_ID_VERIFIED
+		}
 	}
 }
 

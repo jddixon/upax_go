@@ -3,6 +3,7 @@ package upax_go
 // upax_go/entry.go
 
 import (
+	"bytes"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -90,6 +91,37 @@ func (e *LogEntry) TimeStamp() int64 {
 // Whether the key is an SHA1 key.
 func (e *LogEntry) UsingSHA1() bool {
 	return len(e.key) == xu.SHA1_LEN/2
+}
+
+// EQUAL ////////////////////////////////////////////////////////////
+
+func (e *LogEntry) Equal(any interface{}) bool {
+	if any == e {
+		return true
+	}
+	if any == nil {
+		return false
+	}
+	switch v := any.(type) {
+	case *LogEntry:
+		_ = v
+	default:
+		return false
+	}
+	other := any.(*LogEntry) // type assertion
+
+	if e.timestamp != other.timestamp {
+		return false
+	} else if !bytes.Equal(e.key, other.key) {
+		return false
+	} else if !bytes.Equal(e.nodeID, other.nodeID) {
+		return false
+	} else if e.src != other.src {
+		return false
+	} else if e.path != other.path {
+		return false
+	}
+	return true
 }
 
 // SERIALIZATION AND DESERIALIZATION ////////////////////////////////
