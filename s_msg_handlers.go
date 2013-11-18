@@ -319,6 +319,7 @@ func doSPutMsg(h *ClusterInHandler) {
 				found = logEntry.Equal(whatever)
 			}
 			if !found {
+				// write data to U/x/x, the appropriate hash directory
 				var hash []byte
 				_, hash, err = h.us.uDir.PutData(data, key)
 				if err == nil && !bytes.Equal(hash, key) {
@@ -327,7 +328,12 @@ func doSPutMsg(h *ClusterInHandler) {
 			}
 		}
 		if err == nil && !found {
-			err = h.us.entries.Insert(key, logEntry)
+			// write to U/L, the log file (UNSYNCHRONIZED)
+			_, err = h.us.ftLogFile.WriteString(logEntry.String() + "\n")
+			if err == nil {
+				// written to U, entry appended to U/L, so put it into the map
+				err = h.us.entries.Insert(key, logEntry)
+			}
 		}
 		if err == nil {
 			// Send reply to client ----------------------------------

@@ -1,5 +1,12 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.2.3
+    2013-11-18
+        * s_msg_handler Put appends entry to U/L                    SLOC  2473
+    2013-11-17
+        * s_msg_handler largely complete except for IHave           SLOC  2470
+        * IDMap added (much improved version of BNIMap)
+        * puts to and gets from U
 0.2.2
     2013-11-09
         * intra server comms: s_in_hander, s_msg_handler in         SLOC  1564
