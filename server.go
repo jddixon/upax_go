@@ -4,19 +4,27 @@ package upax_go
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/rsa"
 	"fmt"
 	xn "github.com/jddixon/xlattice_go/node"
 	"github.com/jddixon/xlattice_go/reg"
+	xt "github.com/jddixon/xlattice_go/transport"
 	"github.com/jddixon/xlattice_go/u"
 	xf "github.com/jddixon/xlattice_go/util/lfs"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 var _ = fmt.Print
+
+const (
+	RETRY_INTERVAL = 10 * time.Millisecond
+	MAX_RETRY      = 3 // how many times we retry if we can't get a cnx
+)
 
 // Load serialized log entries into the IDMap from which they are
 // retrievable using the content key.  Conventionally the logEntry
@@ -49,6 +57,11 @@ func loadEntries(pathToFTLog string, m *xn.IDMap, usingSHA1 bool) (
 }
 
 type UpaxServer struct {
+	Interval time.Duration
+	Lifespan int
+	PeerCnx  []xt.ConnectionI
+	DoneCh   chan bool
+
 	// conventional log, mostly for debugging
 	PathToDebugLog string
 	Logger         *log.Logger
@@ -150,6 +163,7 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 	}
 	if err == nil {
 		us = &UpaxServer{
+			DoneCh:         make(chan bool, 2),
 			PathToDebugLog: pathToLog,
 			Logger:         logger,
 			uDir:           uDir,
@@ -165,8 +179,65 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 	return
 }
 
-func (us *UpaxServer) Run() {
+// Contact a peer, send it an ItsMe, wait for an Ack, and then send
+// on the ready chan.  Allow for the fact that the peer may be this
+// server, in which case we just send ready.  Also presume the peer
+// will take some time to get running, so pause before trying for a
+// connection, and be willing to retry.
+//
+func (us *UpaxServer) InitialHandshake(peerNdx uint32, readyCh chan bool) {
 
-	// XXX STUB XXX
+	if peerNdx >= us.ClusterSize {
+		panic(fmt.Sprintf("peer index is %d but cluster size is %d",
+			peerNdx, us.ClusterSize))
+	}
+	peerInfo := us.Members[peerNdx]
+	peerID := peerInfo.GetNodeID().Value()
+	myID := us.GetNodeID().Value()
+	if !bytes.Equal(peerID, myID) {
+		time.Sleep(RETRY_INTERVAL)
 
+		// XXX STUB XXX
+
+	}
+	readyCh <- true
+}
+
+// Run the server, sending keepalives at the interval specified.  The
+// server's lifetime is specified in keepalive intervals; if the lifetime
+// is less then or equl to zero, it is infinite.
+//
+func (us *UpaxServer) Run(interval time.Duration, lifespan int) (err error) {
+
+	if interval <= 0 {
+		return IntervalMustBePositive
+	}
+	us.Interval = interval
+	us.Lifespan = lifespan
+
+	clusterSize := us.ClusterSize
+	us.PeerCnx = make([]xt.ConnectionI, clusterSize)
+	serverHasAcked := make([]chan bool, clusterSize)
+	for i := uint32(0); i < clusterSize; i++ {
+		serverHasAcked[i] = make(chan bool)
+	}
+
+	// everything else is in a goroutine
+	go func(deltaT time.Duration, lifespan int) {
+
+		for i := uint32(0); i < clusterSize; i++ {
+
+			// Send ItsMe to each other server in the cluster, remembering
+			// to skip self.
+
+			// Goroutine signals when Ack is received.
+
+		}
+
+		// XXX STUB XXX
+
+		us.DoneCh <- true
+	}(interval, lifespan)
+
+	return
 }

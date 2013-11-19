@@ -1,34 +1,12 @@
 github.com/jddixon/upax_go/TODO
 
-2013-11-17 (from 11-14, edited)
-    * s_msg_handler: finish Get, handling LogEntry                      * DONE
-        - IDMap must internally get read lock                           * DONE
-    * s_msg_handler: finish Put, handling LogEntry,                     * DONE
-        - including append to U/L                                       * DONE 
-        - IDMap must internally get write lock                          * DONE
-
-2013-11-16 (from 11-12, edited
-    * server must load logEntries into memory at start of run           * DONE
-    * append to disk log L immediately after writing into U             * DONE
-
+2013-11-18
+    * xlattice_go/reg ClusterMember needs to be modified so that the
+        list of members excludes the member itself.
 2013-11-16
     * FIX nil pointer causes panic doTestCluster 22, cluster_test 136,
         client_ndoe 144, ...  This appears to be an obscure effect of
         xlReg being down.  Need better handling of this condition.
-    * accesses to IDMap entries need to be synchronized, but this       * DONE 
-        should be done there (in xlattice_go/node/id_map.go), not in    * DONE
-        using code                                                      * DONE
-    * also need an entryCount on IDMap, synchronized there              * DONE
-
-2013-11-14
-    * U/L opened 0600                                                   * DONE
-    * dirty flag in associated data structure                           * DONE
-
-2013-11-12
-    * consider changing xlattice_go/u to
-        - hide the usingSHA1 distinction (eg GetData1 and GetData3      * DONE
-            hide behind GetData)                                        * DONE
-        - use binary keys, []byte instead of hex string                 * DONE
 
 2013-11-09
     * FIX: Get and Put only handle files that fit within the buffer;

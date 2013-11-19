@@ -12,6 +12,7 @@ import (
 	. "launchpad.net/gocheck"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 var _ = fmt.Print
@@ -142,28 +143,49 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	}
 	// verify files are present and then start the servers ----------
 
-	// XXX STUB
-
-	// verify servers are running -------------------------
-
-	// XXX STUB
-
-	// When all UpaxServers are ready, create K2 clients.  Each client
-	// creates K3 separate datums of differnt length (L1..L2) and
-	// content.  Each client signals when done.
+	// 11-07 TODO, modified:
+	// Run() causes each server to send ItsMe to all other servers;
+	// as each gets its Ack, it starts the KeepAlive/Ack cycle running
+	// at a 50 ms interval specified as a Run() argument and then sends
+	// on DoneCh.  Second parameter is lifetime of the server in
+	// keep-alives, say 20 (so 1 sec in total).  When this time has
+	// passed, the server will send again on DoneCh, and then shut down.
 
 	// XXX STUB
+	for i := 0; i < K1; i++ {
+		err = us[i].Run(10*time.Millisecond, 20)
+		c.Assert(err, IsNil)
+	}
 
-	// Verify for each of the K2 clients that its data is present on
-	// the selected server.
+	// Verify servers are running -------------------------
+	// 11-18: we wait for the first done from each server.
+	//
+	// XXX STUB
+	for i := 0; i < K1; i++ {
+		<-us[i].DoneCh
+	}
+	// DEBUG
+	fmt.Println("all servers have sent first DONE")
+	// END
+
+	// When all UpaxServers are ready, create K2 clients.--
+	// Each client creates K3 separate datums of differnt
+	// length (L1..L2) and content.  Each client signals
+	// when done.
 
 	// XXX STUB
 
-	// After a reasonable deltaT, verify that all servers have a copy
-	// of each and every datum.
+	// Verify for each of the K2 clients ------------------
+	// that its data is present on the selected server.  We
+	// do this by an Exists() call on uDir for the server's
+	// LFS/U for each item posted.
 
 	// XXX STUB
 
-	_, _, _, _, _ = K1, K2, M, LMin, LMax
-	_ = us
+	// After a reasonable deltaT, verify that all servers--
+	// have a copy of each and every datum.
+
+	// XXX STUB
+
+	_, _, _, _ = K2, M, LMin, LMax
 }
