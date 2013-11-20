@@ -17,6 +17,7 @@ var (
 	NilID                  = e.New("nil ID parameter")
 	NilLogEntry            = e.New("nil log entry field in message")
 	NilNode                = e.New("nil node parameter")
+	NilOutMsgCh            = e.New("nil OutMsgCh parameter")
 	NilPayload             = e.New("nil payload in message")
 	NilRSAKey              = e.New("nil RSA private key parameter")
 	NilServer              = e.New("nil UpaxServer parameter")

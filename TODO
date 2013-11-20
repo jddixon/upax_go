@@ -1,8 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
 2013-11-18
-    * xlattice_go/reg ClusterMember needs to be modified so that the
-        list of members excludes the member itself.
+    * xlattice_go/reg ClusterMember needs to be modified to include     * DONE
+        a SelfIndex field identifying the member owning the list        * DONE
+    * FIX THE BUG THIS INTRODUCES                                       * DONE
+
 2013-11-16
     * FIX nil pointer causes panic doTestCluster 22, cluster_test 136,
         client_ndoe 144, ...  This appears to be an obscure effect of

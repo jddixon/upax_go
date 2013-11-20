@@ -85,6 +85,7 @@ type UpaxClusterMsg struct {
 	ErrDesc          *string                  `protobuf:"bytes,9,opt" json:"ErrDesc,omitempty"`
 	Hash             []byte                   `protobuf:"bytes,10,opt" json:"Hash,omitempty"`
 	Payload          []byte                   `protobuf:"bytes,11,opt" json:"Payload,omitempty"`
+	IHaveList        *UpaxClusterMsg_IHaves   `protobuf:"bytes,12,opt" json:"IHaveList,omitempty"`
 	Entry            *UpaxClusterMsg_LogEntry `protobuf:"bytes,13,opt" json:"Entry,omitempty"`
 	XXX_unrecognized []byte                   `json:"-"`
 }
@@ -170,6 +171,13 @@ func (m *UpaxClusterMsg) GetPayload() []byte {
 	return nil
 }
 
+func (m *UpaxClusterMsg) GetIHaveList() *UpaxClusterMsg_IHaves {
+	if m != nil {
+		return m.IHaveList
+	}
+	return nil
+}
+
 func (m *UpaxClusterMsg) GetEntry() *UpaxClusterMsg_LogEntry {
 	if m != nil {
 		return m.Entry
@@ -231,6 +239,30 @@ func (m *UpaxClusterMsg_LogEntry) GetPath() string {
 		return *m.Path
 	}
 	return ""
+}
+
+type UpaxClusterMsg_IHaves struct {
+	Count            *int64   `protobuf:"varint,1,opt" json:"Count,omitempty"`
+	Item             [][]byte `protobuf:"bytes,2,rep" json:"Item,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *UpaxClusterMsg_IHaves) Reset()         { *m = UpaxClusterMsg_IHaves{} }
+func (m *UpaxClusterMsg_IHaves) String() string { return proto.CompactTextString(m) }
+func (*UpaxClusterMsg_IHaves) ProtoMessage()    {}
+
+func (m *UpaxClusterMsg_IHaves) GetCount() int64 {
+	if m != nil && m.Count != nil {
+		return *m.Count
+	}
+	return 0
+}
+
+func (m *UpaxClusterMsg_IHaves) GetItem() [][]byte {
+	if m != nil {
+		return m.Item
+	}
+	return nil
 }
 
 func init() {

@@ -15,7 +15,7 @@ message UpaxClusterMsg {
         ItsMe       = 0;    // msgN, id, opt salt, sig
         KeepAlive   = 1;    // msgN
         Get         = 2;    // msgN plus hash
-        IHave       = 3;    // msgN plus payload = list of hashes
+        IHave       = 3;    // msgN plus IHaves = list of hashes
         Put         = 4;    // msgN, LogEntry, payload
         Bye         = 5;    // msgN
 
@@ -34,6 +34,10 @@ message UpaxClusterMsg {
 	    optional string Src         = 5;
 	    optional string Path        = 6;
     }
+    message IHaves {
+        optional int64  Count       = 1;
+        repeated bytes  Item        = 2;
+    }
     optional Tag    Op              = 1;
     optional uint64 MsgN        	= 2; // Nth msg on this cnx, starting at 1
     optional bytes  ID          	= 3;
@@ -46,6 +50,6 @@ message UpaxClusterMsg {
     optional string ErrDesc     	= 9;
     optional bytes  Hash        	= 10;
     optional bytes  Payload     	= 11;
-
+    optional IHaves IHaveList       = 12;
     optional LogEntry   Entry       = 13;
 }

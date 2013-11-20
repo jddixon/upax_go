@@ -4,7 +4,6 @@ package upax_go
 
 import (
 	"bufio"
-	"bytes"
 	"crypto/rsa"
 	"fmt"
 	xn "github.com/jddixon/xlattice_go/node"
@@ -187,18 +186,18 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 //
 func (us *UpaxServer) InitialHandshake(peerNdx uint32, readyCh chan bool) {
 
-	if peerNdx >= us.ClusterSize {
-		panic(fmt.Sprintf("peer index is %d but cluster size is %d",
-			peerNdx, us.ClusterSize))
-	}
-	peerInfo := us.Members[peerNdx]
-	peerID := peerInfo.GetNodeID().Value()
-	myID := us.GetNodeID().Value()
-	if !bytes.Equal(peerID, myID) {
+	if peerNdx != us.SelfIndex {
+		if peerNdx >= us.ClusterSize {
+			panic(fmt.Sprintf("peer index is %d but cluster size is %d",
+				peerNdx, us.ClusterSize))
+		}
+		peerInfo := us.Members[peerNdx]
+		peerID := peerInfo.GetNodeID().Value()
 		time.Sleep(RETRY_INTERVAL)
 
 		// XXX STUB XXX
 
+		_ = peerID
 	}
 	readyCh <- true
 }
