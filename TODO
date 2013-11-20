@@ -1,9 +1,11 @@
 github.com/jddixon/upax_go/TODO
 
-2013-11-18
-    * xlattice_go/reg ClusterMember needs to be modified to include     * DONE
-        a SelfIndex field identifying the member owning the list        * DONE
-    * FIX THE BUG THIS INTRODUCES                                       * DONE
+2013-11-19
+    * write IHaveMgr                                                    * DONE
+    * write ihave_mgr_test.go
+    * write keepalive_test.go
+    * ClusterOutHandler has IHaveMgr running in a separate goroutine
+    * ClusterOutHandler has KeepAliveMgr running in separate goroutine
 
 2013-11-16
     * FIX nil pointer causes panic doTestCluster 22, cluster_test 136,

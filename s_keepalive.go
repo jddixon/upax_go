@@ -8,20 +8,20 @@ import (
 
 type KeepAliveMgr struct {
 	Interval time.Duration
-	OutMsgCh chan *UpaxClusterMsg
+	MsgCh    chan *UpaxClusterMsg
 	StopCh   chan bool
 }
 
-func NewKeepAliveMgr(h *ClusterOutHandler,
-	interval time.Duration, outMsgCh chan *UpaxClusterMsg,
+func NewKeepAliveMgr( //h *ClusterOutHandler,
+	interval time.Duration, msgCh chan *UpaxClusterMsg,
 	stopCh chan bool) (mgr *KeepAliveMgr, err error) {
 
-	if outMsgCh == nil {
-		err = NilOutMsgCh
+	if msgCh == nil {
+		err = NilMsgCh
 	} else {
 		mgr = &KeepAliveMgr{
 			Interval: interval,
-			OutMsgCh: outMsgCh,
+			MsgCh:    msgCh,
 			StopCh:   stopCh}
 	}
 	return
@@ -38,7 +38,7 @@ func (mgr *KeepAliveMgr) Run() {
 				// MsgN needs to be assigned when the message is
 				// actually sent.
 			}
-			mgr.OutMsgCh <- msgOut
+			mgr.MsgCh <- msgOut
 
 		case <-mgr.StopCh:
 			break

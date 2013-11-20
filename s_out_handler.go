@@ -14,6 +14,10 @@ import (
 	"sync"
 )
 
+const (
+	OUT_MSG_Q_SIZE = 16
+)
+
 func init() {
 	var err error
 	serverVersion, err = xu.ParseDecimalVersion(VERSION)
