@@ -2,8 +2,8 @@ github.com/jddixon/upax_go/TODO
 
 2013-11-19
     * write IHaveMgr                                                    * DONE
-    * write ihave_mgr_test.go
-    * write keepalive_test.go
+    * write ihave_mgr_test.go                                           * DONE
+    * write keepalive_test.go                                           * DONE
     * ClusterOutHandler has IHaveMgr running in a separate goroutine
     * ClusterOutHandler has KeepAliveMgr running in separate goroutine
 
