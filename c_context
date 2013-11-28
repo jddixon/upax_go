@@ -1,0 +1,5 @@
+filePrefix	c_
+ConstPrefix	C_
+TypePrefix	Client
+funcPrefix	client
+

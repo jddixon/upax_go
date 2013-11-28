@@ -67,11 +67,6 @@ func init() {
 }
 
 type ClientInHandler struct {
-	iv1, key1, iv2, key2, salt1, salt2 []byte
-	engineS                            cipher.Block
-	encrypterS                         cipher.BlockMode
-	decrypterS                         cipher.BlockMode
-
 	us         *UpaxServer
 	uDir       u.UI
 	clientInfo *reg.MemberInfo
@@ -86,6 +81,12 @@ type ClientInHandler struct {
 	msgIn      *UpaxClientMsg
 	msgOut     *UpaxClientMsg
 	errOut     error
+	
+	engineS                            cipher.Block
+	encrypterS                         cipher.BlockMode
+	decrypterS                         cipher.BlockMode
+	iv1, key1, iv2, key2, salt1, salt2 []byte
+
 	ClientCnxHandler
 }
 
@@ -114,7 +115,10 @@ func NewClientInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-func SetUpClientSessionKey(h *ClientInHandler) (err error) {
+// Set up the receiver (server) side of a communications link with 
+// RSA-to-AES handshaking
+//
+func SetUpReceiverSessionKey(h *ClientInHandler) (err error) {
 	h.engineS, err = aes.NewCipher(h.key2)
 	if err == nil {
 		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
@@ -148,7 +152,7 @@ func (h *ClientInHandler) Run() (err error) {
 		return
 	}
 	// Given iv2, key2 create encrypt and decrypt engines.
-	err = SetUpClientSessionKey(h)
+	err = SetUpReceiverSessionKey(h)
 	if err != nil {
 		return
 	}

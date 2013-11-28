@@ -26,7 +26,7 @@ func init() {
 	}
 }
 
-// Upax servers open a connection to each other server in the cluster.
+// Each Upax server opens a connection to each other server in the cluster.
 //
 type ClusterOutHandler struct {
 	iv1, key1, iv2, key2, salt1, salt2 []byte

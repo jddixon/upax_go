@@ -65,11 +65,6 @@ func init() {
 }
 
 type ClusterInHandler struct {
-	iv1, key1, iv2, key2, salt1, salt2 []byte
-	engineS                            cipher.Block
-	encrypterS                         cipher.BlockMode
-	decrypterS                         cipher.BlockMode
-
 	us       *UpaxServer
 	uDir     u.UI
 	peerInfo *reg.MemberInfo
@@ -83,6 +78,12 @@ type ClusterInHandler struct {
 	msgIn      *UpaxClusterMsg
 	msgOut     *UpaxClusterMsg
 	errOut     error
+	
+	engineS                            cipher.Block
+	encrypterS                         cipher.BlockMode
+	decrypterS                         cipher.BlockMode
+	iv1, key1, iv2, key2, salt1, salt2 []byte
+
 	ClusterCnxHandler
 }
 
@@ -230,6 +231,11 @@ func (h *ClusterInHandler) Run() (err error) {
 // session iv+key and returns them to the client encrypted with the
 // one-time key+iv.
 
+
+/////////////////////////////////////////////////////////////////////
+// XXX THIS IS WRONG.  COMPARE WITH reg/ClientNode.SessionSetup, which 
+// is the right model for this code.
+/////////////////////////////////////////////////////////////////////
 func handlePeerHello(h *ClusterInHandler) (err error) {
 	var (
 		ciphertext, iv1, key1, salt1 []byte

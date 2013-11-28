@@ -1,5 +1,12 @@
 github.com/jddixon/upax_go/TODO
 
+2013-11-22
+    * s_packets.go should be generated from reg/aes_cnx.t and be        * DONE
+        renamed s_aes_cnx.go                                            * DONE
+    * c_packets.go should be generated from reg/aes_cnx.t and be        * DONE
+        renamed c_aes_cnx.go                                            * DONE
+    * Makefile should generate both                                     * DONE
+
 2013-11-19
     * write IHaveMgr                                                    * DONE
     * write ihave_mgr_test.go                                           * DONE
