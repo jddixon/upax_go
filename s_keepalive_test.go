@@ -23,7 +23,7 @@ func (s *XLSuite) TestClusterKeepAlive(c *C) {
 	doneCh := make(chan bool)
 	var msgs []*UpaxClusterMsg
 
-	mgr, err := NewKeepAliveMgr(interval, lifespan, msgCh, stopCh, doneCh)
+	mgr, err := NewClusterKeepAliveMgr(interval, lifespan, msgCh, stopCh, doneCh)
 	c.Assert(err, IsNil)
 	go mgr.Run()
 
@@ -31,7 +31,7 @@ func (s *XLSuite) TestClusterKeepAlive(c *C) {
 
 	select {
 	case <-time.After(time.Duration(2*lifespan) * interval):
-		c.Fatal("timed out waiting for done from KeepAliveMgr")
+		c.Fatal("timed out waiting for done from ClusterKeepAliveMgr")
 	default:
 		for !done {
 			select {

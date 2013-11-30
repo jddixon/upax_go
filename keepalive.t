@@ -1,6 +1,6 @@
-package upax_go
+package ${pkgName}
 
-// upax_go/s_keepalive.go
+// ${pkgName}/${filePrefix}keepalive.go
 
 import (
 	xu "github.com/jddixon/xlattice_go/util"
@@ -11,11 +11,11 @@ import (
 // greater than 0, do this that many times and then halt.  Otherwise
 // do this forever.
 //
-type ClusterKeepAliveMgr struct {
+type ${TypePrefix}KeepAliveMgr struct {
 	Interval time.Duration
 	lifespan int
 	soFar    int
-	MsgCh    chan *UpaxClusterMsg
+	MsgCh    chan *Upax${TypePrefix}Msg
 	StopCh   chan bool
 	DoneCh   chan bool
 }
@@ -25,9 +25,9 @@ type ClusterKeepAliveMgr struct {
 // is the number of intervals, except that if the lifespan is less
 // than or equal to zero, the lifespan is effectively infinite.
 //
-func NewClusterKeepAliveMgr(interval time.Duration, lifespan int,
-	msgCh chan *UpaxClusterMsg, stopCh, doneCh chan bool) (
-	mgr *ClusterKeepAliveMgr, err error) {
+func New${TypePrefix}KeepAliveMgr(interval time.Duration, lifespan int,
+	msgCh chan *Upax${TypePrefix}Msg, stopCh, doneCh chan bool) (
+	mgr *${TypePrefix}KeepAliveMgr, err error) {
 
 	if msgCh == nil {
 		err = NilMsgCh
@@ -35,7 +35,7 @@ func NewClusterKeepAliveMgr(interval time.Duration, lifespan int,
 		if lifespan <= 0 {
 			lifespan = xu.MAX_INT
 		}
-		mgr = &ClusterKeepAliveMgr{
+		mgr = &${TypePrefix}KeepAliveMgr{
 			Interval: interval,
 			lifespan: lifespan,
 			MsgCh:    msgCh,
@@ -45,14 +45,14 @@ func NewClusterKeepAliveMgr(interval time.Duration, lifespan int,
 	return
 }
 
-func (mgr *ClusterKeepAliveMgr) Run() {
+func (mgr *${TypePrefix}KeepAliveMgr) Run() {
 
 	running := true
 	for running {
 		select {
 		case <-time.After(mgr.Interval):
-			op := UpaxClusterMsg_KeepAlive
-			msgOut := &UpaxClusterMsg{
+			op := Upax${TypePrefix}Msg_KeepAlive
+			msgOut := &Upax${TypePrefix}Msg{
 				Op: &op,
 				// MsgN needs to be assigned when the message is
 				// actually sent.
