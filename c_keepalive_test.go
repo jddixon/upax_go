@@ -9,21 +9,21 @@ import (
 	"time"
 )
 
-func (s *XLSuite) TestClusterKeepAlive(c *C) {
+func (s *XLSuite) TestClientKeepAlive(c *C) {
 	if VERBOSITY > 0 {
-		fmt.Println("TEST_CLUSTER_KEEP_ALIVE")
+		fmt.Println("TEST_CLIENT_KEEP_ALIVE")
 	}
 	rng := xr.MakeSimpleRNG()
 	k := time.Duration(1 + rng.Intn(10))
 	interval := k * time.Millisecond
 	lifespan := 3 + rng.Intn(13)
 
-	msgCh := make(chan *UpaxClusterMsg, 2*lifespan)
+	msgCh := make(chan *UpaxClientMsg, 2*lifespan)
 	stopCh := make(chan bool)
 	doneCh := make(chan bool)
-	var msgs []*UpaxClusterMsg
+	var msgs []*UpaxClientMsg
 
-	mgr, err := NewClusterKeepAliveMgr(
+	mgr, err := NewClientKeepAliveMgr(
 		interval, lifespan, msgCh, stopCh, doneCh)
 	c.Assert(err, IsNil)
 	go mgr.Run()
@@ -32,7 +32,7 @@ func (s *XLSuite) TestClusterKeepAlive(c *C) {
 
 	select {
 	case <-time.After(time.Duration(2*lifespan) * interval):
-		c.Fatal("timed out waiting for done from ClusterKeepAliveMgr")
+		c.Fatal("timed out waiting for done from ClientKeepAliveMgr")
 	default:
 		for !done {
 			select {

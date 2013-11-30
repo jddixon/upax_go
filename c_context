@@ -1,3 +1,4 @@
+CapTypePrefix	CLIENT
 ConstPrefix	C_
 filePrefix	c_
 firstMsg	Intro

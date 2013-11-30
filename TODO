@@ -6,7 +6,7 @@ github.com/jddixon/upax_go/TODO
         - ideally the pkg variable should be defined in parent context
     * s_keepalive.go derived from keepalive.t                           * DONE
     * c_keepalive.go derived from keepalive.t                           * DONE
-    * keepalive_test.t ?
+    * keepalive_test.t 
 
 2013-11-22
     * s_packets.go should be generated from reg/aes_cnx.t and be        * DONE
