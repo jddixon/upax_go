@@ -141,7 +141,7 @@ func doCIntroMsg(h *ClientInHandler) {
 	if err == nil {
 		// The appropriate action is to hang a token for this client off
 		// the ClientInHandler.
-		h.clientInfo = clientInfo
+		h.peerInfo = clientInfo
 	}
 	if err == nil {
 		// Send reply to client -------------------------------------
@@ -185,12 +185,12 @@ func doCItsMeMsg(h *ClientInHandler) {
 				break
 			}
 		}
-		if h.clientInfo == nil {
+		if h.peerInfo == nil {
 			err = UnknownClient
 		}
 	}
 	if err == nil {
-		clientSK := h.clientInfo.GetSigPublicKey()
+		clientSK := h.peerInfo.GetSigPublicKey()
 		salt := clientMsg.GetSalt()
 		sig := clientMsg.GetSig()
 
@@ -218,7 +218,7 @@ func doCItsMeMsg(h *ClientInHandler) {
 	if err == nil {
 		// The appropriate action is to hang a token for this client off
 		// the ClientInHandler.
-		h.clientInfo = clientInfo
+		h.peerInfo = clientInfo
 
 	}
 	if err == nil {

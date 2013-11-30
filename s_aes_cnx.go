@@ -19,7 +19,7 @@ type ClusterCnxHandler struct {
 	Cnx   *xt.TcpConnection
 }
 
-// Read data from the connection.  
+// Read data from the connection.
 // XXX This will not handle partial reads correctly
 func (h *ClusterCnxHandler) ReadData() (data []byte, err error) {
 	data = make([]byte, S_MSG_BUF_LEN)

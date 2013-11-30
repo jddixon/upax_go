@@ -1,5 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
+2013-11-29
+    * aes_cnx.t 
+        - package line should be abstracted: "package ${pkg}" or sim.
+        - ideally the pkg variable should be defined in parent context
+
 2013-11-22
     * s_packets.go should be generated from reg/aes_cnx.t and be        * DONE
         renamed s_aes_cnx.go                                            * DONE

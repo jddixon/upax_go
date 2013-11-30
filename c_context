@@ -1,5 +1,8 @@
-filePrefix	c_
 ConstPrefix	C_
+filePrefix	c_
+firstMsg	Intro
+pkgName	upax_go
+shortPrefix	c
 TypePrefix	Client
 funcPrefix	client
 

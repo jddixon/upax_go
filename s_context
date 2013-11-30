@@ -1,5 +1,8 @@
-filePrefix	s_
 ConstPrefix	S_
+filePrefix	s_
+firstMsg	ItsMe
+pkgName	upax_go
+shortPrefix	s
 TypePrefix	Cluster
 funcPrefix	cluster
 

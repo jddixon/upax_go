@@ -10,6 +10,7 @@ import (
 	"github.com/jddixon/xlattice_go/reg"
 	xt "github.com/jddixon/xlattice_go/transport"
 	"github.com/jddixon/xlattice_go/u"
+	xu "github.com/jddixon/xlattice_go/util"
 	xf "github.com/jddixon/xlattice_go/util/lfs"
 	"log"
 	"os"
@@ -101,6 +102,9 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 		err = NilRSAKey
 	} else if cm == nil {
 		err = NilClusterMember
+	}
+	if err == nil {
+		serverVersion, err = xu.ParseDecimalVersion(VERSION)
 	}
 	if err == nil {
 		// whatever created cm should have created the local file system

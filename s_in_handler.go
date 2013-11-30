@@ -10,27 +10,11 @@ import (
 	"github.com/jddixon/xlattice_go/reg"
 	xt "github.com/jddixon/xlattice_go/transport"
 	"github.com/jddixon/xlattice_go/u"
-	xu "github.com/jddixon/xlattice_go/util"
 )
 
 var _ = fmt.Print
 
-// For server-server connections, there is little state to track.
-const (
-	// States through which a intra-cluster input cnx may pass
-	S_HELLO_RCVD = iota
-
-	// After the peer has sent a message containing its nodeID and a
-	// digital signature, we can determine which peer we are speaking to.
-	S_ID_VERIFIED
-
-	// Once the connection has reached this state, no more messages
-	// can be accepted.
-	S_BYE_RCVD
-
-	// When we reach this state, the connection must be closed.
-	S_IN_CLOSED
-)
+// See s_states.go
 
 const (
 	// the number of valid states upon receiving a message from a peer
@@ -44,30 +28,14 @@ const (
 )
 
 var (
-	sMsgHandlers  [][]interface{}
-	serverVersion xu.DecimalVersion
+	sMsgHandlers [][]interface{}
 )
-
-func init() {
-	// sMsgHandlers = make([][]interface{}, S_BYE_RCVD, S_MSG_HANDLER_COUNT)
-
-	sMsgHandlers = [][]interface{}{
-		// client messages permitted in S_HELLO_RCVD state
-		{doSItsMeMsg, badSCombo, badSCombo, badSCombo, badSCombo, badSCombo},
-		// client messages permitted in S_ID_VERIFIED state
-		{badSCombo, doSKeepAliveMsg, doSGetMsg, doSIHaveMsg, doSPutMsg, doSByeMsg},
-	}
-	var err error
-	serverVersion, err = xu.ParseDecimalVersion(VERSION)
-	if err != nil {
-		panic(err)
-	}
-}
 
 type ClusterInHandler struct {
 	us       *UpaxServer
 	uDir     u.UI
 	peerInfo *reg.MemberInfo
+	// client  *reg.RegClient
 
 	myMsgN   uint64 // first message 1, then increment on each send
 	peerMsgN uint64 // expect this to be 1 on the first message
@@ -78,7 +46,7 @@ type ClusterInHandler struct {
 	msgIn      *UpaxClusterMsg
 	msgOut     *UpaxClusterMsg
 	errOut     error
-	
+
 	engineS                            cipher.Block
 	encrypterS                         cipher.BlockMode
 	decrypterS                         cipher.BlockMode
@@ -112,7 +80,10 @@ func NewClusterInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-func SetUpPeerSessionKey(h *ClusterInHandler) (err error) {
+// Set up the receiver (server) side of a communications link with
+// RSA-to-AES handshaking
+//
+func SetUpClusterSessionKey(h *ClusterInHandler) (err error) {
 	h.engineS, err = aes.NewCipher(h.key2)
 	if err == nil {
 		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
@@ -141,12 +112,12 @@ func (h *ClusterInHandler) Run() (err error) {
 	}()
 
 	// This adds an AES iv2 and key2 to the handler.
-	err = handlePeerHello(h)
+	err = handleClusterHello(h)
 	if err != nil {
 		return
 	}
 	// Given iv2, key2 create encrypt and decrypt engines.
-	err = SetUpPeerSessionKey(h)
+	err = SetUpClusterSessionKey(h)
 	if err != nil {
 		return
 	}
@@ -231,12 +202,11 @@ func (h *ClusterInHandler) Run() (err error) {
 // session iv+key and returns them to the client encrypted with the
 // one-time key+iv.
 
-
 /////////////////////////////////////////////////////////////////////
-// XXX THIS IS WRONG.  COMPARE WITH reg/ClientNode.SessionSetup, which 
+// XXX THIS IS WRONG.  COMPARE WITH reg/ClientNode.SessionSetup, which
 // is the right model for this code.
 /////////////////////////////////////////////////////////////////////
-func handlePeerHello(h *ClusterInHandler) (err error) {
+func handleClusterHello(h *ClusterInHandler) (err error) {
 	var (
 		ciphertext, iv1, key1, salt1 []byte
 		version1                     uint32
@@ -269,7 +239,7 @@ func handlePeerHello(h *ClusterInHandler) (err error) {
 	// an exciting thing to do.
 	if err != nil {
 		// DEBUG
-		fmt.Printf("handlePeerHello closing cnx, error was %v\n", err)
+		fmt.Printf("handleClusterHello closing cnx, error was %v\n", err)
 		// END
 		h.Cnx.Close()
 		h = nil

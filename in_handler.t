@@ -1,6 +1,6 @@
-package upax_go
+package ${pkgName}
 
-// xlattice_go/upax_go/c_in_handler.go
+// xlattice_go/${pkgName}/${filePrefix}in_handler.go
 
 import (
 	"crypto/aes"
@@ -14,27 +14,27 @@ import (
 
 var _ = fmt.Print
 
-// See c_states.go
+// See ${filePrefix}states.go
 
 const (
 	// the number of valid states upon receiving a message from a peer
-	C_IN_STATE_COUNT = C_BYE_RCVD + 1
+	${ConstPrefix}IN_STATE_COUNT = ${ConstPrefix}BYE_RCVD + 1
 
-	// The tags that ClientInHandler will accept from a peer.
-	C_MIN_TAG = uint(UpaxClientMsg_Intro)
-	C_MAX_TAG = uint(UpaxClientMsg_Bye)
+	// The tags that ${TypePrefix}InHandler will accept from a peer.
+	${ConstPrefix}MIN_TAG = uint(Upax${TypePrefix}Msg_${firstMsg})
+	${ConstPrefix}MAX_TAG = uint(Upax${TypePrefix}Msg_Bye)
 
-	C_MSG_HANDLER_COUNT = C_MAX_TAG + 1
+	${ConstPrefix}MSG_HANDLER_COUNT = ${ConstPrefix}MAX_TAG + 1
 )
 
 var (
-	cMsgHandlers [][]interface{}
+	${shortPrefix}MsgHandlers [][]interface{}
 )
 
-type ClientInHandler struct {
-	us       *UpaxServer
-	uDir     u.UI
-	peerInfo *reg.MemberInfo
+type ${TypePrefix}InHandler struct {
+	us         *UpaxServer
+	uDir       u.UI
+	peerInfo   *reg.MemberInfo
 	// client  *reg.RegClient
 
 	myMsgN   uint64 // first message 1, then increment on each send
@@ -43,23 +43,23 @@ type ClientInHandler struct {
 	version    uint32 // protocol version used in session
 	entryState int
 	exitState  int
-	msgIn      *UpaxClientMsg
-	msgOut     *UpaxClientMsg
+	msgIn      *Upax${TypePrefix}Msg
+	msgOut     *Upax${TypePrefix}Msg
 	errOut     error
-
+	
 	engineS                            cipher.Block
 	encrypterS                         cipher.BlockMode
 	decrypterS                         cipher.BlockMode
 	iv1, key1, iv2, key2, salt1, salt2 []byte
 
-	ClientCnxHandler
+	${TypePrefix}CnxHandler
 }
 
 // Given an open new connection, create a handler for the connection,
 // associating the connection with a registry.
 
-func NewClientInHandler(us *UpaxServer, conn xt.ConnectionI) (
-	h *ClientInHandler, err error) {
+func New${TypePrefix}InHandler(us *UpaxServer, conn xt.ConnectionI) (
+	h *${TypePrefix}InHandler, err error) {
 
 	if us == nil {
 		err = NilServer
@@ -69,10 +69,10 @@ func NewClientInHandler(us *UpaxServer, conn xt.ConnectionI) (
 		err = msg.NilConnection
 	} else {
 		cnx := conn.(*xt.TcpConnection)
-		h = &ClientInHandler{
+		h = &${TypePrefix}InHandler{
 			us:   us,
 			uDir: us.uDir,
-			ClientCnxHandler: ClientCnxHandler{
+			${TypePrefix}CnxHandler: ${TypePrefix}CnxHandler{
 				Cnx: cnx,
 			},
 		}
@@ -80,10 +80,10 @@ func NewClientInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-// Set up the receiver (server) side of a communications link with
+// Set up the receiver (server) side of a communications link with 
 // RSA-to-AES handshaking
 //
-func SetUpClientSessionKey(h *ClientInHandler) (err error) {
+func SetUp${TypePrefix}SessionKey(h *${TypePrefix}InHandler) (err error) {
 	h.engineS, err = aes.NewCipher(h.key2)
 	if err == nil {
 		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
@@ -92,10 +92,10 @@ func SetUpClientSessionKey(h *ClientInHandler) (err error) {
 	return
 }
 
-// Convert a protobuf op into a zero-based tag for use in the ClientInHandler's
+// Convert a protobuf op into a zero-based tag for use in the ${TypePrefix}InHandler's
 // dispatch table.
-func clientOp2tag(op UpaxClientMsg_Tag) uint {
-	return uint(op - UpaxClientMsg_Intro)
+func ${funcPrefix}Op2tag(op Upax${TypePrefix}Msg_Tag) uint {
+	return uint(op - Upax${TypePrefix}Msg_${firstMsg})
 }
 
 // Given a handler associating an open new connection with a registry,
@@ -103,7 +103,7 @@ func clientOp2tag(op UpaxClientMsg_Tag) uint {
 // The hello message contains an AES Key+IV, a salt, and a requested
 // protocol version. The salt must be at least eight bytes long.
 
-func (h *ClientInHandler) Run() (err error) {
+func (h *${TypePrefix}InHandler) Run() (err error) {
 
 	defer func() {
 		if h.Cnx != nil {
@@ -112,12 +112,12 @@ func (h *ClientInHandler) Run() (err error) {
 	}()
 
 	// This adds an AES iv2 and key2 to the handler.
-	err = handleClientHello(h)
+	err = handle${TypePrefix}Hello(h)
 	if err != nil {
 		return
 	}
 	// Given iv2, key2 create encrypt and decrypt engines.
-	err = SetUpClientSessionKey(h)
+	err = SetUp${TypePrefix}SessionKey(h)
 	if err != nil {
 		return
 	}
@@ -132,19 +132,19 @@ func (h *ClientInHandler) Run() (err error) {
 		if err != nil {
 			return
 		}
-		h.msgIn, err = clientDecryptUnpadDecode(ciphertext, h.decrypterS)
+		h.msgIn, err = ${funcPrefix}DecryptUnpadDecode(ciphertext, h.decrypterS)
 		if err != nil {
 			return
 		}
 		op := h.msgIn.GetOp()
 		// TODO: range check on either op or tag
-		tag = clientOp2tag(op)
-		if tag < C_MIN_TAG || tag > C_MAX_TAG {
+		tag = ${funcPrefix}Op2tag(op)
+		if tag < ${ConstPrefix}MIN_TAG || tag > ${ConstPrefix}MAX_TAG {
 			h.errOut = reg.TagOutOfRange
 		}
 		// ACTION ----------------------------------------------------
 		// Take the action appropriate for the current state
-		cMsgHandlers[h.entryState][tag].(func(*ClientInHandler))(h)
+		${shortPrefix}MsgHandlers[h.entryState][tag].(func(*${TypePrefix}InHandler))(h)
 
 		// RESPONSE -------------------------------------------------
 		// Convert any error encountered into an error message to be
@@ -152,24 +152,24 @@ func (h *ClientInHandler) Run() (err error) {
 		if h.errOut != nil {
 			h.us.Logger.Printf("errOut to client: %v\n", h.errOut)
 
-			op := UpaxClientMsg_Error
+			op := Upax${TypePrefix}Msg_Error
 			s := h.errOut.Error()
-			h.msgOut = &UpaxClientMsg{
+			h.msgOut = &Upax${TypePrefix}Msg{
 				Op:      &op,
 				ErrDesc: &s,
 			}
 			h.errOut = nil            // reduce potential for confusion
-			h.exitState = C_IN_CLOSED // there is no recovery from errors
+			h.exitState = ${ConstPrefix}IN_CLOSED // there is no recovery from errors
 		}
 
-		// encode, pad, and encrypt the UpaxClientMsg object
+		// encode, pad, and encrypt the Upax${TypePrefix}Msg object
 		if h.msgOut != nil {
-			ciphertext, err = clientEncodePadEncrypt(h.msgOut, h.encrypterS)
+			ciphertext, err = ${funcPrefix}EncodePadEncrypt(h.msgOut, h.encrypterS)
 
 			// XXX log any error
 			if err != nil {
 				h.us.Logger.Printf(
-					"ClientInHandler.Run: clientEncodePadEncrypt returns %v\n", err)
+					"${TypePrefix}InHandler.Run: ${funcPrefix}EncodePadEncrypt returns %v\n", err)
 			}
 
 			// put the ciphertext on the wire
@@ -179,13 +179,13 @@ func (h *ClientInHandler) Run() (err error) {
 				// XXX log any error
 				if err != nil {
 					h.us.Logger.Printf(
-						"ClientInHandler.Run: WriteData returns %v\n", err)
+						"${TypePrefix}InHandler.Run: WriteData returns %v\n", err)
 				}
 			}
 
 		}
 		h.entryState = h.exitState
-		if h.exitState == C_IN_CLOSED {
+		if h.exitState == ${ConstPrefix}IN_CLOSED {
 			break
 		}
 	}
@@ -202,11 +202,12 @@ func (h *ClientInHandler) Run() (err error) {
 // session iv+key and returns them to the client encrypted with the
 // one-time key+iv.
 
+
 /////////////////////////////////////////////////////////////////////
-// XXX THIS IS WRONG.  COMPARE WITH reg/ClientNode.SessionSetup, which
+// XXX THIS IS WRONG.  COMPARE WITH reg/ClientNode.SessionSetup, which 
 // is the right model for this code.
 /////////////////////////////////////////////////////////////////////
-func handleClientHello(h *ClientInHandler) (err error) {
+func handle${TypePrefix}Hello(h *${TypePrefix}InHandler) (err error) {
 	var (
 		ciphertext, iv1, key1, salt1 []byte
 		version1                     uint32
@@ -232,14 +233,14 @@ func handleClientHello(h *ClientInHandler) (err error) {
 			h.salt1 = salt1
 			h.salt2 = salt2
 			h.version = uint32(version2)
-			h.State = C_HELLO_RCVD
+			h.State = ${ConstPrefix}HELLO_RCVD
 		}
 	}
 	// On any error silently close the connection and delete the handler,
 	// an exciting thing to do.
 	if err != nil {
 		// DEBUG
-		fmt.Printf("handleClientHello closing cnx, error was %v\n", err)
+		fmt.Printf("handle${TypePrefix}Hello closing cnx, error was %v\n", err)
 		// END
 		h.Cnx.Close()
 		h = nil

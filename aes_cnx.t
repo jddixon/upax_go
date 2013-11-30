@@ -1,4 +1,4 @@
-package upax_go
+package ${pkgName} 
 
 // upax_go/${filePrefix}packets.go
 
