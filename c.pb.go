@@ -21,8 +21,9 @@ const (
 	UpaxClientMsg_KeepAlive UpaxClientMsg_Tag = 2
 	UpaxClientMsg_Query     UpaxClientMsg_Tag = 3
 	UpaxClientMsg_Get       UpaxClientMsg_Tag = 4
-	UpaxClientMsg_Put       UpaxClientMsg_Tag = 5
-	UpaxClientMsg_Bye       UpaxClientMsg_Tag = 6
+	UpaxClientMsg_IHave     UpaxClientMsg_Tag = 5
+	UpaxClientMsg_Put       UpaxClientMsg_Tag = 6
+	UpaxClientMsg_Bye       UpaxClientMsg_Tag = 7
 	UpaxClientMsg_Ack       UpaxClientMsg_Tag = 10
 	UpaxClientMsg_Data      UpaxClientMsg_Tag = 11
 	UpaxClientMsg_NotFound  UpaxClientMsg_Tag = 12
@@ -35,8 +36,9 @@ var UpaxClientMsg_Tag_name = map[int32]string{
 	2:  "KeepAlive",
 	3:  "Query",
 	4:  "Get",
-	5:  "Put",
-	6:  "Bye",
+	5:  "IHave",
+	6:  "Put",
+	7:  "Bye",
 	10: "Ack",
 	11: "Data",
 	12: "NotFound",
@@ -48,8 +50,9 @@ var UpaxClientMsg_Tag_value = map[string]int32{
 	"KeepAlive": 2,
 	"Query":     3,
 	"Get":       4,
-	"Put":       5,
-	"Bye":       6,
+	"IHave":     5,
+	"Put":       6,
+	"Bye":       7,
 	"Ack":       10,
 	"Data":      11,
 	"NotFound":  12,
@@ -88,8 +91,9 @@ type UpaxClientMsg struct {
 	ErrDesc          *string                 `protobuf:"bytes,9,opt" json:"ErrDesc,omitempty"`
 	Hash             []byte                  `protobuf:"bytes,10,opt" json:"Hash,omitempty"`
 	Payload          []byte                  `protobuf:"bytes,11,opt" json:"Payload,omitempty"`
-	ClientInfo       *UpaxClientMsg_Token    `protobuf:"bytes,12,opt" json:"ClientInfo,omitempty"`
+	IHaveList        *UpaxClientMsg_IHaves   `protobuf:"bytes,12,opt" json:"IHaveList,omitempty"`
 	Entry            *UpaxClientMsg_LogEntry `protobuf:"bytes,13,opt" json:"Entry,omitempty"`
+	ClientInfo       *UpaxClientMsg_Token    `protobuf:"bytes,14,opt" json:"ClientInfo,omitempty"`
 	XXX_unrecognized []byte                  `json:"-"`
 }
 
@@ -174,9 +178,9 @@ func (m *UpaxClientMsg) GetPayload() []byte {
 	return nil
 }
 
-func (m *UpaxClientMsg) GetClientInfo() *UpaxClientMsg_Token {
+func (m *UpaxClientMsg) GetIHaveList() *UpaxClientMsg_IHaves {
 	if m != nil {
-		return m.ClientInfo
+		return m.IHaveList
 	}
 	return nil
 }
@@ -184,6 +188,13 @@ func (m *UpaxClientMsg) GetClientInfo() *UpaxClientMsg_Token {
 func (m *UpaxClientMsg) GetEntry() *UpaxClientMsg_LogEntry {
 	if m != nil {
 		return m.Entry
+	}
+	return nil
+}
+
+func (m *UpaxClientMsg) GetClientInfo() *UpaxClientMsg_Token {
+	if m != nil {
+		return m.ClientInfo
 	}
 	return nil
 }
@@ -298,6 +309,30 @@ func (m *UpaxClientMsg_LogEntry) GetPath() string {
 		return *m.Path
 	}
 	return ""
+}
+
+type UpaxClientMsg_IHaves struct {
+	Count            *int64   `protobuf:"varint,1,opt" json:"Count,omitempty"`
+	Item             [][]byte `protobuf:"bytes,2,rep" json:"Item,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *UpaxClientMsg_IHaves) Reset()         { *m = UpaxClientMsg_IHaves{} }
+func (m *UpaxClientMsg_IHaves) String() string { return proto.CompactTextString(m) }
+func (*UpaxClientMsg_IHaves) ProtoMessage()    {}
+
+func (m *UpaxClientMsg_IHaves) GetCount() int64 {
+	if m != nil && m.Count != nil {
+		return *m.Count
+	}
+	return 0
+}
+
+func (m *UpaxClientMsg_IHaves) GetItem() [][]byte {
+	if m != nil {
+		return m.Item
+	}
+	return nil
 }
 
 func init() {

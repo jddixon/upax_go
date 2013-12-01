@@ -18,10 +18,11 @@ type UpaxClusterMsg_Tag int32
 const (
 	UpaxClusterMsg_ItsMe     UpaxClusterMsg_Tag = 0
 	UpaxClusterMsg_KeepAlive UpaxClusterMsg_Tag = 1
-	UpaxClusterMsg_Get       UpaxClusterMsg_Tag = 2
-	UpaxClusterMsg_IHave     UpaxClusterMsg_Tag = 3
-	UpaxClusterMsg_Put       UpaxClusterMsg_Tag = 4
-	UpaxClusterMsg_Bye       UpaxClusterMsg_Tag = 5
+	UpaxClusterMsg_Query     UpaxClusterMsg_Tag = 2
+	UpaxClusterMsg_Get       UpaxClusterMsg_Tag = 3
+	UpaxClusterMsg_IHave     UpaxClusterMsg_Tag = 4
+	UpaxClusterMsg_Put       UpaxClusterMsg_Tag = 5
+	UpaxClusterMsg_Bye       UpaxClusterMsg_Tag = 6
 	UpaxClusterMsg_Ack       UpaxClusterMsg_Tag = 10
 	UpaxClusterMsg_Data      UpaxClusterMsg_Tag = 11
 	UpaxClusterMsg_NotFound  UpaxClusterMsg_Tag = 12
@@ -31,10 +32,11 @@ const (
 var UpaxClusterMsg_Tag_name = map[int32]string{
 	0:  "ItsMe",
 	1:  "KeepAlive",
-	2:  "Get",
-	3:  "IHave",
-	4:  "Put",
-	5:  "Bye",
+	2:  "Query",
+	3:  "Get",
+	4:  "IHave",
+	5:  "Put",
+	6:  "Bye",
 	10: "Ack",
 	11: "Data",
 	12: "NotFound",
@@ -43,10 +45,11 @@ var UpaxClusterMsg_Tag_name = map[int32]string{
 var UpaxClusterMsg_Tag_value = map[string]int32{
 	"ItsMe":     0,
 	"KeepAlive": 1,
-	"Get":       2,
-	"IHave":     3,
-	"Put":       4,
-	"Bye":       5,
+	"Query":     2,
+	"Get":       3,
+	"IHave":     4,
+	"Put":       5,
+	"Bye":       6,
 	"Ack":       10,
 	"Data":      11,
 	"NotFound":  12,

@@ -14,10 +14,11 @@ message UpaxClusterMsg {
 
         ItsMe       = 0;    // msgN, id, opt salt, sig
         KeepAlive   = 1;    // msgN
-        Get         = 2;    // msgN plus hash
-        IHave       = 3;    // msgN plus IHaves = list of hashes
-        Put         = 4;    // msgN, LogEntry, payload
-        Bye         = 5;    // msgN
+        Query       = 2;    // msgN, Hash; reply is Ack or NotFound
+        Get         = 3;    // msgN plus hash
+        IHave       = 4;    // msgN plus IHaves = list of hashes
+        Put         = 5;    // msgN, LogEntry, payload
+        Bye         = 6;    // msgN
 
         // Valid tags for replies to peers.
         Ack         = 10;    // msgN, yourMsgN
@@ -43,7 +44,6 @@ message UpaxClusterMsg {
     optional bytes  ID          	= 3;
     optional bytes  Salt        	= 4;
     optional bytes  Sig         	= 5;
-
     optional uint64 YourMsgN    	= 6;
     optional bytes  YourID      	= 7;
     optional uint64 ErrCode     	= 8;

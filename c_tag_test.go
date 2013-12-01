@@ -21,8 +21,9 @@ func (s *XLSuite) TestClientInHandler(c *C) {
 	c.Assert(clientOp2tag(UpaxClientMsg_KeepAlive), Equals, uint(2))
 	c.Assert(clientOp2tag(UpaxClientMsg_Query), Equals, uint(3))
 	c.Assert(clientOp2tag(UpaxClientMsg_Get), Equals, uint(4))
-	c.Assert(clientOp2tag(UpaxClientMsg_Put), Equals, uint(5))
-	c.Assert(clientOp2tag(UpaxClientMsg_Bye), Equals, uint(6))
+	c.Assert(clientOp2tag(UpaxClientMsg_IHave), Equals, uint(5))
+	c.Assert(clientOp2tag(UpaxClientMsg_Put), Equals, uint(6))
+	c.Assert(clientOp2tag(UpaxClientMsg_Bye), Equals, uint(7))
 	c.Assert(clientOp2tag(UpaxClientMsg_Bye), Equals, C_MAX_TAG)
 
 	// These are reply tags.

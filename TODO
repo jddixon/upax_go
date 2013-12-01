@@ -1,5 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
+2013-11-30
+    * split out common utility functions from s_msg_handlers.go         * DONE
+        as s_msg_util.go                                                * DONE
+    * create msg_util.t, use that to generate {c,s}_msg_util.go         * DONE
+
 2013-11-29
     * aes_cnx.t 
         - package line should be abstracted: "package ${pkg}" or sim.   * DONE
@@ -7,34 +12,26 @@ github.com/jddixon/upax_go/TODO
     * s_keepalive.go derived from keepalive.t                           * DONE
     * c_keepalive.go derived from keepalive.t                           * DONE
     * keepalive_test.t                                                  * DONE
-    * split out common utility functions from s_msg_handlers.go
-        as s_msg_util.go
-    * create msg_util.t, use that to generate {c,s}_msg_util.go
-
 2013-11-22
     * s_packets.go should be generated from reg/aes_cnx.t and be        * DONE
         renamed s_aes_cnx.go                                            * DONE
     * c_packets.go should be generated from reg/aes_cnx.t and be        * DONE
         renamed c_aes_cnx.go                                            * DONE
     * Makefile should generate both                                     * DONE
-
 2013-11-19
     * write IHaveMgr                                                    * DONE
     * write ihave_mgr_test.go                                           * DONE
     * write keepalive_test.go                                           * DONE
     * ClusterOutHandler has IHaveMgr running in a separate goroutine
     * ClusterOutHandler has KeepAliveMgr running in separate goroutine
-
 2013-11-16
     * FIX nil pointer causes panic doTestCluster 22, cluster_test 136,
         client_ndoe 144, ...  This appears to be an obscure effect of
         xlReg being down.  Need better handling of this condition.
-
 2013-11-09
     * FIX: Get and Put only handle files that fit within the buffer;
         need code at both ends that will handle files of indefinite 
         size.
-
 2013-11-07
     * verify that registering cluster member closes the connection
         to the registry when done
@@ -47,37 +44,31 @@ github.com/jddixon/upax_go/TODO
         - then we add the K2 clients
     * starting server must open log file LFS/U/L 0600 at beginning of 
         run, close at end.
-
 2013-11-05
     * need additional state for intra-cluster communications: call it   * DONE
         ID_VERIFIED                                                     * DONE
         - this requires another message signed by the cluster member
             which sent the Hello
-
 2013-10-27
     * a booting server without an LFS must find and parse ./regCred.dat
         to continue
         - once such a server has created its LFS it writes regCred.dat
             into it
-
 2013-10-26
     CLUSTER (was cluster/TODO)
     * expect cluster names to look like reversed fully qualified
         domain names such as org.xlattice.upax.ABCDEF
-
         - create K2 (3..7? but chosen separately) clients; each
             of which runs in a separate goroutine
             * learns cluster configuration from the registry
             * then pumps K3 items into a randomly chosen server
             * sends back to the test master a list of K3 content
                 keys
-
         - when all K2 clients are done, test master verifies that
             all K2 * K3 items are in the cluster
         - after some reasonable period of time, all K2 * K3 items
             should be on all K servers (in the current 
             implementation)
-
     * in tests as in production first communications of a new
         cluster are with xlReg on port 44444, default 127.0.0.1
         - cluster name defaults to "upax"
@@ -87,7 +78,6 @@ github.com/jddixon/upax_go/TODO
             ./tmp/SERVER_NAME for test, where SERVER_NAME is
             locally unique
         - expected xlReg version is 0.2.0 or better
-
     * upax_go/node looks to be useless
 
     CLIENT (was client/TODO)
@@ -97,7 +87,6 @@ github.com/jddixon/upax_go/TODO
         (endPoints) and public keys of cluster members
     * for testing purposes, expect the registry to be on port 44444
     * in production applications, expect the registry to be on 55555
-
 2013-08-09 was: upax_go/ftlog/TODO
     * LogEntry.String() and Parse() support simple conversion 
         between in-memory objects and string files; need a
@@ -106,7 +95,6 @@ github.com/jddixon/upax_go/TODO
             file corruption
         - same spec can of course be used to pass log entries
             between servers
-        
 2013-08-08
     * doTestBodyLine needs better tests of paths
         - rnglib should generate random POSIX paths
