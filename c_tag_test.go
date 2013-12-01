@@ -1,6 +1,6 @@
 package upax_go
 
-// upax_go/s_in_handler_test.go
+// upax_go/c_tag_test.go
 
 import (
 	"fmt"
@@ -24,6 +24,8 @@ func (s *XLSuite) TestClientInHandler(c *C) {
 	c.Assert(clientOp2tag(UpaxClientMsg_Put), Equals, uint(5))
 	c.Assert(clientOp2tag(UpaxClientMsg_Bye), Equals, uint(6))
 	c.Assert(clientOp2tag(UpaxClientMsg_Bye), Equals, C_MAX_TAG)
+
+	// These are reply tags.
 
 	c.Assert(clientOp2tag(UpaxClientMsg_Ack), Equals, uint(10))
 	c.Assert(clientOp2tag(UpaxClientMsg_Data), Equals, uint(11))

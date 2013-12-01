@@ -10,47 +10,8 @@ import (
 	cr "crypto"
 	"crypto/rsa"
 	"crypto/sha1"
-	"errors"
-	"fmt"
-	// xc "github.com/jddixon/xlattice_go/crypto"
-	// xi "github.com/jddixon/xlattice_go/nodeID"
 	"github.com/jddixon/xlattice_go/reg"
 )
-
-// Verify that the message number on the incoming message has been
-// increased by one.
-//
-func checkSMsgN(h *ClusterInHandler) (err error) {
-	byeMsg := h.msgIn
-	peerMsgN := byeMsg.GetMsgN()
-	expectedMsgN := h.peerMsgN + 1
-	if peerMsgN != expectedMsgN {
-		msg := fmt.Sprintf("expected MsgN %d, got %d",
-			expectedMsgN, peerMsgN)
-		err = errors.New(msg)
-	} else {
-		h.peerMsgN++
-	}
-	return
-}
-func sendSAck(h *ClusterInHandler) {
-	h.myMsgN++
-	op := UpaxClusterMsg_Ack
-	h.msgOut = &UpaxClusterMsg{
-		Op:       &op,
-		MsgN:     &h.myMsgN,
-		YourMsgN: &h.peerMsgN,
-	}
-}
-func sendSNotFound(h *ClusterInHandler) {
-	h.myMsgN++
-	op := UpaxClusterMsg_NotFound
-	h.msgOut = &UpaxClusterMsg{
-		Op:       &op,
-		MsgN:     &h.myMsgN,
-		YourMsgN: &h.peerMsgN,
-	}
-}
 
 /////////////////////////////////////////////////////////////////////
 // AES-BASED MESSAGE PAIRS

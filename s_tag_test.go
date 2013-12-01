@@ -1,6 +1,6 @@
 package upax_go
 
-// upax_go/s_in_handler_test.go
+// upax_go/s_tag_test.go
 
 import (
 	"fmt"
@@ -23,6 +23,8 @@ func (s *XLSuite) TestClusterInHandler(c *C) {
 	c.Assert(clusterOp2tag(UpaxClusterMsg_Put), Equals, uint(4))
 	c.Assert(clusterOp2tag(UpaxClusterMsg_Bye), Equals, uint(5))
 	c.Assert(clusterOp2tag(UpaxClusterMsg_Bye), Equals, S_MAX_TAG)
+
+	// These are reply tags.
 
 	c.Assert(clusterOp2tag(UpaxClusterMsg_Ack), Equals, uint(10))
 	c.Assert(clusterOp2tag(UpaxClusterMsg_Data), Equals, uint(11))

@@ -11,48 +11,11 @@ import (
 	"crypto/rsa"
 	"crypto/sha1"
 	"encoding/hex"
-	"errors"
-	"fmt"
 	xc "github.com/jddixon/xlattice_go/crypto"
 	xi "github.com/jddixon/xlattice_go/nodeID"
 	"github.com/jddixon/xlattice_go/reg"
 	xu "github.com/jddixon/xlattice_go/u"
 )
-
-// Verify that the message number on the incoming message has been
-// increased by one.
-//
-func checkCMsgN(h *ClientInHandler) (err error) {
-	byeMsg := h.msgIn
-	peerMsgN := byeMsg.GetMsgN()
-	expectedMsgN := h.peerMsgN + 1
-	if peerMsgN != expectedMsgN {
-		msg := fmt.Sprintf("expected MsgN %d, got %d",
-			expectedMsgN, peerMsgN)
-		err = errors.New(msg)
-	} else {
-		h.peerMsgN++
-	}
-	return
-}
-func sendCAck(h *ClientInHandler) {
-	h.myMsgN++
-	op := UpaxClientMsg_Ack
-	h.msgOut = &UpaxClientMsg{
-		Op:       &op,
-		MsgN:     &h.myMsgN,
-		YourMsgN: &h.peerMsgN,
-	}
-}
-func sendCNotFound(h *ClientInHandler) {
-	h.myMsgN++
-	op := UpaxClientMsg_NotFound
-	h.msgOut = &UpaxClientMsg{
-		Op:       &op,
-		MsgN:     &h.myMsgN,
-		YourMsgN: &h.peerMsgN,
-	}
-}
 
 /////////////////////////////////////////////////////////////////////
 // AES-BASED MESSAGE PAIRS

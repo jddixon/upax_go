@@ -2,7 +2,8 @@
 all:	c.pb.go s.pb.go s_aes_cnx.go c_aes_cnx.go \
 	c_in_handler.go s_in_handler.go \
 	c_keepalive.go s_keepalive.go \
-	c_keepalive_test.go s_keepalive_test.go
+	c_keepalive_test.go s_keepalive_test.go \
+	c_msg_util.go s_msg_util.go 
 
 c.pb.go: c.proto
 	mkdir -p _pb
@@ -41,4 +42,11 @@ c_keepalive_test.go: c_context keepalive_test.t
 
 s_keepalive_test.go: s_context keepalive_test.t
 	xgoT -c s_context -E .go -p s_ keepalive_test 
+
+
+c_msg_util.go: c_context msg_util.t
+	xgoT -c c_context -E .go -p c_ msg_util 
+
+s_msg_util.go: s_context msg_util.t
+	xgoT -c s_context -E .go -p s_ msg_util 
 
