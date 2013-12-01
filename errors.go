@@ -29,6 +29,5 @@ var (
 	NoDigSig               = e.New("no digital signature found")
 	NoMembers              = e.New("nil or empty members parameter")
 	NoSigFields            = e.New("no dig sig data fields found")
-	NotClusterMember       = e.New("not a cluster member")
-	UnknownClient          = e.New("unknown client")
+	UnknownPeer            = e.New("unknown peer")
 )

@@ -7,6 +7,7 @@ package upax_go
 import (
 	"errors"
 	"fmt"
+	"github.com/jddixon/xlattice_go/reg"
 )
 
 // Verify that the message number on the incoming message has been
@@ -42,4 +43,10 @@ func sendSNotFound(h *ClusterInHandler) {
 		MsgN:     &h.myMsgN,
 		YourMsgN: &h.peerMsgN,
 	}
+}
+
+// Dispatch table entry where a message received is inappropriate
+// the the state of the connection.  For example, ...
+func badSCombo(h *ClusterInHandler) {
+	h.errOut = reg.RcvdInvalidMsgForState
 }

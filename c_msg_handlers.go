@@ -1,6 +1,6 @@
 package upax_go
 
-// upax_go/s_msg_handlers.go
+// upax_go/c_msg_handlers.go
 
 // Message handlers for messages betweeen Upax servers, that is, for
 // intra-cluster communications.
@@ -11,10 +11,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha1"
 	"encoding/hex"
-	xc "github.com/jddixon/xlattice_go/crypto"
-	xi "github.com/jddixon/xlattice_go/nodeID"
 	"github.com/jddixon/xlattice_go/reg"
-	xu "github.com/jddixon/xlattice_go/u"
 )
 
 /////////////////////////////////////////////////////////////////////
@@ -23,175 +20,80 @@ import (
 // be invoked through a dispatch table.
 /////////////////////////////////////////////////////////////////////
 
-// Dispatch table entry where a client message received is inappropriate
-// the the state of the connection.  For example, ...
-//
-func badCCombo(h *ClientInHandler) {
-	h.errOut = reg.RcvdInvalidMsgForState
-}
-
-// 0. INTRO AND ACK ================================================
-
-// IntroMsg consists of MsgN and Token; the token should contain
-// name, ID, commsKey, sigKey, salt, and a digital signature over
-// fields present in the token, excluding the token itself.  On
-// success the server replies with an IntroOK.
-//
-func doCIntroMsg(h *ClientInHandler) {
-
-	var err error
-	defer func() {
-		h.errOut = err
-	}()
-	// Examine incoming message -------------------------------------
-	var (
-		clientMsg                         *UpaxClientMsg
-		name                              string
-		token                             *UpaxClientMsg_Token
-		rawID, ckRaw, skRaw, salt, digSig []byte
-		clientCK, clientSK                *rsa.PublicKey
-		clientID                          *xi.NodeID
-		clientInfo                        *reg.MemberInfo
-	)
-	// expect clientMsgN to be 1
-	err = checkCMsgN(h)
-	if err == nil {
-		clientMsg = h.msgIn
-		token = clientMsg.GetClientInfo()
-		if token == nil {
-			err = NilToken
-		}
-	}
-	if err == nil {
-		name = token.GetName()
-		rawID = token.GetID()
-		ckRaw = token.GetCommsKey()
-		skRaw = token.GetSigKey()
-		salt = token.GetSalt()
-		digSig = token.GetDigSig()
-		if name == "" || rawID == nil || ckRaw == nil || skRaw == nil ||
-			salt == nil || digSig == nil {
-			err = MissingTokenField
-		}
-	}
-	if err == nil {
-		clientID, err = xi.New(rawID)
-		if err == nil {
-			clientCK, err = xc.RSAPubKeyFromWire(ckRaw)
-		}
-		if err == nil {
-			clientSK, err = xc.RSAPubKeyFromWire(ckRaw)
-		}
-	}
-	if err == nil {
-		// Use the public key to verify their digsig on the fields
-		// present in canonical order
-
-		d := sha1.New()
-		d.Write([]byte(name))
-		d.Write(rawID)
-		d.Write(ckRaw)
-		d.Write(skRaw)
-		d.Write(salt)
-		hash := d.Sum(nil)
-		err = rsa.VerifyPKCS1v15(clientSK, cr.SHA1, hash, digSig)
-	}
-	if err == nil {
-		clientInfo, err = reg.NewMemberInfo(name, clientID,
-			clientCK, clientSK, 0, nil)
-	}
-	// Take appropriate action --------------------------------------
-	if err == nil {
-		// The appropriate action is to hang a token for this client off
-		// the ClientInHandler.
-		h.peerInfo = clientInfo
-	}
-	if err == nil {
-		// Send reply to client -------------------------------------
-		sendCAck(h)
-
-		// Set exit state -------------------------------------------
-		h.exitState = C_ID_VERIFIED
-	}
-}
-
 // 1. ITS_ME AND ACK ================================================
 
 // Handle an ItsMe msg: we return an Ack or closes the connection.
 // This should normally take the connection to an C_ID_VERIFIED state.
 //
 func doCItsMeMsg(h *ClientInHandler) {
-
-	// XXX ALL client TO BE REPLACED BY client
-
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		clientMsg  *UpaxClientMsg
-		rawID      []byte
-		clientInfo *reg.MemberInfo
+		peerMsg  *UpaxClientMsg
+		peerID   []byte
+		peerInfo *reg.MemberInfo
 	)
-	// expect clientMsgN to be 1
+	// expect peerMsgN to be 1
 	err = checkCMsgN(h)
 	if err == nil {
-		clientMsg = h.msgIn
-		rawID = clientMsg.GetID()
+		peerMsg = h.msgIn
+		peerID = peerMsg.GetID()
 
-		// use the rawID to get their memberInfo
+		// use the peerID to get their memberInfo
 		for i := 0; i < len(h.us.Members); i++ {
 			memberInfo := h.us.Members[i]
-			if bytes.Equal(rawID, memberInfo.GetNodeID().Value()) {
-				clientInfo = memberInfo
+			if bytes.Equal(peerID, memberInfo.GetNodeID().Value()) {
+				peerInfo = memberInfo
 				break
 			}
 		}
 		if h.peerInfo == nil {
-			err = UnknownClient
+			err = UnknownPeer
 		}
 	}
 	if err == nil {
-		clientSK := h.peerInfo.GetSigPublicKey()
-		salt := clientMsg.GetSalt()
-		sig := clientMsg.GetSig()
+		peerSK := h.peerInfo.GetSigPublicKey()
+		salt := peerMsg.GetSalt()
+		sig := peerMsg.GetSig()
 
 		// use the public key to verify their digsig on the fields
 		// present in canonical order: id, salt
 		if sig == nil {
 			err = NoDigSig
 		} else {
-			if rawID == nil && salt == nil {
+			if peerID == nil && salt == nil {
 				err = NoSigFields
 			} else {
 				d := sha1.New()
-				if rawID != nil {
-					d.Write(rawID)
+				if peerID != nil {
+					d.Write(peerID)
 				}
 				if salt != nil {
 					d.Write(salt)
 				}
 				hash := d.Sum(nil)
-				err = rsa.VerifyPKCS1v15(clientSK, cr.SHA1, hash, sig)
+				err = rsa.VerifyPKCS1v15(peerSK, cr.SHA1, hash, sig)
 			}
 		}
 	}
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// The appropriate action is to hang a token for this client off
+		// The appropriate action is to hang a token for this peer off
 		// the ClientInHandler.
-		h.peerInfo = clientInfo
+		h.peerInfo = peerInfo
 
 	}
 	if err == nil {
-		// Send reply to client -------------------------------------
+		// Send reply to peer -------------------------------------
 		sendCAck(h)
 
 		// Set exit state -------------------------------------------
 		h.exitState = C_ID_VERIFIED
 	}
-} // GEEP
+}
 
 // 2. KEEP-ALIVE AND ACK ============================================
 
@@ -207,7 +109,7 @@ func doCKeepAliveMsg(h *ClientInHandler) {
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Send reply to client -------------------------------------
+		// Send reply to peer -------------------------------------
 		sendCAck(h)
 
 		// Set exit state -------------------------------------------
@@ -246,7 +148,7 @@ func doCQueryMsg(h *ClientInHandler) {
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Send reply to client -------------------------------------
+		// Send reply to peer -------------------------------------
 		if found {
 			sendCAck(h)
 		} else {
@@ -271,71 +173,99 @@ func doCGetMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
+		found     bool
 		getMsg    *UpaxClientMsg
-		hash      []byte
-		strHash   string
-		usingSHA1 bool
+		data, key []byte
+		logEntry  *LogEntry // not the message
 	)
 	err = checkCMsgN(h)
 	if err == nil {
 		getMsg = h.msgIn
-		hash = getMsg.GetHash()
-		if hash == nil {
+		key = getMsg.GetHash()
+		if key == nil {
 			err = NilHash
-		} else {
-			strHash = hex.EncodeToString(hash)
-
-			// BEWARE: U uses hex lengths, double byte lengths
-			switch len(strHash) {
-			case xu.SHA1_LEN:
-				usingSHA1 = true
-			case xu.SHA3_LEN:
-				usingSHA1 = false
-			default:
-				err = BadHashLength
-			}
 		}
 	}
+
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		var data []byte
-
-		if usingSHA1 {
-			data, err = h.us.uDir.GetData1(strHash)
-		} else {
-			data, err = h.us.uDir.GetData3(strHash)
+		// determine whether the data requested is present; if it is
+		// we will send a DataMsg, with logEntry and payload fields
+		var whatever interface{}
+		whatever, err = h.us.entries.Find(key)
+		logEntry = whatever.(*LogEntry)
+		if err != nil {
+			found = logEntry != nil
 		}
-		if err == xu.FileNotFound {
-			err = nil
-			data = nil
-		}
-		if err == nil {
-			if data == nil {
-				sendCNotFound(h)
-			} else {
-				// we will send a DataMsg, with logEntry and payload fields
-
+	}
+	if err == nil {
+		if found {
+			// fetch payload
+			data, err = h.us.uDir.GetData(key)
+			if err == nil {
+				// we will send log entry and payload
+				logEntryMsg := &UpaxClientMsg_LogEntry{
+					Timestamp:  &logEntry.timestamp,
+					ContentKey: logEntry.key,
+					Owner:      logEntry.nodeID,
+					Src:        &logEntry.src,
+					Path:       &logEntry.path,
+				}
 				h.myMsgN++
-				op := UpaxClientMsg_Ack
+				op := UpaxClientMsg_Data
 				h.msgOut = &UpaxClientMsg{
-					Op:   &op,
-					MsgN: &h.myMsgN,
-
-					// XXX LOG ENTRY MISSING!	<--------------------
-
+					Op:      &op,
+					MsgN:    &h.myMsgN,
+					Entry:   logEntryMsg,
 					Payload: data,
 				}
-
 			}
+
+		} else {
+			sendCNotFound(h)
 		}
-		// Set exit state -------------------------------------------
 		if err == nil {
+			// Set exit state -----------------------------------------------
 			h.exitState = C_ID_VERIFIED
 		}
 	}
 }
 
-// 5. PUT AND ACK  ==================================================
+// 5. I_HAVE AND ACK ================================================
+
+//
+func doCIHaveMsg(h *ClientInHandler) {
+	var err error
+	defer func() {
+		h.errOut = err
+	}()
+	// Examine incoming message -------------------------------------
+	var (
+		iHaveMsg *UpaxClientMsg
+	)
+	err = checkCMsgN(h)
+	if err == nil {
+		iHaveMsg = h.msgIn
+	}
+	if err == nil {
+
+		// XXX STUB XXX - check the list, filtering out those we
+		// already have; the list is then forwarded to the other
+		// side (the outHandler), which will get anything on the list.
+	}
+	_ = iHaveMsg
+
+	// Take appropriate action --------------------------------------
+	if err == nil {
+		// Send reply to peer -------------------------------------
+		sendCAck(h)
+
+		// Set exit state -------------------------------------------
+		h.exitState = C_ID_VERIFIED
+	}
+}
+
+// 6. PUT AND ACK  ==================================================
 
 //
 func doCPutMsg(h *ClientInHandler) {
@@ -345,25 +275,75 @@ func doCPutMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		putMsg *UpaxClientMsg
+		data, key []byte
+		entryMsg  *UpaxClientMsg_LogEntry
+		logEntry  *LogEntry
+		putMsg    *UpaxClientMsg
 	)
 	err = checkCMsgN(h)
 	if err == nil {
 		putMsg = h.msgIn
+		entryMsg = putMsg.GetEntry()
+		if entryMsg == nil {
+			err = NilLogEntry
+		}
 	}
-	_ = putMsg
+	if err == nil {
+		data = putMsg.GetPayload()
+		if data == nil {
+			err = NilPayload
+		}
+	}
+	if err == nil {
+		t := entryMsg.GetTimestamp()
+		key = entryMsg.GetContentKey()
+		nodeID := entryMsg.GetOwner()
+		src := entryMsg.GetSrc()
+		path := entryMsg.GetPath()
 
+		// XXX CHECK FOR MISSING FIELDS
+
+		logEntry, err = NewLogEntry(t, key, nodeID, src, path)
+	}
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Send reply to client ----------------------------------
-		sendCAck(h)
+		var (
+			found    bool
+			whatever interface{}
+		)
+		whatever, err = h.us.entries.Find(key)
+		if err == nil {
+			if whatever != nil {
+				found = logEntry.Equal(whatever)
+			}
+			if !found {
+				// write data to U/x/x, the appropriate hash directory
+				var hash []byte
+				_, hash, err = h.us.uDir.PutData(data, key)
+				if err == nil && !bytes.Equal(hash, key) {
+					err = BadHash
+				}
+			}
+		}
+		if err == nil && !found {
+			// write to U/L, the log file (UNSYNCHRONIZED)
+			_, err = h.us.ftLogFile.WriteString(logEntry.String() + "\n")
+			if err == nil {
+				// written to U, entry appended to U/L, so put it into the map
+				err = h.us.entries.Insert(key, logEntry)
+			}
+		}
+		if err == nil {
+			// Send reply to peer ----------------------------------
+			sendCAck(h)
 
-		// Set exit state -------------------------------------------
-		h.exitState = C_ID_VERIFIED
+			// Set exit state ---------------------------------------
+			h.exitState = C_ID_VERIFIED
+		}
 	}
 }
 
-// 6. BYE AND ACK ===================================================
+// 7. BYE AND ACK ===================================================
 
 func doCByeMsg(h *ClientInHandler) {
 	var err error
@@ -376,7 +356,7 @@ func doCByeMsg(h *ClientInHandler) {
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
-		// Send reply to client -------------------------------------
+		// Send reply to peer -------------------------------------
 		sendCAck(h)
 
 		// Set exit state -------------------------------------------

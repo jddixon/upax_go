@@ -1,6 +1,6 @@
-package upax_go
+package ${pkgName}
 
-// upax_go/s_msg_handlers.go
+// ${pkgName}/${filePrefix}msg_handlers.go
 
 // Message handlers for messages betweeen Upax servers, that is, for
 // intra-cluster communications.
@@ -23,21 +23,21 @@ import (
 // 1. ITS_ME AND ACK ================================================
 
 // Handle an ItsMe msg: we return an Ack or closes the connection.
-// This should normally take the connection to an S_ID_VERIFIED state.
+// This should normally take the connection to an ${ConstPrefix}ID_VERIFIED state.
 //
-func doSItsMeMsg(h *ClusterInHandler) {
+func do${CapShortPrefix}ItsMeMsg(h *${TypePrefix}InHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		peerMsg  *UpaxClusterMsg
+		peerMsg  *Upax${TypePrefix}Msg
 		peerID   []byte
 		peerInfo *reg.MemberInfo
 	)
 	// expect peerMsgN to be 1
-	err = checkSMsgN(h)
+	err = check${CapShortPrefix}MsgN(h)
 	if err == nil {
 		peerMsg = h.msgIn
 		peerID = peerMsg.GetID()
@@ -82,16 +82,16 @@ func doSItsMeMsg(h *ClusterInHandler) {
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// The appropriate action is to hang a token for this peer off
-		// the ClusterInHandler.
+		// the ${TypePrefix}InHandler.
 		h.peerInfo = peerInfo
 
 	}
 	if err == nil {
 		// Send reply to peer -------------------------------------
-		sendSAck(h)
+		send${CapShortPrefix}Ack(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED
+		h.exitState = ${ConstPrefix}ID_VERIFIED
 	}
 }
 
@@ -99,21 +99,21 @@ func doSItsMeMsg(h *ClusterInHandler) {
 
 // Handle a KeepAlive msg: we just return an Ack
 
-func doSKeepAliveMsg(h *ClusterInHandler) {
+func do${CapShortPrefix}KeepAliveMsg(h *${TypePrefix}InHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
-	err = checkSMsgN(h)
+	err = check${CapShortPrefix}MsgN(h)
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Send reply to peer -------------------------------------
-		sendSAck(h)
+		send${CapShortPrefix}Ack(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED // the base state
+		h.exitState = ${ConstPrefix}ID_VERIFIED // the base state
 	}
 }
 
@@ -122,7 +122,7 @@ func doSKeepAliveMsg(h *ClusterInHandler) {
 // A faster implementation would check an in-memory Bloom filter,
 // trusting a negative reply but verifying any positive with a disk hit.
 //
-func doSQueryMsg(h *ClusterInHandler) {
+func do${CapShortPrefix}QueryMsg(h *${TypePrefix}InHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
@@ -131,9 +131,9 @@ func doSQueryMsg(h *ClusterInHandler) {
 	var (
 		found    bool
 		hash     []byte
-		queryMsg *UpaxClusterMsg
+		queryMsg *Upax${TypePrefix}Msg
 	)
-	err = checkSMsgN(h)
+	err = check${CapShortPrefix}MsgN(h)
 	if err == nil {
 		queryMsg = h.msgIn
 		hash = queryMsg.GetHash()
@@ -150,13 +150,13 @@ func doSQueryMsg(h *ClusterInHandler) {
 	if err == nil {
 		// Send reply to peer -------------------------------------
 		if found {
-			sendSAck(h)
+			send${CapShortPrefix}Ack(h)
 		} else {
-			sendSNotFound(h)
+			send${CapShortPrefix}NotFound(h)
 		}
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED
+		h.exitState = ${ConstPrefix}ID_VERIFIED
 	}
 }
 
@@ -166,7 +166,7 @@ func doSQueryMsg(h *ClusterInHandler) {
 // (payload plus log entry); otherwise we will return NotFound, a non-fatal
 // error message.
 
-func doSGetMsg(h *ClusterInHandler) {
+func do${CapShortPrefix}GetMsg(h *${TypePrefix}InHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
@@ -174,11 +174,11 @@ func doSGetMsg(h *ClusterInHandler) {
 	// Examine incoming message -------------------------------------
 	var (
 		found     bool
-		getMsg    *UpaxClusterMsg
+		getMsg    *Upax${TypePrefix}Msg
 		data, key []byte
 		logEntry  *LogEntry // not the message
 	)
-	err = checkSMsgN(h)
+	err = check${CapShortPrefix}MsgN(h)
 	if err == nil {
 		getMsg = h.msgIn
 		key = getMsg.GetHash()
@@ -204,7 +204,7 @@ func doSGetMsg(h *ClusterInHandler) {
 			data, err = h.us.uDir.GetData(key)
 			if err == nil {
 				// we will send log entry and payload
-				logEntryMsg := &UpaxClusterMsg_LogEntry{
+				logEntryMsg := &Upax${TypePrefix}Msg_LogEntry{
 					Timestamp:  &logEntry.timestamp,
 					ContentKey: logEntry.key,
 					Owner:      logEntry.nodeID,
@@ -212,8 +212,8 @@ func doSGetMsg(h *ClusterInHandler) {
 					Path:       &logEntry.path,
 				}
 				h.myMsgN++
-				op := UpaxClusterMsg_Data
-				h.msgOut = &UpaxClusterMsg{
+				op := Upax${TypePrefix}Msg_Data
+				h.msgOut = &Upax${TypePrefix}Msg{
 					Op:      &op,
 					MsgN:    &h.myMsgN,
 					Entry:   logEntryMsg,
@@ -222,11 +222,11 @@ func doSGetMsg(h *ClusterInHandler) {
 			}
 
 		} else {
-			sendSNotFound(h)
+			send${CapShortPrefix}NotFound(h)
 		}
 		if err == nil {
 			// Set exit state -----------------------------------------------
-			h.exitState = S_ID_VERIFIED
+			h.exitState = ${ConstPrefix}ID_VERIFIED
 		}
 	}
 }
@@ -234,16 +234,16 @@ func doSGetMsg(h *ClusterInHandler) {
 // 5. I_HAVE AND ACK ================================================
 
 //
-func doSIHaveMsg(h *ClusterInHandler) {
+func do${CapShortPrefix}IHaveMsg(h *${TypePrefix}InHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		iHaveMsg *UpaxClusterMsg
+		iHaveMsg *Upax${TypePrefix}Msg
 	)
-	err = checkSMsgN(h)
+	err = check${CapShortPrefix}MsgN(h)
 	if err == nil {
 		iHaveMsg = h.msgIn
 	}
@@ -258,17 +258,17 @@ func doSIHaveMsg(h *ClusterInHandler) {
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Send reply to peer -------------------------------------
-		sendSAck(h)
+		send${CapShortPrefix}Ack(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_ID_VERIFIED
+		h.exitState = ${ConstPrefix}ID_VERIFIED
 	}
 }
 
 // 6. PUT AND ACK  ==================================================
 
 //
-func doSPutMsg(h *ClusterInHandler) {
+func do${CapShortPrefix}PutMsg(h *${TypePrefix}InHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
@@ -276,11 +276,11 @@ func doSPutMsg(h *ClusterInHandler) {
 	// Examine incoming message -------------------------------------
 	var (
 		data, key []byte
-		entryMsg  *UpaxClusterMsg_LogEntry
+		entryMsg  *Upax${TypePrefix}Msg_LogEntry
 		logEntry  *LogEntry
-		putMsg    *UpaxClusterMsg
+		putMsg    *Upax${TypePrefix}Msg
 	)
-	err = checkSMsgN(h)
+	err = check${CapShortPrefix}MsgN(h)
 	if err == nil {
 		putMsg = h.msgIn
 		entryMsg = putMsg.GetEntry()
@@ -335,31 +335,31 @@ func doSPutMsg(h *ClusterInHandler) {
 		}
 		if err == nil {
 			// Send reply to peer ----------------------------------
-			sendSAck(h)
+			send${CapShortPrefix}Ack(h)
 
 			// Set exit state ---------------------------------------
-			h.exitState = S_ID_VERIFIED
+			h.exitState = ${ConstPrefix}ID_VERIFIED
 		}
 	}
 }
 
 // 7. BYE AND ACK ===================================================
 
-func doSByeMsg(h *ClusterInHandler) {
+func do${CapShortPrefix}ByeMsg(h *${TypePrefix}InHandler) {
 	var err error
 	defer func() {
 		h.errOut = err
 	}()
 
 	// Examine incoming message -------------------------------------
-	err = checkSMsgN(h)
+	err = check${CapShortPrefix}MsgN(h)
 
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// Send reply to peer -------------------------------------
-		sendSAck(h)
+		send${CapShortPrefix}Ack(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = S_BYE_RCVD
+		h.exitState = ${ConstPrefix}BYE_RCVD
 	}
 }
