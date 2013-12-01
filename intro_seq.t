@@ -1,6 +1,6 @@
-package upax_go
+package ${pkgName}
 
-// upax_go/c_intro_seq.go
+// ${pkgName}/c_intro_seq.go
 
 import (
 	cr "crypto"
@@ -24,7 +24,7 @@ import (
 // fields present in the token, excluding the token itself.  On
 // success the server replies with an IntroOK.
 //
-func doCIntroMsg(h *ClientInHandler) {
+func do${CapShortPrefix}IntroMsg(h *${TypePrefix}InHandler) {
 
 	var err error
 	defer func() {
@@ -32,19 +32,19 @@ func doCIntroMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		peerMsg                           *UpaxClientMsg
+		peerMsg                         *Upax${TypePrefix}Msg
 		name                              string
-		token                             *UpaxClientMsg_Token
+		token                             *Upax${TypePrefix}Msg_Token
 		rawID, ckRaw, skRaw, salt, digSig []byte
-		peerCK, peerSK                    *rsa.PublicKey
-		peerID                            *xi.NodeID
-		peerInfo                          *reg.MemberInfo
+		peerCK, peerSK                *rsa.PublicKey
+		peerID                          *xi.NodeID
+		peerInfo                        *reg.MemberInfo
 	)
 	// expect peerMsgN to be 1
-	err = checkCMsgN(h)
+	err = check${CapShortPrefix}MsgN(h)
 	if err == nil {
 		peerMsg = h.msgIn
-		token = peerMsg.GetClientInfo()
+		token = peerMsg.Get${TypePrefix}Info()
 		if token == nil {
 			err = NilToken
 		}
@@ -90,14 +90,14 @@ func doCIntroMsg(h *ClientInHandler) {
 	// Take appropriate action --------------------------------------
 	if err == nil {
 		// The appropriate action is to hang a token for this client off
-		// the ClientInHandler.
+		// the ${TypePrefix}InHandler.
 		h.peerInfo = peerInfo
 	}
 	if err == nil {
 		// Send reply to client -------------------------------------
-		sendCAck(h)
+		send${CapShortPrefix}Ack(h)
 
 		// Set exit state -------------------------------------------
-		h.exitState = C_ID_VERIFIED
+		h.exitState = ${ConstPrefix}ID_VERIFIED
 	}
 }

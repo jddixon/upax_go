@@ -1,6 +1,6 @@
 package ${pkgName}
 
-// upax_go/s_keepalive_test.go
+// ${pkgName}/s_keepalive_test.go
 
 import (
 	"fmt"

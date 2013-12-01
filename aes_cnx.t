@@ -1,6 +1,6 @@
 package ${pkgName} 
 
-// upax_go/${filePrefix}packets.go
+// ${pkgName}/${filePrefix}packets.go
 
 import (
 	"code.google.com/p/goprotobuf/proto"
