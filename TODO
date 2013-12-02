@@ -4,8 +4,8 @@ github.com/jddixon/upax_go/TODO
     * extract c_intro_seq.go from c_msg_handlers.go                     * DONE
     * create msg_handlers.t, use that to generate {c,s}_msg_handlers.go * DONE
     * generate c_intro_seq.go from intro_seq.t                          * DONE
-    * generate {c,s}_ihave_mgr.go from ihave_mgr.t
-        - and tests
+    * generate {c,s}_ihave_mgr.go from ihave_mgr.t                      * DONE
+        - and tests                                                     * DONE
 
 2013-11-30
     * split out common utility functions from s_msg_handlers.go         * DONE
