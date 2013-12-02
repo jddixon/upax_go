@@ -1,5 +1,6 @@
 # by default, first target is only target
 all:	c.pb.go s.pb.go s_aes_cnx.go c_aes_cnx.go \
+	c_ihave_mgr.go s_ihave_mgr.go \
 	c_in_handler.go s_in_handler.go \
 	c_intro_seq.go \
 	c_keepalive.go s_keepalive.go \
@@ -26,6 +27,12 @@ c_aes_cnx.go: c_context aes_cnx.t
 
 s_aes_cnx.go: s_context aes_cnx.t
 	xgoT -c s_context -E .go -p s_ aes_cnx 
+
+c_ihave_mgr.go: c_context ihave_mgr.t
+	xgoT -c c_context -E .go -p c_ ihave_mgr 
+
+s_ihave_mgr.go: s_context ihave_mgr.t
+	xgoT -c s_context -E .go -p s_ ihave_mgr 
 
 c_in_handler.go: c_context in_handler.t
 	xgoT -c c_context -E .go -p c_ in_handler 

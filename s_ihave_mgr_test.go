@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (s *XLSuite) TestClusterIHaveMgr(c *C) {
+func (s *XLSuite) TestClusterClusterIHaveMgr(c *C) {
 	if VERBOSITY > 0 {
 		fmt.Println("TEST_CLUSTER_IHAVE_MGR")
 	}
@@ -33,7 +33,7 @@ func (s *XLSuite) TestClusterIHaveMgr(c *C) {
 	}
 	obj := IHaveObj{keys}
 
-	mgr, err := NewIHaveMgr(iHaveCh, entries, outMsgCh, stopCh)
+	mgr, err := NewClusterIHaveMgr(iHaveCh, entries, outMsgCh, stopCh)
 	c.Assert(err, IsNil)
 	go mgr.Run()
 	mgr.iHaveCh <- obj

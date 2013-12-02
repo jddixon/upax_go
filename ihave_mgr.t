@@ -1,26 +1,26 @@
-package upax_go
+package ${pkgName}
 
-// upax_go/s_ihave_mgr.go
+// ${pkgName}/${filePrefix}ihave_mgr.go
 
 import (
 	xn "github.com/jddixon/xlattice_go/node"
 )
 
-// The ClusterIHaveMgr receives IHaveObjs on its input channel.  For each
+// The ${TypePrefix}IHaveMgr receives IHaveObjs on its input channel.  For each
 // ID, it checks to see whether the ID is present in its entries.
 // If the ID is not present, it creates a Get message, which it passes
 // on.
 //
-type ClusterIHaveMgr struct {
+type ${TypePrefix}IHaveMgr struct {
 	iHaveCh  chan IHaveObj
 	entries  *xn.IDMap // a convenience
-	outMsgCh chan *UpaxClusterMsg
+	outMsgCh chan *Upax${TypePrefix}Msg
 	stopCh   chan bool
 }
 
-func NewClusterIHaveMgr(iHaveCh chan IHaveObj, entries *xn.IDMap,
-	outMsgCh chan *UpaxClusterMsg, stopCh chan bool) (
-	mgr *ClusterIHaveMgr, err error) {
+func New${TypePrefix}IHaveMgr(iHaveCh chan IHaveObj, entries *xn.IDMap,
+	outMsgCh chan *Upax${TypePrefix}Msg, stopCh chan bool) (
+	mgr *${TypePrefix}IHaveMgr, err error) {
 
 	if iHaveCh == nil {
 		err = NilIHaveChan
@@ -29,7 +29,7 @@ func NewClusterIHaveMgr(iHaveCh chan IHaveObj, entries *xn.IDMap,
 	} else if outMsgCh == nil {
 		err = NilOutMsgCh
 	} else {
-		mgr = &ClusterIHaveMgr{
+		mgr = &${TypePrefix}IHaveMgr{
 			iHaveCh:  iHaveCh,
 			entries:  entries,
 			outMsgCh: outMsgCh,
@@ -41,7 +41,7 @@ func NewClusterIHaveMgr(iHaveCh chan IHaveObj, entries *xn.IDMap,
 
 // This will normally be run in a separate goroutine.
 //
-func (mgr *ClusterIHaveMgr) Run() {
+func (mgr *${TypePrefix}IHaveMgr) Run() {
 	var whatever interface{}
 	var err error
 	for {
@@ -52,8 +52,8 @@ func (mgr *ClusterIHaveMgr) Run() {
 				id := ids[i]
 				whatever, err = mgr.entries.Find(id)
 				if (err == nil) && (whatever == nil) {
-					op := UpaxClusterMsg_Get
-					msgOut := &UpaxClusterMsg{
+					op := Upax${TypePrefix}Msg_Get
+					msgOut := &Upax${TypePrefix}Msg{
 						Op:   &op,
 						Hash: id,
 						// MsgN needs to be assigned when the message is
