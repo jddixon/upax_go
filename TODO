@@ -1,5 +1,14 @@
 github.com/jddixon/upax_go/TODO
 
+2013-12-04
+    * write NewMockUpaxClient() to create wrapper around UpaxClient     * DONE
+    * pair_test tests a single MockUpaxClient against a couple of
+        servers in a 2-cluster
+    * MockUpaxClient.createData() does that
+    * MockUpaxClient.postData() sends to server 0
+    * MockUpaxClient.checkPrimaryServer() checks server 0
+    * MockUpaxClient.checkOtherServers() checks server 1
+        
 2013-12-01
     * extract c_intro_seq.go from c_msg_handlers.go                     * DONE
     * create msg_handlers.t, use that to generate {c,s}_msg_handlers.go * DONE

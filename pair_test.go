@@ -1,6 +1,11 @@
 package upax_go
 
-// upax_go/cluster_test.go
+// upax_go/pair_test.go
+
+// This is a simplified version of cluster_test.go.  We start a single
+// server and then a single client.  The client generates a number of
+// dummy files, loads them into the server, and then checks to see
+// whether they are there.
 
 import (
 	"crypto/rand"
@@ -19,13 +24,16 @@ import (
 
 var _ = fmt.Print
 
-func (s *XLSuite) TestCluster(c *C) {
+func (s *XLSuite) TestPair(c *C) {
 	rng := xr.MakeSimpleRNG()
-	s.doTestCluster(c, rng, true)  // usingSHA1
-	s.doTestCluster(c, rng, false) // not
+	s.doTestPair(c, rng, true)  // usingSHA1
+	s.doTestPair(c, rng, false) // not
 }
 
-func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
+// This was copied from cluster_test.go and minimal changes have been
+// made.
+//
+func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// read regCred.dat to get keys etc for a registry --------------
 	dat, err := ioutil.ReadFile("regCred.dat")
@@ -54,11 +62,11 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	}
 
 	// Set the test size in various senses --------------------------
-	// K1 is the number of servers, and so the cluster size.  K2 is
-	// the number of clients, M the number of messages sent (items to
+	// K1 is the number of upax servers, and so the cluster size.  K2 is
+	// the number of upax clients, M the number of messages sent (items to
 	// be added to the Upax store), LMin and LMax message lengths.
-	K1 := 3 + rng.Intn(5)  // so 3..7
-	K2 := 2 + rng.Intn(4)  // so 2..5
+	K1 := 2
+	K2 := 1
 	M := 16 + rng.Intn(16) // 16..31
 	LMin := 64 + rng.Intn(64)
 	LMax := 128 + rng.Intn(128)
@@ -106,7 +114,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		c.Assert(skPriv[i], NotNil)
 	}
 
-	// create K1 client nodes ---------------------------------------
+	// create K1 reg client nodes -----------------------------------
 	uc := make([]*reg.UserClient, K1)
 	for i := 0; i < K1; i++ {
 		var ep *xt.TcpEndPoint
@@ -122,18 +130,18 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		c.Assert(uc[i], NotNil)
 		c.Assert(uc[i].ClusterID, NotNil)
 	}
-	// Start the K1 client nodes running ----------------------------
+	// Start the K1 reg client nodes running ------------------------
 	for i := 0; i < K1; i++ {
 		err = uc[i].Run()
 		c.Assert(err, IsNil)
 	}
 
-	// wait until all clientNodes are done --------------------------
+	// wait until all reg clientNodes are done ----------------------
 	for i := 0; i < K1; i++ {
 		<-uc[i].ClientNode.DoneCh
 	}
 
-	// convert the client nodes to UpaxServers ----------------------
+	// convert the reg client nodes to UpaxServers ------------------
 	us := make([]*UpaxServer, K1)
 	for i := 0; i < K1; i++ {
 		err = uc[i].PersistClusterMember()
@@ -171,7 +179,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// END
 
 	// When all UpaxServers are ready, create K2 clients.--
-	// Each client creates K3 separate datums of differnt
+	// Each upax client creates K3 separate datums of differnt
 	// length (L1..L2) and content.  Each client signals
 	// when done.
 
