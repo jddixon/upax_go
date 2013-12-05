@@ -23,7 +23,7 @@ var _ = fmt.Print
 
 const (
 	RETRY_INTERVAL = 10 * time.Millisecond
-	MAX_RETRY      = 3 // how many times we retry if we can't get a cnx
+	MAX_RETRY      = 13 // how many times we retry if we can't get a cnx
 )
 
 // Load serialized log entries into the IDMap from which they are

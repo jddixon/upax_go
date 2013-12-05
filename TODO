@@ -7,28 +7,10 @@ github.com/jddixon/upax_go/TODO
     * generate {c,s}_ihave_mgr.go from ihave_mgr.t                      * DONE
         - and tests                                                     * DONE
 
-2013-11-30
-    * split out common utility functions from s_msg_handlers.go         * DONE
-        as s_msg_util.go                                                * DONE
-    * create msg_util.t, use that to generate {c,s}_msg_util.go         * DONE
-
 2013-11-29
     * aes_cnx.t 
-        - package line should be abstracted: "package ${pkg}" or sim.   * DONE
         - ideally the pkg variable should be defined in parent context
-    * s_keepalive.go derived from keepalive.t                           * DONE
-    * c_keepalive.go derived from keepalive.t                           * DONE
-    * keepalive_test.t                                                  * DONE
-2013-11-22
-    * s_packets.go should be generated from reg/aes_cnx.t and be        * DONE
-        renamed s_aes_cnx.go                                            * DONE
-    * c_packets.go should be generated from reg/aes_cnx.t and be        * DONE
-        renamed c_aes_cnx.go                                            * DONE
-    * Makefile should generate both                                     * DONE
 2013-11-19
-    * write IHaveMgr                                                    * DONE
-    * write ihave_mgr_test.go                                           * DONE
-    * write keepalive_test.go                                           * DONE
     * ClusterOutHandler has IHaveMgr running in a separate goroutine
     * ClusterOutHandler has KeepAliveMgr running in separate goroutine
 2013-11-16

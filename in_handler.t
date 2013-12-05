@@ -57,7 +57,6 @@ type ${TypePrefix}InHandler struct {
 
 // Given an open new connection, create a handler for the connection,
 // associating the connection with a registry.
-
 func New${TypePrefix}InHandler(us *UpaxServer, conn xt.ConnectionI) (
 	h *${TypePrefix}InHandler, err error) {
 
@@ -82,7 +81,6 @@ func New${TypePrefix}InHandler(us *UpaxServer, conn xt.ConnectionI) (
 
 // Set up the receiver (server) side of a communications link with 
 // RSA-to-AES handshaking
-//
 func SetUp${TypePrefix}SessionKey(h *${TypePrefix}InHandler) (err error) {
 	h.engineS, err = aes.NewCipher(h.key2)
 	if err == nil {
@@ -92,8 +90,8 @@ func SetUp${TypePrefix}SessionKey(h *${TypePrefix}InHandler) (err error) {
 	return
 }
 
-// Convert a protobuf op into a zero-based tag for use in the ${TypePrefix}InHandler's
-// dispatch table.
+// Convert a protobuf op into a zero-based tag for use in the 
+// ${TypePrefix}InHandler's dispatch table.
 func ${funcPrefix}Op2tag(op Upax${TypePrefix}Msg_Tag) uint {
 	return uint(op - Upax${TypePrefix}Msg_${firstMsg})
 }
@@ -102,7 +100,6 @@ func ${funcPrefix}Op2tag(op Upax${TypePrefix}Msg_Tag) uint {
 // process a hello message for this node, which creates a session.
 // The hello message contains an AES Key+IV, a salt, and a requested
 // protocol version. The salt must be at least eight bytes long.
-
 func (h *${TypePrefix}InHandler) Run() (err error) {
 
 	defer func() {
@@ -113,15 +110,11 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 
 	// This adds an AES iv2 and key2 to the handler.
 	err = handle${TypePrefix}Hello(h)
-	if err != nil {
-		return
+	if err == nil {
+		// Given iv2, key2 create encrypt and decrypt engines.
+		err = SetUp${TypePrefix}SessionKey(h)
 	}
-	// Given iv2, key2 create encrypt and decrypt engines.
-	err = SetUp${TypePrefix}SessionKey(h)
-	if err != nil {
-		return
-	}
-	for {
+	for err == nil {
 		var (
 			tag uint
 		)
@@ -129,12 +122,11 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 		//   receive the raw data off the wire
 		var ciphertext []byte
 		ciphertext, err = h.ReadData()
-		if err != nil {
-			return
+		if err == nil {
+			h.msgIn, err = ${funcPrefix}DecryptUnpadDecode(ciphertext, h.decrypterS)
 		}
-		h.msgIn, err = ${funcPrefix}DecryptUnpadDecode(ciphertext, h.decrypterS)
 		if err != nil {
-			return
+			break
 		}
 		op := h.msgIn.GetOp()
 		// TODO: range check on either op or tag
@@ -150,7 +142,7 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 		// Convert any error encountered into an error message to be
 		// sent to the client.
 		if h.errOut != nil {
-			h.us.Logger.Printf("errOut to client: %v\n", h.errOut)
+			h.us.Logger.Printf("errOut to client: %s\n", h.errOut.Error())
 
 			op := Upax${TypePrefix}Msg_Error
 			s := h.errOut.Error()
@@ -169,20 +161,21 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 			// XXX log any error
 			if err != nil {
 				h.us.Logger.Printf(
-					"${TypePrefix}InHandler.Run: ${funcPrefix}EncodePadEncrypt returns %v\n", err)
+					"${TypePrefix}InHandler.Run: ${funcPrefix}EncodePadEncrypt returns %s\n", 
+					err.Error())
 			}
 
 			// put the ciphertext on the wire
 			if err == nil {
 				err = h.WriteData(ciphertext)
 
-				// XXX log any error
+				// log any error
 				if err != nil {
 					h.us.Logger.Printf(
-						"${TypePrefix}InHandler.Run: WriteData returns %v\n", err)
+						"${TypePrefix}InHandler.Run: WriteData returns %s\n", 
+						err.Error())
 				}
 			}
-
 		}
 		h.entryState = h.exitState
 		if h.exitState == ${ConstPrefix}IN_CLOSED {
@@ -197,16 +190,15 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 // RSA-BASED MESSAGE PAIR
 /////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////
+// XXX COMPARE WITH reg/ClientNode.SessionSetup, which is a better
+// model for this code.
+/////////////////////////////////////////////////////////////////////
+
 // The client has sent the server a one-time AES key+iv encrypted with
 // the server's RSA comms public key.  The server creates the real
 // session iv+key and returns them to the client encrypted with the
 // one-time key+iv.
-
-
-/////////////////////////////////////////////////////////////////////
-// XXX THIS IS WRONG.  COMPARE WITH reg/ClientNode.SessionSetup, which 
-// is the right model for this code.
-/////////////////////////////////////////////////////////////////////
 func handle${TypePrefix}Hello(h *${TypePrefix}InHandler) (err error) {
 	var (
 		ciphertext, iv1, key1, salt1 []byte
@@ -236,14 +228,13 @@ func handle${TypePrefix}Hello(h *${TypePrefix}InHandler) (err error) {
 			h.State = ${ConstPrefix}HELLO_RCVD
 		}
 	}
-	// On any error silently close the connection and delete the handler,
-	// an exciting thing to do.
+	// On any error silently close the connection.
 	if err != nil {
 		// DEBUG
-		fmt.Printf("handle${TypePrefix}Hello closing cnx, error was %v\n", err)
+		fmt.Printf("handle${TypePrefix}Hello closing cnx, error was %s\n", 
+			err.Error())
 		// END
 		h.Cnx.Close()
-		h = nil
 	}
 	return
 }

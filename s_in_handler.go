@@ -57,7 +57,6 @@ type ClusterInHandler struct {
 
 // Given an open new connection, create a handler for the connection,
 // associating the connection with a registry.
-
 func NewClusterInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	h *ClusterInHandler, err error) {
 
@@ -82,7 +81,6 @@ func NewClusterInHandler(us *UpaxServer, conn xt.ConnectionI) (
 
 // Set up the receiver (server) side of a communications link with
 // RSA-to-AES handshaking
-//
 func SetUpClusterSessionKey(h *ClusterInHandler) (err error) {
 	h.engineS, err = aes.NewCipher(h.key2)
 	if err == nil {
@@ -92,8 +90,8 @@ func SetUpClusterSessionKey(h *ClusterInHandler) (err error) {
 	return
 }
 
-// Convert a protobuf op into a zero-based tag for use in the ClusterInHandler's
-// dispatch table.
+// Convert a protobuf op into a zero-based tag for use in the
+// ClusterInHandler's dispatch table.
 func clusterOp2tag(op UpaxClusterMsg_Tag) uint {
 	return uint(op - UpaxClusterMsg_ItsMe)
 }
@@ -102,7 +100,6 @@ func clusterOp2tag(op UpaxClusterMsg_Tag) uint {
 // process a hello message for this node, which creates a session.
 // The hello message contains an AES Key+IV, a salt, and a requested
 // protocol version. The salt must be at least eight bytes long.
-
 func (h *ClusterInHandler) Run() (err error) {
 
 	defer func() {
@@ -113,15 +110,11 @@ func (h *ClusterInHandler) Run() (err error) {
 
 	// This adds an AES iv2 and key2 to the handler.
 	err = handleClusterHello(h)
-	if err != nil {
-		return
+	if err == nil {
+		// Given iv2, key2 create encrypt and decrypt engines.
+		err = SetUpClusterSessionKey(h)
 	}
-	// Given iv2, key2 create encrypt and decrypt engines.
-	err = SetUpClusterSessionKey(h)
-	if err != nil {
-		return
-	}
-	for {
+	for err == nil {
 		var (
 			tag uint
 		)
@@ -129,12 +122,11 @@ func (h *ClusterInHandler) Run() (err error) {
 		//   receive the raw data off the wire
 		var ciphertext []byte
 		ciphertext, err = h.ReadData()
-		if err != nil {
-			return
+		if err == nil {
+			h.msgIn, err = clusterDecryptUnpadDecode(ciphertext, h.decrypterS)
 		}
-		h.msgIn, err = clusterDecryptUnpadDecode(ciphertext, h.decrypterS)
 		if err != nil {
-			return
+			break
 		}
 		op := h.msgIn.GetOp()
 		// TODO: range check on either op or tag
@@ -150,7 +142,7 @@ func (h *ClusterInHandler) Run() (err error) {
 		// Convert any error encountered into an error message to be
 		// sent to the client.
 		if h.errOut != nil {
-			h.us.Logger.Printf("errOut to client: %v\n", h.errOut)
+			h.us.Logger.Printf("errOut to client: %s\n", h.errOut.Error())
 
 			op := UpaxClusterMsg_Error
 			s := h.errOut.Error()
@@ -169,20 +161,21 @@ func (h *ClusterInHandler) Run() (err error) {
 			// XXX log any error
 			if err != nil {
 				h.us.Logger.Printf(
-					"ClusterInHandler.Run: clusterEncodePadEncrypt returns %v\n", err)
+					"ClusterInHandler.Run: clusterEncodePadEncrypt returns %s\n",
+					err.Error())
 			}
 
 			// put the ciphertext on the wire
 			if err == nil {
 				err = h.WriteData(ciphertext)
 
-				// XXX log any error
+				// log any error
 				if err != nil {
 					h.us.Logger.Printf(
-						"ClusterInHandler.Run: WriteData returns %v\n", err)
+						"ClusterInHandler.Run: WriteData returns %s\n",
+						err.Error())
 				}
 			}
-
 		}
 		h.entryState = h.exitState
 		if h.exitState == S_IN_CLOSED {
@@ -197,15 +190,15 @@ func (h *ClusterInHandler) Run() (err error) {
 // RSA-BASED MESSAGE PAIR
 /////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////
+// XXX COMPARE WITH reg/ClientNode.SessionSetup, which is a better
+// model for this code.
+/////////////////////////////////////////////////////////////////////
+
 // The client has sent the server a one-time AES key+iv encrypted with
 // the server's RSA comms public key.  The server creates the real
 // session iv+key and returns them to the client encrypted with the
 // one-time key+iv.
-
-/////////////////////////////////////////////////////////////////////
-// XXX THIS IS WRONG.  COMPARE WITH reg/ClientNode.SessionSetup, which
-// is the right model for this code.
-/////////////////////////////////////////////////////////////////////
 func handleClusterHello(h *ClusterInHandler) (err error) {
 	var (
 		ciphertext, iv1, key1, salt1 []byte
@@ -235,14 +228,13 @@ func handleClusterHello(h *ClusterInHandler) (err error) {
 			h.State = S_HELLO_RCVD
 		}
 	}
-	// On any error silently close the connection and delete the handler,
-	// an exciting thing to do.
+	// On any error silently close the connection.
 	if err != nil {
 		// DEBUG
-		fmt.Printf("handleClusterHello closing cnx, error was %v\n", err)
+		fmt.Printf("handleClusterHello closing cnx, error was %s\n",
+			err.Error())
 		// END
 		h.Cnx.Close()
-		h = nil
 	}
 	return
 }
