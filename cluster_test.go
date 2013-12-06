@@ -128,8 +128,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	}
 	// Start the K1 client nodes running ----------------------------
 	for i := 0; i < K1; i++ {
-		err = uc[i].Run()
-		c.Assert(err, IsNil)
+		uc[i].Run()
 	}
 
 	// wait until all clientNodes are done --------------------------

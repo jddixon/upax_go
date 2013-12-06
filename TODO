@@ -1,9 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
 2013-12-05
-    * DEBUG: pair_test.go about line 162, uc[i].Members[j] sometimes nil
-        - problem is that ClientNode.Run() is getting EOF from server and
-            just doesn't handle the EOF
+    * DEBUG: pair_test.go about line 162, uc[i].Members[j] sometimes    * DONE
+        nil                                                             * DONE
+        - problem is that ClientNode.Run() is getting EOF from server   * DONE
+            and just doesn't handle the EOF                             * DONE
 
 2013-12-04
     * write NewMockUpaxClient() to create wrapper around UpaxClient     * DONE

@@ -90,6 +90,10 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	epCount := cn.EpCount
 	c.Assert(epCount, Equals, uint32(EP_COUNT))
 
+	// DEBUG
+	// fmt.Printf("cluster %s: %s\n", clusterName, clusterID.String())
+	// END
+
 	// Create names and LFSs for the K1 servers ---------------------
 	// We create a distinct tmp/clusterName/serverName for each
 	// server as its local file system (LFS).
@@ -142,14 +146,6 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// wait until all reg clientNodes are done ----------------------
 	for i := 0; i < K1; i++ {
 		success := <-uc[i].ClientNode.DoneCh
-		if !success {
-			// HACK
-			fmt.Printf("second try for uc[%d]\n", i) // DEBUG
-			time.Sleep(100 * time.Millisecond)
-			uc[i].Run()
-			success = <-uc[i].ClientNode.DoneCh
-			// END HACK
-		}
 		c.Assert(success, Equals, true)
 		if success {
 			c.Assert(uc[i].Err, IsNil)
@@ -166,14 +162,19 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// verify that all clientNode members have meaningful baseNodes -
 	for i := 0; i < K1; i++ {
-		fmt.Printf("  server %s\n", serverNames[i])
+		// fmt.Printf("  server %s\n", serverNames[i])	// DEBUG
 		memberCount := len(uc[i].Members)
 		c.Assert(memberCount, Equals, K1)
 		for j := 0; j < memberCount; j++ {
-			c.Assert(uc[i].Members[j], NotNil) // XXX SOMETIMES FAILS
-			fmt.Printf("    other server[%d] is %s\n", j, serverNames[j])
-			// WORKING HERE: GUESS THAT MEMBERS ARE NOT BEING INITIALIZED
-			//c.Assert(uc[i].Members[j].GetName(), Equals, serverNames[j])
+			c.Assert(uc[i].Members[j], NotNil)
+			// DEBUG
+			// fmt.Printf("    other server[%d] is %s\n", j, serverNames[j])
+			// END
+
+			// doesn't work because reg server does not necessarily see
+			// members in serverName order.
+			// c.Assert(uc[i].Members[j].GetName(), Equals, serverNames[j])
+			c.Assert(uc[i].Members[j].GetName() == "", Equals, false)
 			c.Assert(uc[i].Members[j].GetNodeID(), NotNil)
 			c.Assert(uc[i].Members[j].GetCommsPublicKey(), NotNil)
 			c.Assert(uc[i].Members[j].GetSigPublicKey(), NotNil)
