@@ -27,6 +27,10 @@ func (s *XLSuite) TestCluster(c *C) {
 
 func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
+	if VERBOSITY > 0 {
+		fmt.Printf("TEST_CLUSTER usingSHA1 = %v\n", usingSHA1)
+	}
+
 	// read regCred.dat to get keys etc for a registry --------------
 	dat, err := ioutil.ReadFile("regCred.dat")
 	c.Assert(err, IsNil)
@@ -133,6 +137,14 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		<-uc[i].ClientNode.DoneCh
 	}
 
+	// verify that all clientNodes have meaningful baseNodes --------
+	// XXX THESE TESTS ALWAYS FAIL
+	//for i := 0; i < K1; i++ {
+	//	c.Assert(uc[i].GetName(), Equals, serverNames[i])
+	//	c.Assert(uc[i].GetNodeID(), NotNil)
+	//	c.Assert(uc[i].GetCommsPublicKey(), NotNil)
+	//	c.Assert(uc[i].GetSigPublicKey(), NotNil)
+	//}
 	// convert the client nodes to UpaxServers ----------------------
 	us := make([]*UpaxServer, K1)
 	for i := 0; i < K1; i++ {

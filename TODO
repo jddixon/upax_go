@@ -1,5 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
+2013-12-05
+    * DEBUG: pair_test.go about line 162, uc[i].Members[j] sometimes nil
+        - problem is that ClientNode.Run() is getting EOF from server and
+            just doesn't handle the EOF
+
 2013-12-04
     * write NewMockUpaxClient() to create wrapper around UpaxClient     * DONE
     * pair_test tests a single MockUpaxClient against a couple of
@@ -24,7 +29,7 @@ github.com/jddixon/upax_go/TODO
     * ClusterOutHandler has KeepAliveMgr running in separate goroutine
 2013-11-16
     * FIX nil pointer causes panic doTestCluster 22, cluster_test 136,
-        client_ndoe 144, ...  This appears to be an obscure effect of
+        client_node 144, ...  This appears to be an obscure effect of
         xlReg being down.  Need better handling of this condition.
 2013-11-09
     * FIX: Get and Put only handle files that fit within the buffer;

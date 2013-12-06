@@ -12,6 +12,8 @@ import (
 // upax_go/mock_upax_client_test.go
 
 type MockUpaxClient struct {
+	K3     int // number of data items
+	L1, L2 int // min and max length thereof
 	UpaxClient
 }
 
