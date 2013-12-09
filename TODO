@@ -1,5 +1,18 @@
 github.com/jddixon/upax_go/TODO
 
+2013-12-09
+    * add version negotiation to client/server protocol, c.proto
+        - VERSION in const.go
+    * client_msg.go needs
+        - IntroAndAck
+        - ItsMeAndAck
+        - KeepAliveAndAck
+        - QueryAndAck (STUB)
+        - GetAndData
+        - IHaveAndAck (STUB)
+        - PutAndAck
+        - ByeAndAck                                                     * DONE
+
 2013-12-08
     * move engine, de/encrypter, iv*, key*, salt* from in_handler.t     * DONE
         to aes.t                                                        * DONE
@@ -15,7 +28,7 @@ github.com/jddixon/upax_go/TODO
     * write NewMockUpaxClient() to create wrapper around UpaxClient     * DONE
     * pair_test tests a single MockUpaxClient against a couple of
         servers in a 2-cluster
-    * MockUpaxClient.createData() does that
+    * MockUpaxClient.createData() does that                             * DONE
     * MockUpaxClient.postData() sends to server 0
     * MockUpaxClient.checkPrimaryServer() checks server 0
     * MockUpaxClient.checkOtherServers() checks server 1

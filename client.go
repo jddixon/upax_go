@@ -8,6 +8,7 @@ import (
 	xi "github.com/jddixon/xlattice_go/nodeID"
 	"github.com/jddixon/xlattice_go/reg"
 	xt "github.com/jddixon/xlattice_go/transport"
+	xu "github.com/jddixon/xlattice_go/util"
 )
 
 ////////////////////////////////////////////////////////
@@ -15,10 +16,17 @@ import (
 ////////////////////////////////////////////////////////
 
 type UpaxClient struct {
-	cnx            *xt.ConnectionI
+	cnx     xt.ConnectionI
+	Members []*reg.MemberInfo
+	Version xu.DecimalVersion
+
+	// server side
+	Primary   uint           // selects from Members
+	serverEnd xt.EndPointI   // convenience
+	serverCK  *rsa.PublicKey // convenience
+
+	// this side
 	ckPriv, skPriv *rsa.PrivateKey
-	Members        []*reg.MemberInfo
-	Primary        uint
 	ClientCnxHandler
 	xn.Node
 }
