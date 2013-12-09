@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	xn "github.com/jddixon/xlattice_go/node"
 	"github.com/jddixon/xlattice_go/reg"
+	xr "github.com/jddixon/xlattice_go/rnglib"
 	xt "github.com/jddixon/xlattice_go/transport"
 	xf "github.com/jddixon/xlattice_go/util/lfs"
 )
@@ -12,14 +13,15 @@ import (
 // upax_go/mock_upax_client_test.go
 
 type MockUpaxClient struct {
-	K3     int // number of data items
-	L1, L2 int // min and max length thereof
+	K3      int // number of data items
+	L1, L2  int // min and max length thereof
+	data    [][]byte
+	primary uint // which server we will be using
 	UpaxClient
 }
 
-func NewMockUpaxClient(name, lfs string, members []*reg.MemberInfo) (
-	mc *MockUpaxClient, err error) {
-
+func NewMockUpaxClient(name, lfs string, members []*reg.MemberInfo,
+	primary uint) (mc *MockUpaxClient, err error) {
 	var (
 		ckPriv, skPriv *rsa.PrivateKey
 		ep             []xt.EndPointI
@@ -57,30 +59,50 @@ func NewMockUpaxClient(name, lfs string, members []*reg.MemberInfo) (
 			lfs, ckPriv, skPriv, nil, ep, nil) // nil overlays, peers
 	}
 	if err == nil {
-		uc, err = NewUpaxClient(ckPriv, skPriv, node, members)
+		uc, err = NewUpaxClient(ckPriv, skPriv, node, members, primary)
 		if err == nil {
-			mc = &MockUpaxClient{UpaxClient: *uc}
+			mc = &MockUpaxClient{
+				UpaxClient: *uc,
+			}
 		}
 	}
 	return
 }
 
-func (muc *MockUpaxClient) createData() (err error) {
-	// XXX STUB
+// Populate the K3 byte slices to be used for testing
+func (muc *MockUpaxClient) createData(rng *xr.PRNG, K3, L1, L2 int) (
+	err error) {
+
+	muc.K3 = K3
+	muc.L1 = L1
+	muc.L2 = L2
+
+	muc.data = make([][]byte, K3)
+	for i := 0; i < K3; i++ {
+		length := L1 + rng.Intn(L2-L1+1) // so L1..L2 inclusive
+		muc.data[i] = make([]byte, length)
+		rng.NextBytes(&muc.data[i])
+	}
 	return
 }
 
 func (muc *MockUpaxClient) postData() (err error) {
+
 	// XXX STUB
+
 	return
 }
 
 func (muc *MockUpaxClient) checkPrimaryServer() (err error) {
+
 	// XXX STUB
+
 	return
 }
 
 func (muc *MockUpaxClient) checkOtherServers() (err error) {
+
 	// XXX STUB
+
 	return
 }

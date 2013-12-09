@@ -1,5 +1,7 @@
 package upax_go
 
+// upax_go/client.go
+
 import (
 	"crypto/rsa"
 	xn "github.com/jddixon/xlattice_go/node"
@@ -8,16 +10,22 @@ import (
 	xt "github.com/jddixon/xlattice_go/transport"
 )
 
+////////////////////////////////////////////////////////
+// The model for this is xlattice_go/reg/client_node.go
+////////////////////////////////////////////////////////
+
 type UpaxClient struct {
 	cnx            *xt.ConnectionI
 	ckPriv, skPriv *rsa.PrivateKey
-	members        []*reg.MemberInfo
+	Members        []*reg.MemberInfo
+	Primary        uint
+	ClientCnxHandler
 	xn.Node
 }
 
 //
 func NewUpaxClient(ckPriv, skPriv *rsa.PrivateKey, node *xn.Node,
-	members []*reg.MemberInfo) (upc *UpaxClient, err error) {
+	members []*reg.MemberInfo, primary uint) (upc *UpaxClient, err error) {
 
 	if ckPriv == nil || skPriv == nil {
 		err = NilRSAKey
@@ -25,14 +33,15 @@ func NewUpaxClient(ckPriv, skPriv *rsa.PrivateKey, node *xn.Node,
 		err = NilNode
 	} else if members == nil || len(members) == 0 {
 		err = NoMembers
-	}
-
-	if err == nil {
+	} else if primary >= uint(len(members)) {
+		err = PrimaryOutOfRange
+	} else {
 		upc = &UpaxClient{
 			ckPriv:  ckPriv,
 			skPriv:  skPriv,
 			Node:    *node,
-			members: members,
+			Members: members,
+			Primary: primary,
 		}
 	}
 	return

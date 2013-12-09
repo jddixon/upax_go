@@ -3,8 +3,6 @@ package ${pkgName}
 // xlattice_go/${pkgName}/${filePrefix}in_handler.go
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
 	"fmt"
 	"github.com/jddixon/xlattice_go/msg"
 	"github.com/jddixon/xlattice_go/reg"
@@ -45,12 +43,7 @@ type ${TypePrefix}InHandler struct {
 	exitState  int
 	msgIn      *Upax${TypePrefix}Msg
 	msgOut     *Upax${TypePrefix}Msg
-	errOut     error
-	
-	engineS                            cipher.Block
-	encrypterS                         cipher.BlockMode
-	decrypterS                         cipher.BlockMode
-	iv1, key1, iv2, key2, salt1, salt2 []byte
+	errOut	   error
 
 	${TypePrefix}CnxHandler
 }
@@ -79,17 +72,6 @@ func New${TypePrefix}InHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-// Set up the receiver (server) side of a communications link with 
-// RSA-to-AES handshaking
-func SetUp${TypePrefix}SessionKey(h *${TypePrefix}InHandler) (err error) {
-	h.engineS, err = aes.NewCipher(h.key2)
-	if err == nil {
-		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
-		h.decrypterS = cipher.NewCBCDecrypter(h.engineS, h.iv2)
-	}
-	return
-}
-
 // Convert a protobuf op into a zero-based tag for use in the 
 // ${TypePrefix}InHandler's dispatch table.
 func ${funcPrefix}Op2tag(op Upax${TypePrefix}Msg_Tag) uint {
@@ -112,7 +94,7 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 	err = handle${TypePrefix}Hello(h)
 	if err == nil {
 		// Given iv2, key2 create encrypt and decrypt engines.
-		err = SetUp${TypePrefix}SessionKey(h)
+		err = h.SetupSessionKey()
 	}
 	for err == nil {
 		var (
@@ -123,7 +105,7 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 		var ciphertext []byte
 		ciphertext, err = h.ReadData()
 		if err == nil {
-			h.msgIn, err = ${funcPrefix}DecryptUnpadDecode(ciphertext, h.decrypterS)
+			h.msgIn, err = ${funcPrefix}DecryptUnpadDecode(ciphertext, h.decrypter)
 		}
 		if err != nil {
 			break
@@ -156,7 +138,7 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 
 		// encode, pad, and encrypt the Upax${TypePrefix}Msg object
 		if h.msgOut != nil {
-			ciphertext, err = ${funcPrefix}EncodePadEncrypt(h.msgOut, h.encrypterS)
+			ciphertext, err = ${funcPrefix}EncodePadEncrypt(h.msgOut, h.encrypter)
 
 			// XXX log any error
 			if err != nil {

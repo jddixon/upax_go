@@ -69,10 +69,10 @@ func NewClusterOutHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-// XXX This duplicates ClusterInHandler.SetUpPeerSessionKey: some
+// XXX This duplicates ClusterInHandler.SetupPeerSessionKey: some
 // refactoring is needed.
 //
-func SetUpPeerSessionOutKey(h *ClusterOutHandler) (err error) {
+func SetupPeerSessionOutKey(h *ClusterOutHandler) (err error) {
 	h.engineS, err = aes.NewCipher(h.key2)
 	if err == nil {
 		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
@@ -106,7 +106,7 @@ func (h *ClusterOutHandler) Run() (err error) {
 	err = handleOutPeerHello(h)
 	if err == nil {
 		// Given iv2, key2 create encrypt and decrypt engines.
-		err = SetUpPeerSessionOutKey(h)
+		err = SetupPeerSessionOutKey(h)
 	}
 	return
 }

@@ -29,5 +29,6 @@ var (
 	NoDigSig               = e.New("no digital signature found")
 	NoMembers              = e.New("nil or empty members parameter")
 	NoSigFields            = e.New("no dig sig data fields found")
+	PrimaryOutOfRange      = e.New("index of primary server out of range")
 	UnknownPeer            = e.New("unknown peer")
 )

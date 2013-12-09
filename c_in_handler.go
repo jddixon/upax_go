@@ -3,8 +3,6 @@ package upax_go
 // xlattice_go/upax_go/c_in_handler.go
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
 	"fmt"
 	"github.com/jddixon/xlattice_go/msg"
 	"github.com/jddixon/xlattice_go/reg"
@@ -47,11 +45,6 @@ type ClientInHandler struct {
 	msgOut     *UpaxClientMsg
 	errOut     error
 
-	engineS                            cipher.Block
-	encrypterS                         cipher.BlockMode
-	decrypterS                         cipher.BlockMode
-	iv1, key1, iv2, key2, salt1, salt2 []byte
-
 	ClientCnxHandler
 }
 
@@ -79,17 +72,6 @@ func NewClientInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-// Set up the receiver (server) side of a communications link with
-// RSA-to-AES handshaking
-func SetUpClientSessionKey(h *ClientInHandler) (err error) {
-	h.engineS, err = aes.NewCipher(h.key2)
-	if err == nil {
-		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
-		h.decrypterS = cipher.NewCBCDecrypter(h.engineS, h.iv2)
-	}
-	return
-}
-
 // Convert a protobuf op into a zero-based tag for use in the
 // ClientInHandler's dispatch table.
 func clientOp2tag(op UpaxClientMsg_Tag) uint {
@@ -112,7 +94,7 @@ func (h *ClientInHandler) Run() (err error) {
 	err = handleClientHello(h)
 	if err == nil {
 		// Given iv2, key2 create encrypt and decrypt engines.
-		err = SetUpClientSessionKey(h)
+		err = h.SetupSessionKey()
 	}
 	for err == nil {
 		var (
@@ -123,7 +105,7 @@ func (h *ClientInHandler) Run() (err error) {
 		var ciphertext []byte
 		ciphertext, err = h.ReadData()
 		if err == nil {
-			h.msgIn, err = clientDecryptUnpadDecode(ciphertext, h.decrypterS)
+			h.msgIn, err = clientDecryptUnpadDecode(ciphertext, h.decrypter)
 		}
 		if err != nil {
 			break
@@ -156,7 +138,7 @@ func (h *ClientInHandler) Run() (err error) {
 
 		// encode, pad, and encrypt the UpaxClientMsg object
 		if h.msgOut != nil {
-			ciphertext, err = clientEncodePadEncrypt(h.msgOut, h.encrypterS)
+			ciphertext, err = clientEncodePadEncrypt(h.msgOut, h.encrypter)
 
 			// XXX log any error
 			if err != nil {

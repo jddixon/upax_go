@@ -1,5 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
+2013-12-08
+    * move engine, de/encrypter, iv*, key*, salt* from in_handler.t     * DONE
+        to aes.t                                                        * DONE
+    * regularize spelling of SetUp to Setup                             * DONE
+
 2013-12-05
     * DEBUG: pair_test.go about line 162, uc[i].Members[j] sometimes    * DONE
         nil                                                             * DONE

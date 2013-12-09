@@ -1,6 +1,6 @@
 package upax_go
 
-// upax_go/c_packets.go
+// upax_go/c_aes_cnx.go
 
 import (
 	"code.google.com/p/goprotobuf/proto"
@@ -15,8 +15,21 @@ const (
 )
 
 type ClientCnxHandler struct {
-	State int
-	Cnx   *xt.TcpConnection
+	State                              int
+	Cnx                                *xt.TcpConnection
+	engine                             cipher.Block
+	encrypter                          cipher.BlockMode
+	decrypter                          cipher.BlockMode
+	iv1, key1, iv2, key2, salt1, salt2 []byte
+}
+
+func (a *ClientCnxHandler) SetupSessionKey() (err error) {
+	a.engine, err = aes.NewCipher(a.key2)
+	if err == nil {
+		a.encrypter = cipher.NewCBCEncrypter(a.engine, a.iv2)
+		a.decrypter = cipher.NewCBCDecrypter(a.engine, a.iv2)
+	}
+	return
 }
 
 // Read data from the connection.

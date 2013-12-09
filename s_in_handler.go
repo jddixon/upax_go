@@ -3,8 +3,6 @@ package upax_go
 // xlattice_go/upax_go/s_in_handler.go
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
 	"fmt"
 	"github.com/jddixon/xlattice_go/msg"
 	"github.com/jddixon/xlattice_go/reg"
@@ -47,11 +45,6 @@ type ClusterInHandler struct {
 	msgOut     *UpaxClusterMsg
 	errOut     error
 
-	engineS                            cipher.Block
-	encrypterS                         cipher.BlockMode
-	decrypterS                         cipher.BlockMode
-	iv1, key1, iv2, key2, salt1, salt2 []byte
-
 	ClusterCnxHandler
 }
 
@@ -79,17 +72,6 @@ func NewClusterInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-// Set up the receiver (server) side of a communications link with
-// RSA-to-AES handshaking
-func SetUpClusterSessionKey(h *ClusterInHandler) (err error) {
-	h.engineS, err = aes.NewCipher(h.key2)
-	if err == nil {
-		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
-		h.decrypterS = cipher.NewCBCDecrypter(h.engineS, h.iv2)
-	}
-	return
-}
-
 // Convert a protobuf op into a zero-based tag for use in the
 // ClusterInHandler's dispatch table.
 func clusterOp2tag(op UpaxClusterMsg_Tag) uint {
@@ -112,7 +94,7 @@ func (h *ClusterInHandler) Run() (err error) {
 	err = handleClusterHello(h)
 	if err == nil {
 		// Given iv2, key2 create encrypt and decrypt engines.
-		err = SetUpClusterSessionKey(h)
+		err = h.SetupSessionKey()
 	}
 	for err == nil {
 		var (
@@ -123,7 +105,7 @@ func (h *ClusterInHandler) Run() (err error) {
 		var ciphertext []byte
 		ciphertext, err = h.ReadData()
 		if err == nil {
-			h.msgIn, err = clusterDecryptUnpadDecode(ciphertext, h.decrypterS)
+			h.msgIn, err = clusterDecryptUnpadDecode(ciphertext, h.decrypter)
 		}
 		if err != nil {
 			break
@@ -156,7 +138,7 @@ func (h *ClusterInHandler) Run() (err error) {
 
 		// encode, pad, and encrypt the UpaxClusterMsg object
 		if h.msgOut != nil {
-			ciphertext, err = clusterEncodePadEncrypt(h.msgOut, h.encrypterS)
+			ciphertext, err = clusterEncodePadEncrypt(h.msgOut, h.encrypter)
 
 			// XXX log any error
 			if err != nil {
