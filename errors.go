@@ -10,6 +10,7 @@ var (
 	BadHash                = e.New("content hash doesn't match key")
 	ClusterConfigNotFound  = e.New("cluster config not found")
 	EmptyName              = e.New("empty name parameter")
+	ExpectedAck            = e.New("expected Ack message")
 	IntervalMustBePositive = e.New("interval must be positive")
 	MissingTokenField      = e.New("missing token field")
 	NilClusterMember       = e.New("nil cluster member parameter")

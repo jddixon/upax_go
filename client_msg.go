@@ -3,11 +3,17 @@ package upax_go
 // upax_go/client_msg.go
 
 import (
+	"crypto"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha1"
+	"encoding/binary"
 
-	// xc "github.com/jddixon/xlattice_go/crypto"
+	xc "github.com/jddixon/xlattice_go/crypto"
 	xm "github.com/jddixon/xlattice_go/msg"
+	xr "github.com/jddixon/xlattice_go/rnglib"
 	xt "github.com/jddixon/xlattice_go/transport"
 	xu "github.com/jddixon/xlattice_go/util"
 )
@@ -88,8 +94,63 @@ func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 
 // msgN, token including DigSig; gets Ack or Error
 func (upc *UpaxClient) IntroAndAck() (err error) {
-	// XXX STUB XXX
+	var (
+		name                       string
+		id, ckBytes, skBytes, salt []byte
+		digSig                     []byte // over name, id, ckBytes, skBytes, salt, in order
+	)
+	// Send INTRO MSG =====================================
+	name = upc.GetName()
+	id = upc.GetNodeID().Value()
+	ckBytes, err = xc.RSAPubKeyToWire(&upc.ckPriv.PublicKey)
+	if err == nil {
+		skBytes, err = xc.RSAPubKeyToWire(&upc.skPriv.PublicKey)
+		if err == nil {
+			rng := xr.NewSystemRNG(0)
+			n := uint64(rng.Int63())
+			salt = make([]byte, 8)
+			binary.LittleEndian.PutUint64(salt, n)
+		}
+	}
+	if err == nil {
+		d := sha1.New()
+		d.Write([]byte(name))
+		d.Write(id)
+		d.Write(ckBytes)
+		d.Write(skBytes)
+		d.Write(salt)
+		hash := d.Sum(nil)
+		digSig, err = rsa.SignPKCS1v15(
+			rand.Reader, upc.skPriv, crypto.SHA1, hash)
+	}
+	if err == nil {
+		token := UpaxClientMsg_Token{
+			Name:     &name,
+			ID:       id,
+			CommsKey: ckBytes,
+			SigKey:   skBytes,
+			Salt:     salt,
+			DigSig:   digSig,
+		}
+		op := UpaxClientMsg_Intro
+		request := &UpaxClientMsg{
+			Op:         &op,
+			ClientInfo: &token,
+		}
+		// SHOULD CHECK FOR TIMEOUT
+		err = upc.writeMsg(request)
+	}
+	// Process ACK ========================================
+	if err == nil {
+		var response *UpaxClientMsg
 
+		// SHOULD CHECK FOR TIMEOUT AND VERIFY THAT IT'S AN ACK
+		response, err = upc.readMsg()
+		op := response.GetOp()
+		if op != UpaxClientMsg_Ack {
+			err = ExpectedAck
+		}
+	}
 	return
 }
 
@@ -99,55 +160,6 @@ func (upc *UpaxClient) ItsMeAndAck() (err error) {
 
 	return
 }
-
-// EXAMPLE: /////////////////////////////////////////////////////////
-//
-//func (upc *UpaxClient) ClientAndOK() (err error) {
-//
-//	var (
-//		ckBytes, skBytes []byte
-//		myEnds           []string
-//	)
-//
-//	// Send CLIENT MSG ==========================================
-//	ckBytes, err = xc.RSAPubKeyToWire(&upc.ckPriv.PublicKey)
-//	if err == nil {
-//		skBytes, err = xc.RSAPubKeyToWire(&upc.skPriv.PublicKey)
-//		if err == nil {
-//			for i := 0; i < len(upc.endPoints); i++ {
-//				myEnds = append(myEnds, upc.endPoints[i].String())
-//			}
-//			token := &UpaxClientMsg_Token{
-//				Name:     &upc.name,
-//				Attrs:    &upc.proposedAttrs,
-//				CommsKey: ckBytes,
-//				SigKey:   skBytes,
-//				MyEnds:   myEnds,
-//			}
-//
-//			op := UpaxClientMsg_Client
-//			request := &UpaxClientMsg{
-//				Op:          &op,
-//				ClientName:  &upc.name, // XXX redundant
-//				ClientSpecs: token,
-//			}
-//			// SHOULD CHECK FOR TIMEOUT
-//			err = upc.writeMsg(request)
-//		}
-//	}
-//	// Process CLIENT_OK --------------------------------------------
-//	// SHOULD CHECK FOR TIMEOUT
-//	response, err := upc.readMsg()
-//	if err == nil {
-//		id := response.GetClientID()
-//		upc.clientID, err = xi.New(id)
-//
-//		// XXX err ignored
-//
-//		upc.Attrs = response.GetClientAttrs()
-//	}
-//	return
-//}
 
 // msgN ; gets Ack or timeout
 func (upc *UpaxClient) KeepAliveAndAck() (err error) {

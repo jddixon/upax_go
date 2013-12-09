@@ -4,7 +4,7 @@ github.com/jddixon/upax_go/TODO
     * add version negotiation to client/server protocol, c.proto
         - VERSION in const.go
     * client_msg.go needs
-        - IntroAndAck
+        - IntroAndAck                                                   * DONE
         - ItsMeAndAck
         - KeepAliveAndAck
         - QueryAndAck (STUB)
@@ -12,6 +12,8 @@ github.com/jddixon/upax_go/TODO
         - IHaveAndAck (STUB)
         - PutAndAck
         - ByeAndAck                                                     * DONE
+    * ExpectedAck error should be replaced by a custom message that
+        says what it expected and what it got.
 
 2013-12-08
     * move engine, de/encrypter, iv*, key*, salt* from in_handler.t     * DONE
