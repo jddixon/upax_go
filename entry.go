@@ -84,7 +84,7 @@ func (e *LogEntry) Src() string {
 }
 
 // Return the timestamp as nanoseconds from the epoch, 00:00 on 1 Jan 1970
-func (e *LogEntry) TimeStamp() int64 {
+func (e *LogEntry) Timestamp() int64 {
 	return e.timestamp
 }
 

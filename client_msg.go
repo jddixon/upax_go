@@ -231,29 +231,142 @@ func (upc *UpaxClient) KeepAliveAndAck() (err error) {
 
 // msgN, hash ; gets Ack or NotFound -- LEAVE THIS STUBBED
 func (upc *UpaxClient) QueryAndAck() (err error) {
-	// XXX STUB XXX
 
+	panic("QueryAndAck not implemented")
+
+	// Process ACK ========================================
+	if err == nil {
+		var response *UpaxClientMsg
+
+		// SHOULD CHECK FOR TIMEOUT
+		response, err = upc.readMsg()
+		op := response.GetOp()
+		if op != UpaxClientMsg_Ack {
+			err = ExpectedAck
+
+			// XXX MsgN, YourMsgN ignored
+		}
+	}
 	return
 }
 
 // msgN, hash ; gets Data or NotFound
-func (upc *UpaxClient) GetAndData() (err error) {
-	// XXX STUB XXX
+func (upc *UpaxClient) GetAndData(hash []byte) (
+	logEntry *LogEntry, payload []byte, err error) {
 
+	if hash == nil {
+		err = NilHash
+	} else {
+		op := UpaxClientMsg_Get
+		request := &UpaxClientMsg{
+			Op:   &op,
+			Hash: hash,
+		}
+		// SHOULD CHECK FOR TIMEOUT
+		err = upc.writeMsg(request)
+	}
+	// Process DATA or NOT_FOUND ==========================
+	if err == nil {
+		var response *UpaxClientMsg
+
+		// SHOULD CHECK FOR TIMEOUT
+		response, err = upc.readMsg()
+		if err == nil {
+			op := response.GetOp()
+			if op == UpaxClientMsg_Data {
+				// Data has msgN, LogEntry, and payload fields
+				payload = response.GetPayload()
+				entryMsg := response.GetEntry()
+				if entryMsg == nil {
+					// SUITABLE ERROR
+				} else {
+					// any field may be bad
+					t := entryMsg.GetTimestamp()
+					key := entryMsg.GetContentKey()
+					owner := entryMsg.GetOwner() // []byte
+					src := entryMsg.GetSrc()
+					path := entryMsg.GetPath()
+					logEntry, err = NewLogEntry(t, key, owner, src, path)
+				}
+			} else if op == UpaxClientMsg_NotFound {
+				// NotFound has only msgN, yourMsgN fields; return nil logEntry
+				// and payload
+
+				// XXX not an error
+
+			} else {
+				// XXX STUB: INVALID OP
+			}
+		}
+	}
 	return
 }
 
 // msgN plus IHaves ; gets Ack -- LEAVE THIS STUBBED
 func (upc *UpaxClient) IHaveAndAck() (err error) {
-	// XXX STUB XXX
 
+	panic("IHaveAndAck not implemented")
+
+	// Process ACK ========================================
+	if err == nil {
+		var response *UpaxClientMsg
+
+		// SHOULD CHECK FOR TIMEOUT
+		response, err = upc.readMsg()
+		op := response.GetOp()
+		if op != UpaxClientMsg_Ack {
+			err = ExpectedAck
+
+			// XXX MsgN, YourMsgN ignored
+		}
+	}
 	return
 }
 
 // msgN, logEntry, payload ; gets Ack
-func (upc *UpaxClient) PutAndAck() (err error) {
-	// XXX STUB XXX
+func (upc *UpaxClient) PutAndAck(entry *LogEntry, payload []byte) (err error) {
 
+	if entry == nil {
+		err = NilLogEntry
+	} else if payload == nil {
+		err = NilPayload
+	}
+	if err == nil {
+		t := entry.Timestamp()
+		key := entry.Key()
+		owner := entry.NodeID()
+		src := entry.Src()
+		path := entry.Path()
+		entry := &UpaxClientMsg_LogEntry{
+			Timestamp:  &t,
+			ContentKey: key,
+			Owner:      owner,
+			Src:        &src,
+			Path:       &path,
+		}
+		op := UpaxClientMsg_Put
+		request := &UpaxClientMsg{
+			Op:      &op,
+			Entry:   entry,
+			Payload: payload,
+		}
+		// SHOULD CHECK FOR TIMEOUT
+		err = upc.writeMsg(request)
+	}
+
+	// Process ACK ========================================
+	if err == nil {
+		var response *UpaxClientMsg
+
+		// SHOULD CHECK FOR TIMEOUT
+		response, err = upc.readMsg()
+		op := response.GetOp()
+		if op != UpaxClientMsg_Ack {
+			err = ExpectedAck
+
+			// XXX MsgN, YourMsgN ignored
+		}
+	}
 	return
 }
 

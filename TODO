@@ -7,14 +7,17 @@ github.com/jddixon/upax_go/TODO
         - IntroAndAck                                                   * DONE
         - ItsMeAndAck                                                   * DONE
         - KeepAliveAndAck                                               * DONE
-        - QueryAndAck (STUB)
-        - GetAndData
-        - IHaveAndAck (STUB)
-        - PutAndAck
+        - QueryAndAck (STUB)                                            * DONE
+        - GetAndData                                                    * DONE
+        - IHaveAndAck (STUB)                                            * DONE
+        - PutAndAck                                                     * DONE
         - ByeAndAck                                                     * DONE
+
     * ExpectedAck error should be replaced by a custom message that
         says what it expected and what it got.
-    * Consider adding rng to upc struct
+    * Consider adding rng created in Intro/ItsMeAndAck to upc struct
+    * Think and fix: GetAndData will only handle data that will fit 
+        in memory
 
 2013-12-08
     * move engine, de/encrypter, iv*, key*, salt* from in_handler.t     * DONE

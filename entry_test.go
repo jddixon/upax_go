@@ -53,7 +53,7 @@ func (s *XLSuite) doTestEntry(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
 	entry, err := NewLogEntry(t, key, nodeID, src, path)
 	c.Assert(err, IsNil)
 
-	c.Assert(entry.TimeStamp(), Equals, t)
+	c.Assert(entry.Timestamp(), Equals, t)
 	c.Assert(hex.EncodeToString(entry.Key()), Equals, hexKey)
 	c.Assert(hex.EncodeToString(entry.NodeID()), Equals, hexNodeID)
 	c.Assert(entry.Src(), Equals, src)
