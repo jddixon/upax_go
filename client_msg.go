@@ -154,16 +154,77 @@ func (upc *UpaxClient) IntroAndAck() (err error) {
 	return
 }
 
-// msgN, id, opt salt, sig; gets Ack or Error
+// msgN, id, salt, sig; gets Ack or Error
 func (upc *UpaxClient) ItsMeAndAck() (err error) {
-	// XXX STUB XXX
+	var (
+		id, salt []byte
+		digSig   []byte // over id, salt, in order
+	)
+	// Send ITS_ME MSG ====================================
+
+	id = upc.GetNodeID().Value()
+	rng := xr.NewSystemRNG(0)
+	n := uint64(rng.Int63())
+	salt = make([]byte, 8)
+	binary.LittleEndian.PutUint64(salt, n)
+
+	d := sha1.New()
+	d.Write(id)
+	d.Write(salt)
+	hash := d.Sum(nil)
+	digSig, err = rsa.SignPKCS1v15(
+		rand.Reader, upc.skPriv, crypto.SHA1, hash)
+
+	if err == nil {
+		op := UpaxClientMsg_ItsMe
+		request := &UpaxClientMsg{
+			Op:   &op,
+			ID:   id,
+			Salt: salt,
+			Sig:  digSig,
+		}
+		// SHOULD CHECK FOR TIMEOUT
+		err = upc.writeMsg(request)
+	}
+	// Process ACK ========================================
+	if err == nil {
+		var response *UpaxClientMsg
+
+		// SHOULD CHECK FOR TIMEOUT
+		response, err = upc.readMsg()
+		op := response.GetOp()
+		if op != UpaxClientMsg_Ack {
+			err = ExpectedAck
+		}
+	}
 
 	return
 }
 
 // msgN ; gets Ack or timeout
 func (upc *UpaxClient) KeepAliveAndAck() (err error) {
-	// XXX STUB XXX
+
+	// Send KEEP_ALIVE MSG ================================
+	op := UpaxClientMsg_KeepAlive
+	request := &UpaxClientMsg{
+		Op: &op,
+	}
+	// SHOULD CHECK FOR TIMEOUT
+	err = upc.writeMsg(request)
+
+	// Process ACK ========================================
+	if err == nil {
+		var response *UpaxClientMsg
+
+		// SHOULD CHECK FOR TIMEOUT
+		response, err = upc.readMsg()
+		op := response.GetOp()
+		if op != UpaxClientMsg_Ack {
+			err = ExpectedAck
+
+			// XXX MsgN, YourMsgN ignored
+		}
+	}
 
 	return
 }

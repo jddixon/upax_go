@@ -5,8 +5,8 @@ github.com/jddixon/upax_go/TODO
         - VERSION in const.go
     * client_msg.go needs
         - IntroAndAck                                                   * DONE
-        - ItsMeAndAck
-        - KeepAliveAndAck
+        - ItsMeAndAck                                                   * DONE
+        - KeepAliveAndAck                                               * DONE
         - QueryAndAck (STUB)
         - GetAndData
         - IHaveAndAck (STUB)
@@ -14,6 +14,7 @@ github.com/jddixon/upax_go/TODO
         - ByeAndAck                                                     * DONE
     * ExpectedAck error should be replaced by a custom message that
         says what it expected and what it got.
+    * Consider adding rng to upc struct
 
 2013-12-08
     * move engine, de/encrypter, iv*, key*, salt* from in_handler.t     * DONE
