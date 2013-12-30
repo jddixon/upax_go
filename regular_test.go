@@ -36,11 +36,11 @@ func (s *XLSuite) doTestRegexes(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
 		length = 32
 	}
 	key := make([]byte, length)
-	rng.NextBytes(&key)
+	rng.NextBytes(key)
 	hexKey := hex.EncodeToString(key)
 
 	nodeID := make([]byte, length)
-	rng.NextBytes(&nodeID)
+	rng.NextBytes(nodeID)
 	hexNodeID := hex.EncodeToString(nodeID)
 
 	src := rng.NextFileName(32) // 32 is max len

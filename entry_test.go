@@ -29,10 +29,10 @@ func (s *XLSuite) makeEntryData(c *C, rng *rnglib.PRNG, usingSHA1 bool) (
 		length = 32
 	}
 	key = make([]byte, length)
-	rng.NextBytes(&key)
+	rng.NextBytes(key)
 
 	nodeID = make([]byte, length)
-	rng.NextBytes(&nodeID)
+	rng.NextBytes(nodeID)
 
 	src = rng.NextFileName(32) // 32 is max len
 	path = rng.NextFileName(32)

@@ -25,7 +25,7 @@ func (s *XLSuite) TestClusterClusterIHaveMgr(c *C) {
 	keys := make([][]byte, K)
 	for i := 0; i < K; i++ {
 		keys[i] = make([]byte, 32)
-		rng.NextBytes(&keys[i])
+		rng.NextBytes(keys[i])
 		if i < K/2 {
 			err = entries.Insert(keys[i], &keys[i])
 			c.Assert(err, IsNil)

@@ -1,5 +1,8 @@
 github.com/jddixon/upax_go/TODO
 
+2013-12-24
+    * integrate in xlattice chunks
+
 2013-12-09
     * add version negotiation to client/server protocol, c.proto
         - VERSION in const.go

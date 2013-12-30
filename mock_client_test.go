@@ -81,7 +81,7 @@ func (muc *MockUpaxClient) createData(rng *xr.PRNG, K3, L1, L2 int) (
 	for i := 0; i < K3; i++ {
 		length := L1 + rng.Intn(L2-L1+1) // so L1..L2 inclusive
 		muc.data[i] = make([]byte, length)
-		rng.NextBytes(&muc.data[i])
+		rng.NextBytes(muc.data[i])
 	}
 	return
 }
