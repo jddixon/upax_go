@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# ~/dev/gh-pages/upax_go/update.gh-pages
+#
+cd ~/dev/gh-pages/upax_go
+echo "you should have edited index.md and checked the results in index.html"
+git add index.html
+git commit -m "updating index.html"
+git push origin gh-pages

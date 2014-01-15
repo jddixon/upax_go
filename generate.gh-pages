@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# ~/dev/gh-pages/upax_go/generate.gh-pages
+#
+cd ~/dev/gh-pages/upax_go
+blackfriday-tool -page  \
+    -css style/normalize.css  \
+    -css style/main.css \
+    index.md index.html
+echo "you should check index.html with a browser"
