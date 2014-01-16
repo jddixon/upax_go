@@ -31,4 +31,3 @@ request a copy of any file - but only the owner may delete it.  It
 is likely that upax_go will retain these characteristics in the near
 term.
 
-[LICENSE](/LICENSE.html)
