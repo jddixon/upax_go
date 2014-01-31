@@ -3,7 +3,7 @@ package upax_go
 // upax_go/c_ihave_mgr.go
 
 import (
-	xn "github.com/jddixon/xlattice_go/node"
+	xi "github.com/jddixon/xlattice_go/nodeID"
 )
 
 // The ClientIHaveMgr receives IHaveObjs on its input channel.  For each
@@ -13,12 +13,12 @@ import (
 //
 type ClientIHaveMgr struct {
 	iHaveCh  chan IHaveObj
-	entries  *xn.IDMap // a convenience
+	entries  *xi.IDMap // a convenience
 	outMsgCh chan *UpaxClientMsg
 	stopCh   chan bool
 }
 
-func NewClientIHaveMgr(iHaveCh chan IHaveObj, entries *xn.IDMap,
+func NewClientIHaveMgr(iHaveCh chan IHaveObj, entries *xi.IDMap,
 	outMsgCh chan *UpaxClientMsg, stopCh chan bool) (
 	mgr *ClientIHaveMgr, err error) {
 

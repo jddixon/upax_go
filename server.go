@@ -6,7 +6,7 @@ import (
 	"bufio"
 	"crypto/rsa"
 	"fmt"
-	xn "github.com/jddixon/xlattice_go/node"
+	xi "github.com/jddixon/xlattice_go/nodeID"
 	"github.com/jddixon/xlattice_go/reg"
 	xt "github.com/jddixon/xlattice_go/transport"
 	"github.com/jddixon/xlattice_go/u"
@@ -32,7 +32,7 @@ const (
 //
 // We are guaranteed that the file exists and that m is not nil.
 //
-func loadEntries(pathToFTLog string, m *xn.IDMap, usingSHA1 bool) (
+func loadEntries(pathToFTLog string, m *xi.IDMap, usingSHA1 bool) (
 	count int, err error) {
 
 	f, err := os.OpenFile(pathToFTLog, os.O_RDONLY, 0600)
@@ -69,7 +69,7 @@ type UpaxServer struct {
 	// what we are here for: data managed by the server
 	uDir u.UI // content-keyed disk store
 
-	entries     *xn.IDMap // key []byte ==> *LogEntry, stored in U/L
+	entries     *xi.IDMap // key []byte ==> *LogEntry, stored in U/L
 	ftLogFile   *os.File
 	pathToFTLog string
 
@@ -94,7 +94,7 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 
 		uDir        u.UI
 		pathToU     string
-		entries     *xn.IDMap
+		entries     *xi.IDMap
 		ftLogFile   *os.File
 		pathToFTLog string // conventionally lfs/U/L
 	)
@@ -141,7 +141,7 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
 		uDir, err = u.New(pathToU, u.DIR16x16, 0)
 	}
 	if err == nil {
-		entries, err = xn.NewNewIDMap() // with default depth
+		entries, err = xi.NewNewIDMap() // with default depth
 	}
 	if err == nil {
 		var found bool

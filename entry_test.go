@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	xn "github.com/jddixon/xlattice_go/node"
+	xi "github.com/jddixon/xlattice_go/nodeID"
 	"github.com/jddixon/xlattice_go/rnglib"
 	xf "github.com/jddixon/xlattice_go/util/lfs"
 	. "launchpad.net/gocheck"
@@ -116,7 +116,7 @@ func (s *XLSuite) doTestLoadEntries(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
 	c.Assert(len(entries), Equals, K)
 
 	// use UpaxServer.LoadEntries to load the stuff in the file.
-	m, err := xn.NewNewIDMap()
+	m, err := xi.NewNewIDMap()
 	c.Assert(err, IsNil)
 	count, err := loadEntries(pathToFile, m, usingSHA1)
 	c.Assert(err, IsNil)

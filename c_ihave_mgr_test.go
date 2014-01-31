@@ -4,7 +4,7 @@ package upax_go
 
 import (
 	"fmt"
-	xn "github.com/jddixon/xlattice_go/node"
+	xi "github.com/jddixon/xlattice_go/nodeID"
 	xr "github.com/jddixon/xlattice_go/rnglib"
 	. "launchpad.net/gocheck"
 	"time"
@@ -16,7 +16,7 @@ func (s *XLSuite) TestClientClientIHaveMgr(c *C) {
 	}
 	rng := xr.MakeSimpleRNG()
 	iHaveCh := make(chan IHaveObj)
-	entries, err := xn.NewNewIDMap()
+	entries, err := xi.NewNewIDMap()
 	c.Assert(err, IsNil)
 	outMsgCh := make(chan *UpaxClientMsg, 16)
 	stopCh := make(chan bool)

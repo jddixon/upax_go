@@ -131,10 +131,13 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		uc[i].Run()
 	}
 
+	fmt.Println("ALL CLIENTS RUNNING") // XXX SEEN
+
 	// wait until all clientNodes are done --------------------------
 	for i := 0; i < K1; i++ {
 		<-uc[i].ClientNode.DoneCh
 	}
+	fmt.Println("ALL CLIENTS DONE") // XXX NOT SEEN
 
 	// verify that all clientNodes have meaningful baseNodes --------
 	// XXX THESE TESTS ALWAYS FAIL

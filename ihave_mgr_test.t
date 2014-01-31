@@ -4,7 +4,7 @@ package ${pkgName}
 
 import (
 	"fmt"
-	xn "github.com/jddixon/xlattice_go/node"
+	xi "github.com/jddixon/xlattice_go/nodeID"
 	xr "github.com/jddixon/xlattice_go/rnglib"
 	. "launchpad.net/gocheck"
 	"time"
@@ -16,7 +16,7 @@ func (s *XLSuite) Test${TypePrefix}${TypePrefix}IHaveMgr(c *C) {
 	}
 	rng := xr.MakeSimpleRNG()
 	iHaveCh := make(chan IHaveObj)
-	entries, err := xn.NewNewIDMap()
+	entries, err := xi.NewNewIDMap()
 	c.Assert(err, IsNil)
 	outMsgCh := make(chan *Upax${TypePrefix}Msg, 16)
 	stopCh := make(chan bool)

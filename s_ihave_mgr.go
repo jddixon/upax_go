@@ -3,7 +3,7 @@ package upax_go
 // upax_go/s_ihave_mgr.go
 
 import (
-	xn "github.com/jddixon/xlattice_go/node"
+	xi "github.com/jddixon/xlattice_go/nodeID"
 )
 
 // The ClusterIHaveMgr receives IHaveObjs on its input channel.  For each
@@ -13,12 +13,12 @@ import (
 //
 type ClusterIHaveMgr struct {
 	iHaveCh  chan IHaveObj
-	entries  *xn.IDMap // a convenience
+	entries  *xi.IDMap // a convenience
 	outMsgCh chan *UpaxClusterMsg
 	stopCh   chan bool
 }
 
-func NewClusterIHaveMgr(iHaveCh chan IHaveObj, entries *xn.IDMap,
+func NewClusterIHaveMgr(iHaveCh chan IHaveObj, entries *xi.IDMap,
 	outMsgCh chan *UpaxClusterMsg, stopCh chan bool) (
 	mgr *ClusterIHaveMgr, err error) {
 

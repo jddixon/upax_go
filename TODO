@@ -1,5 +1,8 @@
 github.com/jddixon/upax_go/TODO
 
+2014-01-29
+    * URGENT FIX: TEST_CLUSTER is broken, gets NPE
+
 2013-12-24
     * integrate in xlattice chunks
 

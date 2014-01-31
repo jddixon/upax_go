@@ -3,7 +3,7 @@ package ${pkgName}
 // ${pkgName}/${filePrefix}ihave_mgr.go
 
 import (
-	xn "github.com/jddixon/xlattice_go/node"
+	xi "github.com/jddixon/xlattice_go/nodeID"
 )
 
 // The ${TypePrefix}IHaveMgr receives IHaveObjs on its input channel.  For each
@@ -13,12 +13,12 @@ import (
 //
 type ${TypePrefix}IHaveMgr struct {
 	iHaveCh  chan IHaveObj
-	entries  *xn.IDMap // a convenience
+	entries  *xi.IDMap // a convenience
 	outMsgCh chan *Upax${TypePrefix}Msg
 	stopCh   chan bool
 }
 
-func New${TypePrefix}IHaveMgr(iHaveCh chan IHaveObj, entries *xn.IDMap,
+func New${TypePrefix}IHaveMgr(iHaveCh chan IHaveObj, entries *xi.IDMap,
 	outMsgCh chan *Upax${TypePrefix}Msg, stopCh chan bool) (
 	mgr *${TypePrefix}IHaveMgr, err error) {
 
