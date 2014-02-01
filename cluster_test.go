@@ -82,25 +82,25 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	epCount := cn.EpCount
 	c.Assert(epCount, Equals, uint32(EP_COUNT))
 
-	// Create names and LFSs for the K1 servers ---------------------
+	// Create names and LFSs for the K1 members ---------------------
 	// We create a distinct tmp/clusterName/serverName for each
 	// server as its local file system (LFS).
-	serverNames := make([]string, K1)
-	serverPaths := make([]string, K1)
+	memberNames := make([]string, K1)
+	memberPaths := make([]string, K1)
 	ckPriv := make([]*rsa.PrivateKey, K1)
 	skPriv := make([]*rsa.PrivateKey, K1)
 	for i := 0; i < K1; i++ {
-		serverNames[i] = rng.NextFileName(8)
-		serverPaths[i] = filepath.Join(clusterPath, serverNames[i])
-		found, err = xf.PathExists(serverPaths[i])
+		memberNames[i] = rng.NextFileName(8)
+		memberPaths[i] = filepath.Join(clusterPath, memberNames[i])
+		found, err = xf.PathExists(memberPaths[i])
 		c.Assert(err, IsNil)
 		for found {
-			serverNames[i] = rng.NextFileName(8)
-			serverPaths[i] = filepath.Join(clusterPath, serverNames[i])
-			found, err = xf.PathExists(serverPaths[i])
+			memberNames[i] = rng.NextFileName(8)
+			memberPaths[i] = filepath.Join(clusterPath, memberNames[i])
+			found, err = xf.PathExists(memberPaths[i])
 			c.Assert(err, IsNil)
 		}
-		err = os.MkdirAll(serverPaths[i], 0750)
+		err = os.MkdirAll(memberPaths[i], 0750)
 		c.Assert(err, IsNil)
 		ckPriv[i], err = rsa.GenerateKey(rand.Reader, 1024) // cheap keys
 		c.Assert(err, IsNil)
@@ -113,11 +113,12 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// create K1 client nodes ---------------------------------------
 	uc := make([]*reg.UserClient, K1)
 	for i := 0; i < K1; i++ {
-		var ep *xt.TcpEndPoint
-		ep, err = xt.NewTcpEndPoint("127.0.0.1:0")
+		var ep1, ep2 *xt.TcpEndPoint
+		ep1, err = xt.NewTcpEndPoint("127.0.0.1:0")
+		ep2, err = xt.NewTcpEndPoint("127.0.0.1:0")
 		c.Assert(err, IsNil)
-		e := []xt.EndPointI{ep}
-		uc[i], err = reg.NewUserClient(serverNames[i], serverPaths[i],
+		e := []xt.EndPointI{ep1, ep2}
+		uc[i], err = reg.NewUserClient(memberNames[i], memberPaths[i],
 			ckPriv[i], skPriv[i],
 			regServerName, regServerID, regServerEnd, regServerCK, regServerSK,
 			clusterName, cn.ClusterAttrs, cn.ClusterID,
@@ -125,24 +126,27 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		c.Assert(err, IsNil)
 		c.Assert(uc[i], NotNil)
 		c.Assert(uc[i].ClusterID, NotNil)
+		c.Assert(uc[i].ClientNode.DoneCh, NotNil)
 	}
 	// Start the K1 client nodes running ----------------------------
 	for i := 0; i < K1; i++ {
 		uc[i].Run()
 	}
 
-	fmt.Println("ALL CLIENTS RUNNING") // XXX SEEN
+	fmt.Println("ALL CLIENTS STARTED") // XXX SEEN
 
 	// wait until all clientNodes are done --------------------------
 	for i := 0; i < K1; i++ {
-		<-uc[i].ClientNode.DoneCh
+		success := <-uc[i].ClientNode.DoneCh
+		c.Assert(success, Equals, true)
+		// nodeID := uc[i].clientID
 	}
 	fmt.Println("ALL CLIENTS DONE") // XXX NOT SEEN
 
 	// verify that all clientNodes have meaningful baseNodes --------
 	// XXX THESE TESTS ALWAYS FAIL
 	//for i := 0; i < K1; i++ {
-	//	c.Assert(uc[i].GetName(), Equals, serverNames[i])
+	//	c.Assert(uc[i].GetName(), Equals, memberNames[i])
 	//	c.Assert(uc[i].GetNodeID(), NotNil)
 	//	c.Assert(uc[i].GetCommsPublicKey(), NotNil)
 	//	c.Assert(uc[i].GetSigPublicKey(), NotNil)
