@@ -12,7 +12,7 @@ import (
 	"encoding/binary"
 
 	xc "github.com/jddixon/xlattice_go/crypto"
-	xm "github.com/jddixon/xlattice_go/msg"
+	xa "github.com/jddixon/xlattice_go/protocol/aes_cnx"
 	xr "github.com/jddixon/xlattice_go/rnglib"
 	xt "github.com/jddixon/xlattice_go/transport"
 	xu "github.com/jddixon/xlattice_go/util"
@@ -62,7 +62,7 @@ func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 	if err == nil {
 		upc.Cnx = upcx
 		ciphertext1, iv1, key1, salt1,
-			err = xm.ClientEncodeHello(proposedVersion, upc.serverCK)
+			err = xa.ClientEncodeHello(proposedVersion, upc.serverCK)
 	}
 	if err == nil {
 		err = upc.WriteData(ciphertext1)
@@ -73,7 +73,7 @@ func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 	}
 	if err == nil {
 		iv2, key2, salt2, salt1c, decidedVersion,
-			err = xm.ClientDecodeHelloReply(ciphertext2, iv1, key1)
+			err = xa.ClientDecodeHelloReply(ciphertext2, iv1, key1)
 		_ = salt1c // XXX
 	}
 	// Set up AES engines ---------------------------------------

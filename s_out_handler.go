@@ -6,7 +6,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"fmt"
-	"github.com/jddixon/xlattice_go/msg"
+	xa "github.com/jddixon/xlattice_go/protocol/aes_cnx"
 	"github.com/jddixon/xlattice_go/reg"
 	xt "github.com/jddixon/xlattice_go/transport"
 	"github.com/jddixon/xlattice_go/u"
@@ -55,7 +55,7 @@ func NewClusterOutHandler(us *UpaxServer, conn xt.ConnectionI) (
 	} else if us.uDir == nil {
 		err = NilUDir
 	} else if conn == nil {
-		err = msg.NilConnection
+		err = xa.NilConnection
 	} else {
 		cnx := conn.(*xt.TcpConnection)
 		h = &ClusterOutHandler{
@@ -131,12 +131,12 @@ func handleOutPeerHello(h *ClusterOutHandler) (err error) {
 	ciphertext, err = h.ReadData()
 	if err == nil {
 		iv1, key1, salt1, version1,
-			err = msg.ServerDecodeHello(ciphertext, h.us.ckPriv)
+			err = xa.ServerDecodeHello(ciphertext, h.us.ckPriv)
 		_ = version1 // ignore whatever version they propose
 	}
 	if err == nil {
 		version2 := serverVersion
-		iv2, key2, salt2, ciphertextOut, err := msg.ServerEncodeHelloReply(
+		iv2, key2, salt2, ciphertextOut, err := xa.ServerEncodeHelloReply(
 			iv1, key1, salt1, uint32(version2))
 		if err == nil {
 			err = h.WriteData(ciphertextOut)
