@@ -84,6 +84,9 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	cn := &an.ClientNode
 	<-cn.DoneCh
 	clusterID := cn.ClusterID
+	if clusterID == nil {
+		fmt.Println("NIL CLUSTER ID: is xlReg running??")
+	}
 	c.Assert(clusterID, NotNil)
 	clusterSize := cn.ClusterSize
 	c.Assert(clusterSize, Equals, uint32(K1))
