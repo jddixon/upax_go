@@ -1,5 +1,4 @@
-Upax Client
-===========
+<h1 class="appTop">Upax Client</h1>
 
 A Upax client is an XLattice Node and so has a unique 20 or 32-byte nodeID;
 two RSA keys, one for encryption/decryption and one for digital 

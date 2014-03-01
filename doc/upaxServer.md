@@ -1,5 +1,4 @@
-Upax Server
-===========
+<h1 class="appTop">Upax Server</h1>
 
 A Upax server is an XLattice Node and so has a unique 20 or 32-byte NodeID;
 two RSA keys, one for encryption/decryption and one for digital 
