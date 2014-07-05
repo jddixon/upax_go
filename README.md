@@ -31,3 +31,7 @@ to commit them.  There is no notion of privacy.  Any client may
 request a copy of any file - but only the owner may delete it.  It
 is likely that upax_go will retain these characteristics in the near
 term.
+
+## On-line Documentation
+
+More information on the **upax_go** project can be found [here](https://jddixon.github.io/upax_go)
