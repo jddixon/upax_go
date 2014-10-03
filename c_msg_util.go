@@ -7,7 +7,7 @@ package upax_go
 import (
 	"errors"
 	"fmt"
-	"github.com/jddixon/xlattice_go/reg"
+	reg "github.com/jddixon/xlReg_go"
 )
 
 // Verify that the message number on the incoming message has been

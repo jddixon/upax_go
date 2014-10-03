@@ -6,8 +6,8 @@ import (
 	"code.google.com/p/goprotobuf/proto"
 	"crypto/aes"
 	"crypto/cipher"
-	xc "github.com/jddixon/xlattice_go/crypto"
-	xt "github.com/jddixon/xlattice_go/transport"
+	xc "github.com/jddixon/xlCrypto_go"
+	xt "github.com/jddixon/xlTransport_go"
 )
 
 const (

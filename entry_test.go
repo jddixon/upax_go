@@ -6,9 +6,9 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	xi "github.com/jddixon/xlattice_go/nodeID"
-	"github.com/jddixon/xlattice_go/rnglib"
-	xf "github.com/jddixon/xlattice_go/util/lfs"
+	xi "github.com/jddixon/xlNodeID_go"
+	xr "github.com/jddixon/rnglib_go"
+	xf "github.com/jddixon/xlUtil_go/lfs"
 	. "launchpad.net/gocheck"
 	"os"
 	"path/filepath"
@@ -18,7 +18,7 @@ import (
 // for loadEntries()
 import ()
 
-func (s *XLSuite) makeEntryData(c *C, rng *rnglib.PRNG, usingSHA1 bool) (
+func (s *XLSuite) makeEntryData(c *C, rng *xr.PRNG, usingSHA1 bool) (
 	t int64, key, nodeID []byte, src, path string) {
 
 	t = rng.Int63() // timestamp
@@ -41,7 +41,7 @@ func (s *XLSuite) makeEntryData(c *C, rng *rnglib.PRNG, usingSHA1 bool) (
 	}
 	return
 }
-func (s *XLSuite) doTestEntry(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
+func (s *XLSuite) doTestEntry(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	t, key, nodeID, src, path := s.makeEntryData(c, rng, usingSHA1)
 	hexKey := hex.EncodeToString(key)
@@ -69,7 +69,7 @@ func (s *XLSuite) doTestEntry(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
 }
 
 func (s *XLSuite) TestEntry(c *C) {
-	rng := rnglib.MakeSimpleRNG()
+	rng := xr.MakeSimpleRNG()
 	s.doTestEntry(c, rng, true)
 	s.doTestEntry(c, rng, false)
 }
@@ -79,11 +79,11 @@ func (s *XLSuite) TestEntry(c *C) {
 // are stored in a randomly named file under ./tmp/
 //
 func (s *XLSuite) TestLoadEntries(c *C) {
-	rng := rnglib.MakeSimpleRNG()
+	rng := xr.MakeSimpleRNG()
 	s.doTestLoadEntries(c, rng, true)  // using SHA1
 	s.doTestLoadEntries(c, rng, false) // not using SHA1
 }
-func (s *XLSuite) doTestLoadEntries(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
+func (s *XLSuite) doTestLoadEntries(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	K := 16 + rng.Intn(16)
 
 	// create a unique name for a scratch file

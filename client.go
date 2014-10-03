@@ -4,11 +4,11 @@ package upax_go
 
 import (
 	"crypto/rsa"
-	xn "github.com/jddixon/xlattice_go/node"
-	xi "github.com/jddixon/xlattice_go/nodeID"
-	"github.com/jddixon/xlattice_go/reg"
-	xt "github.com/jddixon/xlattice_go/transport"
-	xu "github.com/jddixon/xlattice_go/util"
+	xn "github.com/jddixon/xlNode_go"
+	xi "github.com/jddixon/xlNodeID_go"
+	reg "github.com/jddixon/xlReg_go"
+	xt "github.com/jddixon/xlTransport_go"
+	xu "github.com/jddixon/xlUtil_go"
 )
 
 ////////////////////////////////////////////////////////

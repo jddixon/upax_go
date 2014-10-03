@@ -5,7 +5,7 @@ package upax_go
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/jddixon/xlattice_go/rnglib"
+	xr "github.com/jddixon/rnglib_go"
 	. "launchpad.net/gocheck"
 	"strings"
 )
@@ -27,7 +27,7 @@ func (s *XLSuite) TestIgnorability(c *C) {
 func (s *XLSuite) TestPathRE(c *C) {
 	// XXX STUB XXX
 }
-func (s *XLSuite) doTestRegexes(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
+func (s *XLSuite) doTestRegexes(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	t := rng.Int63()
 	var length int
 	if usingSHA1 {
@@ -76,7 +76,7 @@ func (s *XLSuite) doTestRegexes(c *C, rng *rnglib.PRNG, usingSHA1 bool) {
 }
 
 func (s *XLSuite) TestRegexes(c *C) {
-	rng := rnglib.MakeSimpleRNG()
+	rng := xr.MakeSimpleRNG()
 	for i := 0; i < 8; i++ {
 		s.doTestRegexes(c, rng, true)
 		s.doTestRegexes(c, rng, false)

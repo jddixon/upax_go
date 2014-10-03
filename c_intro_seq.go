@@ -6,9 +6,9 @@ import (
 	cr "crypto"
 	"crypto/rsa"
 	"crypto/sha1"
-	xc "github.com/jddixon/xlattice_go/crypto"
-	xi "github.com/jddixon/xlattice_go/nodeID"
-	"github.com/jddixon/xlattice_go/reg"
+	xc "github.com/jddixon/xlCrypto_go"
+	xi "github.com/jddixon/xlNodeID_go"
+	reg "github.com/jddixon/xlReg_go"
 )
 
 /////////////////////////////////////////////////////////////////////

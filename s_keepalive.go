@@ -3,7 +3,7 @@ package upax_go
 // upax_go/s_keepalive.go
 
 import (
-	xu "github.com/jddixon/xlattice_go/util"
+	xu "github.com/jddixon/xlUtil_go"
 	"time"
 )
 

@@ -11,10 +11,10 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
-	"github.com/jddixon/xlattice_go/reg"
-	xr "github.com/jddixon/xlattice_go/rnglib"
-	xt "github.com/jddixon/xlattice_go/transport"
-	xf "github.com/jddixon/xlattice_go/util/lfs"
+	reg "github.com/jddixon/xlReg_go"
+	xr "github.com/jddixon/rnglib_go"
+	xt "github.com/jddixon/xlTransport_go"
+	xf "github.com/jddixon/xlUtil_go/lfs"
 	"io/ioutil"
 	. "launchpad.net/gocheck"
 	"os"
@@ -69,7 +69,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// K1 is the number of upax servers, and so the cluster size.  K2 is
 	// the number of upax clients, M the number of messages sent (items to
 	// be added to the Upax store), LMin and LMax message lengths.
-	K1 := 2
+	K1 := uint32(2)
 	K2 := 1
 	M := 16 + rng.Intn(16) // 16..31
 	LMin := 64 + rng.Intn(64)
@@ -77,11 +77,11 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// Use an admin client to get a clusterID for this clusterName --
 	const EP_COUNT = 2
-	an, err := reg.NewAdminClient(regServerName, regServerID, regServerEnd,
+	an, err := reg.NewAdminMember(regServerName, regServerID, regServerEnd,
 		regServerCK, regServerSK, clusterName, uint64(0), K1, EP_COUNT, nil)
 	c.Assert(err, IsNil)
 	an.Run()
-	cn := &an.ClientNode
+	cn := &an.MemberNode
 	<-cn.DoneCh
 	clusterID := cn.ClusterID
 	if clusterID == nil {
@@ -104,7 +104,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	serverPaths := make([]string, K1)
 	ckPriv := make([]*rsa.PrivateKey, K1)
 	skPriv := make([]*rsa.PrivateKey, K1)
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		serverNames[i] = rng.NextFileName(8)
 		serverPaths[i] = filepath.Join(clusterPath, serverNames[i])
 		found, err = xf.PathExists(serverPaths[i])
@@ -126,13 +126,13 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	}
 
 	// create K1 reg client nodes -----------------------------------
-	uc := make([]*reg.UserClient, K1)
-	for i := 0; i < K1; i++ {
+	uc := make([]*reg.UserMember, K1)
+	for i := uint32(0); i < K1; i++ {
 		var ep *xt.TcpEndPoint
 		ep, err = xt.NewTcpEndPoint("127.0.0.1:0")
 		c.Assert(err, IsNil)
 		e := []xt.EndPointI{ep}
-		uc[i], err = reg.NewUserClient(serverNames[i], serverPaths[i],
+		uc[i], err = reg.NewUserMember(serverNames[i], serverPaths[i],
 			ckPriv[i], skPriv[i],
 			regServerName, regServerID, regServerEnd, regServerCK, regServerSK,
 			clusterName, cn.ClusterAttrs, cn.ClusterID,
@@ -142,17 +142,14 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		c.Assert(uc[i].ClusterID, NotNil)
 	}
 	// Start the K1 reg client nodes running ------------------------
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		uc[i].Run()
 	}
 
 	// wait until all reg clientNodes are done ----------------------
-	for i := 0; i < K1; i++ {
-		success := <-uc[i].ClientNode.DoneCh
-		c.Assert(success, Equals, true)
-		if success {
-			c.Assert(uc[i].Err, IsNil)
-		}
+	for i := uint32(0); i < K1; i++ {
+		err := <-uc[i].MemberNode.DoneCh
+		c.Assert(err, IsNil)
 	}
 
 	// verify that all clientNodes have meaningful baseNodes --------
@@ -164,7 +161,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	//}
 
 	// verify that all clientNode members have meaningful baseNodes -
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		// fmt.Printf("  server %s\n", serverNames[i])	// DEBUG
 		memberCount := len(uc[i].Members)
 		c.Assert(memberCount, Equals, K1)
@@ -186,7 +183,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// convert the reg client nodes to UpaxServers ------------------
 	us := make([]*UpaxServer, K1)
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		err = uc[i].PersistClusterMember() // sometimes panics
 		c.Assert(err, IsNil)
 		us[i], err = NewUpaxServer(
@@ -205,7 +202,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// passed, the server will send again on DoneCh, and then shut down.
 
 	// XXX STUB
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		err = us[i].Run(10*time.Millisecond, 20)
 		c.Assert(err, IsNil)
 	}
@@ -214,7 +211,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// 11-18: we wait for the first done from each server.
 	//
 	// XXX STUB
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		<-us[i].DoneCh
 	}
 	// DEBUG

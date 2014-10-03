@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	xu "github.com/jddixon/xlattice_go/u"
+	xu "github.com/jddixon/xlU_go"
 	"strconv"
 	"strings"
 	"time"

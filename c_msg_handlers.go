@@ -11,7 +11,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha1"
 	"encoding/hex"
-	"github.com/jddixon/xlattice_go/reg"
+	reg "github.com/jddixon/xlReg_go"
 )
 
 /////////////////////////////////////////////////////////////////////

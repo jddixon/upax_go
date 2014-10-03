@@ -11,11 +11,11 @@ import (
 	"crypto/sha1"
 	"encoding/binary"
 
-	xc "github.com/jddixon/xlattice_go/crypto"
-	xa "github.com/jddixon/xlattice_go/protocol/aes_cnx"
-	xr "github.com/jddixon/xlattice_go/rnglib"
-	xt "github.com/jddixon/xlattice_go/transport"
-	xu "github.com/jddixon/xlattice_go/util"
+	xc "github.com/jddixon/xlCrypto_go"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
+	xr "github.com/jddixon/rnglib_go"
+	xt "github.com/jddixon/xlTransport_go"
+	xu "github.com/jddixon/xlUtil_go"
 )
 
 // Read the next message over the connection

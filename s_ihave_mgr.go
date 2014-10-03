@@ -3,7 +3,7 @@ package upax_go
 // upax_go/s_ihave_mgr.go
 
 import (
-	xi "github.com/jddixon/xlattice_go/nodeID"
+	xi "github.com/jddixon/xlNodeID_go"
 )
 
 // The ClusterIHaveMgr receives IHaveObjs on its input channel.  For each

@@ -6,11 +6,11 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"fmt"
-	xa "github.com/jddixon/xlattice_go/protocol/aes_cnx"
-	"github.com/jddixon/xlattice_go/reg"
-	xt "github.com/jddixon/xlattice_go/transport"
-	"github.com/jddixon/xlattice_go/u"
-	xu "github.com/jddixon/xlattice_go/util"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
+	reg "github.com/jddixon/xlReg_go"
+	xt "github.com/jddixon/xlTransport_go"
+	u "github.com/jddixon/xlU_go"
+	xu "github.com/jddixon/xlUtil_go"
 	"sync"
 )
 

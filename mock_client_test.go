@@ -3,11 +3,11 @@ package upax_go
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	xn "github.com/jddixon/xlattice_go/node"
-	"github.com/jddixon/xlattice_go/reg"
-	xr "github.com/jddixon/xlattice_go/rnglib"
-	xt "github.com/jddixon/xlattice_go/transport"
-	xf "github.com/jddixon/xlattice_go/util/lfs"
+	xn "github.com/jddixon/xlNode_go"
+	reg "github.com/jddixon/xlReg_go"
+	xr "github.com/jddixon/rnglib_go"
+	xt "github.com/jddixon/xlTransport_go"
+	xf "github.com/jddixon/xlUtil_go/lfs"
 )
 
 // upax_go/mock_upax_client_test.go

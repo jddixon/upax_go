@@ -3,12 +3,12 @@ package upax_go
 // upax_go/const.go
 
 import (
-	xu "github.com/jddixon/xlattice_go/util"
+	xu "github.com/jddixon/xlUtil_go"
 )
 
 const (
-	VERSION      = "0.2.4"
-	VERSION_DATE = "2013-12-09"
+	VERSION      = "0.3.0"
+	VERSION_DATE = "2014-10-03"
 )
 
 // XXX NOT A CONSTANT - find me another home!

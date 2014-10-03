@@ -4,10 +4,10 @@ package upax_go
 
 import (
 	"fmt"
-	xa "github.com/jddixon/xlattice_go/protocol/aes_cnx"
-	"github.com/jddixon/xlattice_go/reg"
-	xt "github.com/jddixon/xlattice_go/transport"
-	"github.com/jddixon/xlattice_go/u"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
+	reg "github.com/jddixon/xlReg_go"
+	xt "github.com/jddixon/xlTransport_go"
+	u "github.com/jddixon/xlU_go"
 )
 
 var _ = fmt.Print

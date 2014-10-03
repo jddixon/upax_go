@@ -4,8 +4,8 @@ package upax_go
 
 import (
 	"fmt"
-	xi "github.com/jddixon/xlattice_go/nodeID"
-	xr "github.com/jddixon/xlattice_go/rnglib"
+	xi "github.com/jddixon/xlNodeID_go"
+	xr "github.com/jddixon/rnglib_go"
 	. "launchpad.net/gocheck"
 	"time"
 )

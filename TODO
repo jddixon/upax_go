@@ -1,5 +1,9 @@
 github.com/jddixon/upax_go/TODO
 
+2014-10-03
+    * update to use new xl*_go packages
+    * explore use of Memory in the server
+
 2014-01-29
     * URGENT FIX: TEST_CLUSTER is broken, gets NPE                      * DONE
 

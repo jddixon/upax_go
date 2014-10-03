@@ -6,10 +6,10 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
-	"github.com/jddixon/xlattice_go/reg"
-	xr "github.com/jddixon/xlattice_go/rnglib"
-	xt "github.com/jddixon/xlattice_go/transport"
-	xf "github.com/jddixon/xlattice_go/util/lfs"
+	reg "github.com/jddixon/xlReg_go"
+	xr "github.com/jddixon/rnglib_go"
+	xt "github.com/jddixon/xlTransport_go"
+	xf "github.com/jddixon/xlUtil_go/lfs"
 	"io/ioutil"
 	. "launchpad.net/gocheck"
 	"os"
@@ -61,19 +61,19 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// K1 is the number of servers, and so the cluster size.  K2 is
 	// the number of clients, M the number of messages sent (items to
 	// be added to the Upax store), LMin and LMax message lengths.
-	K1 := 3 + rng.Intn(5)  // so 3..7
-	K2 := 2 + rng.Intn(4)  // so 2..5
+	K1 := uint32(3 + rng.Intn(5))  // so 3..7
+	K2 := uint32(2 + rng.Intn(4))  // so 2..5
 	M := 16 + rng.Intn(16) // 16..31
 	LMin := 64 + rng.Intn(64)
 	LMax := 128 + rng.Intn(128)
 
 	// Use an admin client to get a clusterID for this clusterName --
 	const EP_COUNT = 2
-	an, err := reg.NewAdminClient(regServerName, regServerID, regServerEnd,
+	an, err := reg.NewAdminMember(regServerName, regServerID, regServerEnd,
 		regServerCK, regServerSK, clusterName, uint64(0), K1, EP_COUNT, nil)
 	c.Assert(err, IsNil)
 	an.Run()
-	cn := &an.ClientNode
+	cn := &an.MemberNode
 	<-cn.DoneCh
 	clusterID := cn.ClusterID
 	if clusterID == nil {
@@ -92,7 +92,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	memberPaths := make([]string, K1)
 	ckPriv := make([]*rsa.PrivateKey, K1)
 	skPriv := make([]*rsa.PrivateKey, K1)
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		memberNames[i] = rng.NextFileName(8)
 		memberPaths[i] = filepath.Join(clusterPath, memberNames[i])
 		found, err = xf.PathExists(memberPaths[i])
@@ -114,14 +114,14 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	}
 
 	// create K1 client nodes ---------------------------------------
-	uc := make([]*reg.UserClient, K1)
-	for i := 0; i < K1; i++ {
+	uc := make([]*reg.UserMember, K1)
+	for i := uint32(0); i < K1; i++ {
 		var ep1, ep2 *xt.TcpEndPoint
 		ep1, err = xt.NewTcpEndPoint("127.0.0.1:0")
 		ep2, err = xt.NewTcpEndPoint("127.0.0.1:0")
 		c.Assert(err, IsNil)
 		e := []xt.EndPointI{ep1, ep2}
-		uc[i], err = reg.NewUserClient(memberNames[i], memberPaths[i],
+		uc[i], err = reg.NewUserMember(memberNames[i], memberPaths[i],
 			ckPriv[i], skPriv[i],
 			regServerName, regServerID, regServerEnd, regServerCK, regServerSK,
 			clusterName, cn.ClusterAttrs, cn.ClusterID,
@@ -129,18 +129,18 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		c.Assert(err, IsNil)
 		c.Assert(uc[i], NotNil)
 		c.Assert(uc[i].ClusterID, NotNil)
-		c.Assert(uc[i].ClientNode.DoneCh, NotNil)
+		c.Assert(uc[i].MemberNode.DoneCh, NotNil)
 	}
 	// Start the K1 client nodes running ----------------------------
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		uc[i].Run()
 	}
 
 	fmt.Println("ALL CLIENTS STARTED") // XXX SEEN
 
 	// wait until all clientNodes are done --------------------------
-	for i := 0; i < K1; i++ {
-		success := <-uc[i].ClientNode.DoneCh
+	for i := uint32(0); i < K1; i++ {
+		success := <-uc[i].MemberNode.DoneCh
 		c.Assert(success, Equals, true)
 		// nodeID := uc[i].clientID
 	}
@@ -156,7 +156,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	//}
 	// convert the client nodes to UpaxServers ----------------------
 	us := make([]*UpaxServer, K1)
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		err = uc[i].PersistClusterMember()
 		c.Assert(err, IsNil)
 		us[i], err = NewUpaxServer(
@@ -175,7 +175,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// passed, the server will send again on DoneCh, and then shut down.
 
 	// XXX STUB
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		err = us[i].Run(10*time.Millisecond, 20)
 		c.Assert(err, IsNil)
 	}
@@ -184,7 +184,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// 11-18: we wait for the first done from each server.
 	//
 	// XXX STUB
-	for i := 0; i < K1; i++ {
+	for i := uint32(0); i < K1; i++ {
 		<-us[i].DoneCh
 	}
 	// DEBUG
