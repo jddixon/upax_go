@@ -140,8 +140,8 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// wait until all clientNodes are done --------------------------
 	for i := uint32(0); i < K1; i++ {
-		success := <-uc[i].MemberNode.DoneCh
-		c.Assert(success, Equals, true)
+		err = <-uc[i].MemberNode.DoneCh
+		c.Assert(err, IsNil)
 		// nodeID := uc[i].clientID
 	}
 	fmt.Println("ALL CLIENTS DONE") // XXX NOT SEEN

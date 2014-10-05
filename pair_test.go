@@ -163,9 +163,9 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// verify that all clientNode members have meaningful baseNodes -
 	for i := uint32(0); i < K1; i++ {
 		// fmt.Printf("  server %s\n", serverNames[i])	// DEBUG
-		memberCount := len(uc[i].Members)
+		memberCount := uint32(len(uc[i].Members))
 		c.Assert(memberCount, Equals, K1)
-		for j := 0; j < memberCount; j++ {
+		for j := uint32(0); j < memberCount; j++ {
 			c.Assert(uc[i].Members[j], NotNil)
 			// DEBUG
 			// fmt.Printf("    other server[%d] is %s\n", j, serverNames[j])
