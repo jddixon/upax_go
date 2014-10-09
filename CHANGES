@@ -1,5 +1,9 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.3.1
+    2014-10-09
+        * updated regCred.dat
+        * more changes to reflect API changes elsewhere             SLOC  3771
 0.3.0
     2014-10-03
         * changes to reflect API changes elsewhere                  SLOC  3733

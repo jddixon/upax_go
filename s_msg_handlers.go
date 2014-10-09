@@ -143,7 +143,7 @@ func doSQueryMsg(h *ClusterInHandler) {
 	}
 	if err == nil {
 		strHash := hex.EncodeToString(hash)
-		found, err = h.us.uDir.Exists(strHash)
+		found, err = h.us.uDir.HexKeyExists(strHash)
 	}
 
 	// Take appropriate action --------------------------------------

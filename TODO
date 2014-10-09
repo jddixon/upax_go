@@ -1,7 +1,16 @@
 github.com/jddixon/upax_go/TODO
 
+2014-10-06
+    * use HAMT to store log in memory
+    * introduce BaseLogEntry without key (content hash)
+        - LogEntry is BaseLogEntry with key field
+        - IndexedLogEntry is BaseLogEntry plus Index uint
+        - LogEntrys get appended to on-disk ftlog
+        - HAMT is keyed on content hash (key) and points to
+            IndexedLogEntry
+
 2014-10-03
-    * update to use new xl*_go packages
+    * update to use new xl*_go packages                                 * DONE
     * explore use of Memory in the server
 
 2014-01-29

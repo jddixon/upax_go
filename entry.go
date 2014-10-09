@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	xu "github.com/jddixon/xlU_go"
+	xc "github.com/jddixon/xlCrypto_go"
 	"strconv"
 	"strings"
 	"time"
@@ -37,8 +37,8 @@ func NewLogEntry(t int64, key []byte, nodeID []byte,
 	}
 	if key == nil || nodeID == nil {
 		err = NilKeyOrNodeID
-	} else if (len(key) != xu.SHA1_LEN/2 && len(key) != xu.SHA3_LEN/2) ||
-		(len(nodeID) != xu.SHA1_LEN/2 && len(nodeID) != xu.SHA3_LEN/2) {
+	} else if (len(key) != xc.SHA1_BYTE_LEN && len(key) != xc.SHA3_BYTE_LEN) ||
+		(len(nodeID) != xc.SHA1_BYTE_LEN && len(nodeID) != xc.SHA3_BYTE_LEN) {
 		err = InvalidKeyOrNodeID
 	}
 	if err == nil {
@@ -90,7 +90,7 @@ func (e *LogEntry) Timestamp() int64 {
 
 // Whether the key is an SHA1 key.
 func (e *LogEntry) UsingSHA1() bool {
-	return len(e.key) == xu.SHA1_LEN/2
+	return len(e.key) == xc.SHA1_BYTE_LEN
 }
 
 // EQUAL ////////////////////////////////////////////////////////////
