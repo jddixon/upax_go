@@ -1,5 +1,11 @@
 github.com/jddixon/upax_go/TODO
 
+2014-10-09
+    * 
+
+2014-10-09 (edited from 2013-12-24)
+    * integrate in xlProtocol chunks
+
 2014-10-06
     * use HAMT to store log in memory
     * introduce BaseLogEntry without key (content hash)
@@ -10,14 +16,7 @@ github.com/jddixon/upax_go/TODO
             IndexedLogEntry
 
 2014-10-03
-    * update to use new xl*_go packages                                 * DONE
     * explore use of Memory in the server
-
-2014-01-29
-    * URGENT FIX: TEST_CLUSTER is broken, gets NPE                      * DONE
-
-2013-12-24
-    * integrate in xlattice chunks
 
 2013-12-09
     * add version negotiation to client/server protocol, c.proto

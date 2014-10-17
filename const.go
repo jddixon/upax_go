@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	VERSION      = "0.3.1"
-	VERSION_DATE = "2014-10-01"
+	VERSION      = "0.3.2"
+	VERSION_DATE = "2014-10-17"
 )
 
 // XXX NOT A CONSTANT - find me another home!

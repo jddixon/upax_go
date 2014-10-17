@@ -81,7 +81,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		regServerCK, regServerSK, clusterName, uint64(0), K1, EP_COUNT, nil)
 	c.Assert(err, IsNil)
 	an.Run()
-	cn := &an.MemberNode
+	cn := &an.MemberMaker
 	<-cn.DoneCh
 	clusterID := cn.ClusterID
 	if clusterID == nil {
@@ -90,7 +90,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	c.Assert(clusterID, NotNil)
 	clusterSize := cn.ClusterSize
 	c.Assert(clusterSize, Equals, uint32(K1))
-	epCount := cn.EpCount
+	epCount := cn.EPCount
 	c.Assert(epCount, Equals, uint32(EP_COUNT))
 
 	// DEBUG
@@ -148,7 +148,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// wait until all reg clientNodes are done ----------------------
 	for i := uint32(0); i < K1; i++ {
-		err := <-uc[i].MemberNode.DoneCh
+		err := <-uc[i].MemberMaker.DoneCh
 		c.Assert(err, IsNil)
 	}
 

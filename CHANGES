@@ -1,36 +1,39 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.3.2
+    2014-10-17
+        * API changes xlUtil_go and xlReg_go                        SLOC 3771
 0.3.1
     2014-10-09
         * updated regCred.dat
-        * more changes to reflect API changes elsewhere             SLOC  3771
+        * more changes to reflect API changes elsewhere             SLOC 3771
 0.3.0
     2014-10-03
-        * changes to reflect API changes elsewhere                  SLOC  3733
+        * changes to reflect API changes elsewhere                  SLOC 3733
 0.2.4
     2013-12-09
-        * UpaxClient implemented                                    SLOC  3724
+        * UpaxClient implemented                                    SLOC 3724
 0.2.3
     2013-11-18
-        * s_msg_handler Put appends entry to U/L                    SLOC  2473
+        * s_msg_handler Put appends entry to U/L                    SLOC 2473
     2013-11-17
-        * s_msg_handler largely complete except for IHave           SLOC  2470
+        * s_msg_handler largely complete except for IHave           SLOC 2470
         * IDMap added (much improved version of BNIMap)
         * puts to and gets from U
 0.2.2
     2013-11-09
-        * intra server comms: s_in_hander, s_msg_handler in         SLOC  1564
+        * intra server comms: s_in_hander, s_msg_handler in         SLOC 1564
             skeletal form; DIR16x16 directory structure;
             ItsMe/Ack, KeepAlive/Ack, Bye/Ack; Get/Data in
             development
         * added skeletal UpaxClient
 0.2.1
     2013-10-30
-        * cluster_test creates and runs K1 clients                  SLOC   995
+        * cluster_test creates and runs K1 clients                  SLOC  995
 0.2.0
     2013-10-29
         * flattened directory structure, differentiated
-            server-server and server-client protocols               SLOC   883 
+            server-server and server-client protocols               SLOC  883 
 0.1.0
     2013-10-26
-        * rearranaged initial sketch                                SLOC   839 
+        * rearranaged initial sketch                                SLOC  839 

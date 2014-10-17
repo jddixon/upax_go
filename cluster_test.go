@@ -73,7 +73,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		regServerCK, regServerSK, clusterName, uint64(0), K1, EP_COUNT, nil)
 	c.Assert(err, IsNil)
 	an.Run()
-	cn := &an.MemberNode
+	cn := &an.MemberMaker
 	<-cn.DoneCh
 	clusterID := cn.ClusterID
 	if clusterID == nil {
@@ -82,7 +82,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	c.Assert(clusterID, NotNil)
 	clusterSize := cn.ClusterSize
 	c.Assert(clusterSize, Equals, uint32(K1))
-	epCount := cn.EpCount
+	epCount := cn.EPCount
 	c.Assert(epCount, Equals, uint32(EP_COUNT))
 
 	// Create names and LFSs for the K1 members ---------------------
@@ -129,7 +129,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		c.Assert(err, IsNil)
 		c.Assert(uc[i], NotNil)
 		c.Assert(uc[i].ClusterID, NotNil)
-		c.Assert(uc[i].MemberNode.DoneCh, NotNil)
+		c.Assert(uc[i].MemberMaker.DoneCh, NotNil)
 	}
 	// Start the K1 client nodes running ----------------------------
 	for i := uint32(0); i < K1; i++ {
@@ -140,7 +140,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// wait until all clientNodes are done --------------------------
 	for i := uint32(0); i < K1; i++ {
-		err = <-uc[i].MemberNode.DoneCh
+		err = <-uc[i].MemberMaker.DoneCh
 		c.Assert(err, IsNil)
 		// nodeID := uc[i].clientID
 	}

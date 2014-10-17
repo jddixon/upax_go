@@ -31,7 +31,7 @@ func NewMockUpaxClient(name, lfs string, members []*reg.MemberInfo,
 
 	// lfs should be a well-formed POSIX path; if the directory does
 	// not exist we should create it.
-	err = xf.CheckLFS(lfs)
+	err = xf.CheckLFS(lfs, 0750)
 
 	// The ckPriv is an RSA key used to encrypt short messages.
 	if err == nil {
