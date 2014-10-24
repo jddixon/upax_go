@@ -8,5 +8,5 @@ regCred {
     EndPoints {
          TcpEndPoint: 127.0.0.1:56789
     }
-    Version: 1.2
+    Version: 1.5
 }

@@ -196,7 +196,7 @@ func (us *UpaxServer) InitialHandshake(peerNdx uint32, readyCh chan bool) {
 				peerNdx, us.ClusterSize))
 		}
 		peerInfo := us.Members[peerNdx]
-		peerID := peerInfo.GetNodeID().Value()
+		peerID := peerInfo.Peer.GetNodeID().Value()
 		time.Sleep(RETRY_INTERVAL)
 
 		// XXX STUB XXX

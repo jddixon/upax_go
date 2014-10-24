@@ -45,7 +45,7 @@ func doSItsMeMsg(h *ClusterInHandler) {
 		// use the peerID to get their memberInfo
 		for i := 0; i < len(h.us.Members); i++ {
 			memberInfo := h.us.Members[i]
-			if bytes.Equal(peerID, memberInfo.GetNodeID().Value()) {
+			if bytes.Equal(peerID, memberInfo.Peer.GetNodeID().Value()) {
 				peerInfo = memberInfo
 				break
 			}
@@ -55,7 +55,7 @@ func doSItsMeMsg(h *ClusterInHandler) {
 		}
 	}
 	if err == nil {
-		peerSK := h.peerInfo.GetSigPublicKey()
+		peerSK := h.peerInfo.Peer.GetSigPublicKey()
 		salt := peerMsg.GetSalt()
 		sig := peerMsg.GetSig()
 

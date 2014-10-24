@@ -11,8 +11,8 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
-	reg "github.com/jddixon/xlReg_go"
 	xr "github.com/jddixon/rnglib_go"
+	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xf "github.com/jddixon/xlUtil_go/lfs"
 	"io/ioutil"
@@ -174,10 +174,10 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 			// doesn't work because reg server does not necessarily see
 			// members in serverName order.
 			// c.Assert(uc[i].Members[j].GetName(), Equals, serverNames[j])
-			c.Assert(uc[i].Members[j].GetName() == "", Equals, false)
-			c.Assert(uc[i].Members[j].GetNodeID(), NotNil)
-			c.Assert(uc[i].Members[j].GetCommsPublicKey(), NotNil)
-			c.Assert(uc[i].Members[j].GetSigPublicKey(), NotNil)
+			c.Assert(uc[i].Members[j].Peer.GetName() == "", Equals, false)
+			c.Assert(uc[i].Members[j].Peer.GetNodeID(), NotNil)
+			c.Assert(uc[i].Members[j].Peer.GetCommsPublicKey(), NotNil)
+			c.Assert(uc[i].Members[j].Peer.GetSigPublicKey(), NotNil)
 		}
 	}
 

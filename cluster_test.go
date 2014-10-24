@@ -6,8 +6,8 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
-	reg "github.com/jddixon/xlReg_go"
 	xr "github.com/jddixon/rnglib_go"
+	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xf "github.com/jddixon/xlUtil_go/lfs"
 	"io/ioutil"
@@ -24,6 +24,19 @@ func (s *XLSuite) TestCluster(c *C) {
 	s.doTestCluster(c, rng, true)  // usingSHA1
 	s.doTestCluster(c, rng, false) // not
 }
+
+/////////////////////////////////////////////////////////////////////
+// BEFORE RUNNING THIS TEST, BE SURE THAT YOU HAVE
+// * IF NECESSARY
+//	 * STOPPED ANY OLD INSTANCE OF xlReg
+//   * REBUILT AND INSTALLED xlReg
+// * STARTED xlReg RUNNING
+// * AND INVOKVED ./updateRegCred
+//
+// In other words, the local version of regCred.dat must match the
+// one in /var/app/xlReg; that in turn must correspond to the current
+// build of xlReg; and an instance of that build must be running.
+/////////////////////////////////////////////////////////////////////
 
 func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
@@ -48,22 +61,28 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	clusterName := rng.NextFileName(8)
 	clusterPath := filepath.Join("tmp", clusterName)
-	found, err := xf.PathExists(clusterPath)
-	c.Assert(err, IsNil)
-	for found {
+	for {
+		if _, err = os.Stat(clusterPath); os.IsNotExist(err) {
+			break
+		}
 		clusterName = rng.NextFileName(8)
 		clusterPath = filepath.Join("tmp", clusterName)
-		found, err = xf.PathExists(clusterPath)
-		c.Assert(err, IsNil)
 	}
+	err = xf.CheckLFS(clusterPath, 0750)
+	c.Assert(err, IsNil)
+
+	// DEBUG
+	fmt.Printf("CLUSTER      %s\n", clusterName)
+	fmt.Printf("CLUSTER_PATH %s\n", clusterPath)
+	// END
 
 	// Set the test size in various senses --------------------------
 	// K1 is the number of servers, and so the cluster size.  K2 is
 	// the number of clients, M the number of messages sent (items to
 	// be added to the Upax store), LMin and LMax message lengths.
-	K1 := uint32(3 + rng.Intn(5))  // so 3..7
-	K2 := uint32(2 + rng.Intn(4))  // so 2..5
-	M := 16 + rng.Intn(16) // 16..31
+	K1 := uint32(3 + rng.Intn(5)) // so 3..7
+	K2 := uint32(2 + rng.Intn(4)) // so 2..5
+	M := 16 + rng.Intn(16)        // 16..31
 	LMin := 64 + rng.Intn(64)
 	LMax := 128 + rng.Intn(128)
 
@@ -73,16 +92,16 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		regServerCK, regServerSK, clusterName, uint64(0), K1, EP_COUNT, nil)
 	c.Assert(err, IsNil)
 	an.Run()
-	cn := &an.MemberMaker
-	<-cn.DoneCh
-	clusterID := cn.ClusterID
+	<-an.DoneCh
+
+	clusterID := an.ClusterID // a NodeID, not []byte
 	if clusterID == nil {
 		fmt.Println("NIL CLUSTER ID: is xlReg running??")
 	}
 	c.Assert(clusterID, NotNil)
-	clusterSize := cn.ClusterSize
+	clusterSize := an.ClusterSize
 	c.Assert(clusterSize, Equals, uint32(K1))
-	epCount := cn.EPCount
+	epCount := an.EPCount
 	c.Assert(epCount, Equals, uint32(EP_COUNT))
 
 	// Create names and LFSs for the K1 members ---------------------
@@ -93,6 +112,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	ckPriv := make([]*rsa.PrivateKey, K1)
 	skPriv := make([]*rsa.PrivateKey, K1)
 	for i := uint32(0); i < K1; i++ {
+		var found bool
 		memberNames[i] = rng.NextFileName(8)
 		memberPaths[i] = filepath.Join(clusterPath, memberNames[i])
 		found, err = xf.PathExists(memberPaths[i])
@@ -103,6 +123,9 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 			found, err = xf.PathExists(memberPaths[i])
 			c.Assert(err, IsNil)
 		}
+		// DEBUG
+		fmt.Printf("MEMBER_PATH[%d]: %s\n", i, memberPaths[i])
+		// END
 		err = os.MkdirAll(memberPaths[i], 0750)
 		c.Assert(err, IsNil)
 		ckPriv[i], err = rsa.GenerateKey(rand.Reader, 1024) // cheap keys
@@ -124,7 +147,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		uc[i], err = reg.NewUserMember(memberNames[i], memberPaths[i],
 			ckPriv[i], skPriv[i],
 			regServerName, regServerID, regServerEnd, regServerCK, regServerSK,
-			clusterName, cn.ClusterAttrs, cn.ClusterID,
+			clusterName, an.ClusterAttrs, an.ClusterID,
 			K1, EP_COUNT, e)
 		c.Assert(err, IsNil)
 		c.Assert(uc[i], NotNil)
@@ -136,7 +159,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		uc[i].Run()
 	}
 
-	fmt.Println("ALL CLIENTS STARTED") // XXX SEEN
+	fmt.Println("ALL CLIENTS STARTED")
 
 	// wait until all clientNodes are done --------------------------
 	for i := uint32(0); i < K1; i++ {

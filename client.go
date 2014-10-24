@@ -4,8 +4,8 @@ package upax_go
 
 import (
 	"crypto/rsa"
-	xn "github.com/jddixon/xlNode_go"
 	xi "github.com/jddixon/xlNodeID_go"
+	xn "github.com/jddixon/xlNode_go"
 	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xu "github.com/jddixon/xlUtil_go"

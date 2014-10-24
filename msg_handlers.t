@@ -11,7 +11,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha1"
 	"encoding/hex"
-	"github.com/jddixon/xlattice_go/reg"
+	reg "github.com/jddixon/xlReg_go"
 )
 
 /////////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ func do${CapShortPrefix}ItsMeMsg(h *${TypePrefix}InHandler) {
 		// use the peerID to get their memberInfo
 		for i := 0; i < len(h.us.Members); i++ {
 			memberInfo := h.us.Members[i]
-			if bytes.Equal(peerID, memberInfo.GetNodeID().Value()) {
+			if bytes.Equal(peerID, memberInfo.Peer.GetNodeID().Value()) {
 				peerInfo = memberInfo
 				break
 			}
@@ -55,7 +55,7 @@ func do${CapShortPrefix}ItsMeMsg(h *${TypePrefix}InHandler) {
 		}
 	}
 	if err == nil {
-		peerSK := h.peerInfo.GetSigPublicKey()
+		peerSK := h.peerInfo.Peer.GetSigPublicKey()
 		salt := peerMsg.GetSalt()
 		sig := peerMsg.GetSig()
 
@@ -143,7 +143,7 @@ func do${CapShortPrefix}QueryMsg(h *${TypePrefix}InHandler) {
 	}
 	if err == nil {
 		strHash := hex.EncodeToString(hash)
-		found, err = h.us.uDir.Exists(strHash)
+		found, err = h.us.uDir.HexKeyExists(strHash)
 	}
 
 	// Take appropriate action --------------------------------------

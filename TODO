@@ -1,7 +1,12 @@
 github.com/jddixon/upax_go/TODO
 
-2014-10-09
-    * 
+2014-10-23
+    * if xlReg is not running, server invocation fails in SessionSetup,
+        getting a connection refused, which causes a panic; need more
+        robust code
+    * likewise if xlReg has been rebuilt; this requires that any 
+        running xlReg be killed, a new instance started, and then 
+        ./updateRegCred be run 
 
 2014-10-09 (edited from 2013-12-24)
     * integrate in xlProtocol chunks

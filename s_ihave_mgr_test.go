@@ -4,8 +4,8 @@ package upax_go
 
 import (
 	"fmt"
-	xi "github.com/jddixon/xlNodeID_go"
 	xr "github.com/jddixon/rnglib_go"
+	xi "github.com/jddixon/xlNodeID_go"
 	. "launchpad.net/gocheck"
 	"time"
 )

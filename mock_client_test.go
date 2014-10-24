@@ -3,9 +3,9 @@ package upax_go
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	xr "github.com/jddixon/rnglib_go"
 	xn "github.com/jddixon/xlNode_go"
 	reg "github.com/jddixon/xlReg_go"
-	xr "github.com/jddixon/rnglib_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xf "github.com/jddixon/xlUtil_go/lfs"
 )

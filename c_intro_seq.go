@@ -8,6 +8,7 @@ import (
 	"crypto/sha1"
 	xc "github.com/jddixon/xlCrypto_go"
 	xi "github.com/jddixon/xlNodeID_go"
+	xn "github.com/jddixon/xlNode_go"
 	reg "github.com/jddixon/xlReg_go"
 )
 
@@ -84,8 +85,13 @@ func doCIntroMsg(h *ClientInHandler) {
 		err = rsa.VerifyPKCS1v15(peerSK, cr.SHA1, hash, digSig)
 	}
 	if err == nil {
-		peerInfo, err = reg.NewMemberInfo(name, peerID,
-			peerCK, peerSK, 0, nil)
+		var peer *xn.Peer
+		// nil, nil are overlays and connectors
+		peer, err = xn.NewPeer(name, peerID, peerCK, peerSK, nil, nil)
+		if err == nil {
+			attrs := uint64(0) // XXX WHAT VALUE?
+			peerInfo, err = reg.NewMemberInfo(attrs, peer)
+		}
 	}
 	// Take appropriate action --------------------------------------
 	if err == nil {

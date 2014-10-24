@@ -11,9 +11,9 @@ import (
 	"crypto/sha1"
 	"encoding/binary"
 
+	xr "github.com/jddixon/rnglib_go"
 	xc "github.com/jddixon/xlCrypto_go"
 	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
-	xr "github.com/jddixon/rnglib_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xu "github.com/jddixon/xlUtil_go"
 )
