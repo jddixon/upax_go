@@ -1,14 +1,15 @@
 package ${pkgName}
 
-// ${pkgName}/c_intro_seq.go
+// ${pkgName}/intro_seq.t
 
 import (
 	cr "crypto"
 	"crypto/rsa"
 	"crypto/sha1"
-	xc "github.com/jddixon/xlattice_go/crypto"
-	xi "github.com/jddixon/xlattice_go/nodeID"
-	"github.com/jddixon/xlattice_go/reg"
+	xcl "github.com/jddixon/xlCluster_go"
+	xc "github.com/jddixon/xlCrypto_go"
+	xi "github.com/jddixon/xlNodeID_go"
+	xn "github.com/jddixon/xlNode_go"
 )
 
 /////////////////////////////////////////////////////////////////////
@@ -38,7 +39,7 @@ func do${CapShortPrefix}IntroMsg(h *${TypePrefix}InHandler) {
 		rawID, ckRaw, skRaw, salt, digSig []byte
 		peerCK, peerSK                *rsa.PublicKey
 		peerID                          *xi.NodeID
-		peerInfo                        *reg.MemberInfo
+		peerInfo                        *xcl.MemberInfo
 	)
 	// expect peerMsgN to be 1
 	err = check${CapShortPrefix}MsgN(h)
@@ -84,8 +85,14 @@ func do${CapShortPrefix}IntroMsg(h *${TypePrefix}InHandler) {
 		err = rsa.VerifyPKCS1v15(peerSK, cr.SHA1, hash, digSig)
 	}
 	if err == nil {
-		peerInfo, err = reg.NewMemberInfo(name, peerID,
-			peerCK, peerSK, 0, nil)
+		var (
+			attrs uint64	// XXX should be set!
+			peer *xn.Peer
+		)
+		peer, err = xn.NewPeer(name, peerID, peerCK, peerSK, nil, nil)
+		if err == nil {
+			peerInfo, err = xcl.NewMemberInfo(attrs, peer)
+		}
 	}
 	// Take appropriate action --------------------------------------
 	if err == nil {

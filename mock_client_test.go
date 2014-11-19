@@ -4,8 +4,8 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	xr "github.com/jddixon/rnglib_go"
+	xcl "github.com/jddixon/xlCluster_go"
 	xn "github.com/jddixon/xlNode_go"
-	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xf "github.com/jddixon/xlUtil_go/lfs"
 )
@@ -20,7 +20,7 @@ type MockUpaxClient struct {
 	UpaxClient
 }
 
-func NewMockUpaxClient(name, lfs string, members []*reg.MemberInfo,
+func NewMockUpaxClient(name, lfs string, members []*xcl.MemberInfo,
 	primary uint) (mc *MockUpaxClient, err error) {
 	var (
 		ckPriv, skPriv *rsa.PrivateKey

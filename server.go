@@ -7,7 +7,7 @@ import (
 	"crypto/rsa"
 	"fmt"
 	xi "github.com/jddixon/xlNodeID_go"
-	reg "github.com/jddixon/xlReg_go"
+	xcl "github.com/jddixon/xlCluster_go"
 	xt "github.com/jddixon/xlTransport_go"
 	u "github.com/jddixon/xlU_go"
 	xu "github.com/jddixon/xlUtil_go"
@@ -79,10 +79,10 @@ type UpaxServer struct {
 	entriesMu    sync.RWMutex
 
 	ckPriv, skPriv *rsa.PrivateKey
-	reg.ClusterMember
+	xcl.ClusterMember
 }
 
-func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *reg.ClusterMember,
+func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *xcl.ClusterMember,
 	usingSHA1 bool) (us *UpaxServer, err error) {
 
 	var (

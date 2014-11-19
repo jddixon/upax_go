@@ -4,10 +4,11 @@ package ${pkgName}
 
 import (
 	"fmt"
-	xa "github.com/jddixon/xlattice_go/protocol/aes_cnx"
-	"github.com/jddixon/xlattice_go/reg"
-	xt "github.com/jddixon/xlattice_go/transport"
-	"github.com/jddixon/xlattice_go/u"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
+	xcl "github.com/jddixon/xlCluster_go"
+	reg "github.com/jddixon/xlReg_go"
+	xt "github.com/jddixon/xlTransport_go"
+	xu "github.com/jddixon/xlU_go"
 )
 
 var _ = fmt.Print
@@ -31,9 +32,8 @@ var (
 
 type ${TypePrefix}InHandler struct {
 	us         *UpaxServer
-	uDir       u.UI
-	peerInfo   *reg.MemberInfo
-	// client  *reg.RegClient
+	uDir       xu.UI
+	peerInfo   *xcl.MemberInfo
 
 	myMsgN   uint64 // first message 1, then increment on each send
 	peerMsgN uint64 // expect this to be 1 on the first message

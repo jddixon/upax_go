@@ -1,5 +1,11 @@
 github.com/jddixon/upax_go/TODO
 
+2014-11-19
+    * intro_seq.t IntroMsg should set attrs
+
+2014-11-11
+    * needs commit, NewAdminClient() renames NewAdminMember()           * DONE
+
 2014-10-23
     * if xlReg is not running, server invocation fails in SessionSetup,
         getting a connection refused, which causes a panic; need more

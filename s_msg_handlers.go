@@ -11,7 +11,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha1"
 	"encoding/hex"
-	reg "github.com/jddixon/xlReg_go"
+	xcl "github.com/jddixon/xlCluster_go"
 )
 
 /////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ func doSItsMeMsg(h *ClusterInHandler) {
 	var (
 		peerMsg  *UpaxClusterMsg
 		peerID   []byte
-		peerInfo *reg.MemberInfo
+		peerInfo *xcl.MemberInfo
 	)
 	// expect peerMsgN to be 1
 	err = checkSMsgN(h)

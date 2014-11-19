@@ -77,7 +77,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 	// Use an admin client to get a clusterID for this clusterName --
 	const EP_COUNT = 2
-	an, err := reg.NewAdminMember(regServerName, regServerID, regServerEnd,
+	an, err := reg.NewAdminClient(regServerName, regServerID, regServerEnd,
 		regServerCK, regServerSK, clusterName, uint64(0), K1, EP_COUNT, nil)
 	c.Assert(err, IsNil)
 	an.Run()

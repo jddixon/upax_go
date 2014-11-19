@@ -1,15 +1,15 @@
 package upax_go
 
-// upax_go/c_intro_seq.go
+// upax_go/intro_seq.t
 
 import (
 	cr "crypto"
 	"crypto/rsa"
 	"crypto/sha1"
+	xcl "github.com/jddixon/xlCluster_go"
 	xc "github.com/jddixon/xlCrypto_go"
 	xi "github.com/jddixon/xlNodeID_go"
 	xn "github.com/jddixon/xlNode_go"
-	reg "github.com/jddixon/xlReg_go"
 )
 
 /////////////////////////////////////////////////////////////////////
@@ -33,13 +33,13 @@ func doCIntroMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		peerMsg                           *UpaxClientMsg
+		peerMsg                         *UpaxClientMsg
 		name                              string
 		token                             *UpaxClientMsg_Token
 		rawID, ckRaw, skRaw, salt, digSig []byte
-		peerCK, peerSK                    *rsa.PublicKey
-		peerID                            *xi.NodeID
-		peerInfo                          *reg.MemberInfo
+		peerCK, peerSK                *rsa.PublicKey
+		peerID                          *xi.NodeID
+		peerInfo                        *xcl.MemberInfo
 	)
 	// expect peerMsgN to be 1
 	err = checkCMsgN(h)
@@ -85,12 +85,13 @@ func doCIntroMsg(h *ClientInHandler) {
 		err = rsa.VerifyPKCS1v15(peerSK, cr.SHA1, hash, digSig)
 	}
 	if err == nil {
-		var peer *xn.Peer
-		// nil, nil are overlays and connectors
+		var (
+			attrs uint64	// XXX should be set!
+			peer *xn.Peer
+		)
 		peer, err = xn.NewPeer(name, peerID, peerCK, peerSK, nil, nil)
 		if err == nil {
-			attrs := uint64(0) // XXX WHAT VALUE?
-			peerInfo, err = reg.NewMemberInfo(attrs, peer)
+			peerInfo, err = xcl.NewMemberInfo(attrs, peer)
 		}
 	}
 	// Take appropriate action --------------------------------------

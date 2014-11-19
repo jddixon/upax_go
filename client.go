@@ -4,9 +4,9 @@ package upax_go
 
 import (
 	"crypto/rsa"
+	xcl "github.com/jddixon/xlCluster_go"
 	xi "github.com/jddixon/xlNodeID_go"
 	xn "github.com/jddixon/xlNode_go"
-	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xu "github.com/jddixon/xlUtil_go"
 )
@@ -17,7 +17,7 @@ import (
 
 type UpaxClient struct {
 	cnx     xt.ConnectionI
-	Members []*reg.MemberInfo
+	Members []*xcl.MemberInfo
 	Version xu.DecimalVersion
 
 	// server side
@@ -33,7 +33,7 @@ type UpaxClient struct {
 
 //
 func NewUpaxClient(ckPriv, skPriv *rsa.PrivateKey, node *xn.Node,
-	members []*reg.MemberInfo, primary uint) (upc *UpaxClient, err error) {
+	members []*xcl.MemberInfo, primary uint) (upc *UpaxClient, err error) {
 
 	if ckPriv == nil || skPriv == nil {
 		err = NilRSAKey

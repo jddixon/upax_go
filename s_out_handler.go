@@ -7,7 +7,7 @@ import (
 	"crypto/cipher"
 	"fmt"
 	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
-	reg "github.com/jddixon/xlReg_go"
+	xcl "github.com/jddixon/xlCluster_go"
 	xt "github.com/jddixon/xlTransport_go"
 	u "github.com/jddixon/xlU_go"
 	xu "github.com/jddixon/xlUtil_go"
@@ -36,7 +36,7 @@ type ClusterOutHandler struct {
 
 	us       *UpaxServer
 	uDir     u.UI
-	peerInfo *reg.MemberInfo
+	peerInfo *xcl.MemberInfo
 
 	myMsgN   uint64 // first message 1, then increment on each send
 	peerMsgN uint64 // expect this to be 1 on the first message
