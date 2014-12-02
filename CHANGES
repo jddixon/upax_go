@@ -1,5 +1,8 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.4.0
+    2014-11-19
+        * API changes: xlCluster_go split from xlReg_go             SLOC 3784
 0.3.2
     2014-10-17
         * API changes xlUtil_go and xlReg_go                        SLOC 3771

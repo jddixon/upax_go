@@ -91,7 +91,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	an, err := reg.NewAdminClient(regServerName, regServerID, regServerEnd,
 		regServerCK, regServerSK, clusterName, uint64(0), K1, EP_COUNT, nil)
 	c.Assert(err, IsNil)
-	an.Run()
+	an.Start()
 	<-an.DoneCh
 
 	clusterID := an.ClusterID // a NodeID, not []byte
@@ -99,7 +99,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		fmt.Println("NIL CLUSTER ID: is xlReg running??")
 	}
 	c.Assert(clusterID, NotNil)
-	clusterSize := an.ClusterSize
+	clusterSize := an.ClusterMaxSize
 	c.Assert(clusterSize, Equals, uint32(K1))
 	epCount := an.EPCount
 	c.Assert(epCount, Equals, uint32(EP_COUNT))
@@ -156,7 +156,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	}
 	// Start the K1 client nodes running ----------------------------
 	for i := uint32(0); i < K1; i++ {
-		uc[i].Run()
+		uc[i].Start()
 	}
 
 	fmt.Println("ALL CLIENTS STARTED")

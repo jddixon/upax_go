@@ -191,9 +191,9 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *xcl.ClusterMember,
 func (us *UpaxServer) InitialHandshake(peerNdx uint32, readyCh chan bool) {
 
 	if peerNdx != us.SelfIndex {
-		if peerNdx >= us.ClusterSize {
+		if peerNdx >= us.ClusterMaxSize {
 			panic(fmt.Sprintf("peer index is %d but cluster size is %d",
-				peerNdx, us.ClusterSize))
+				peerNdx, us.ClusterMaxSize))
 		}
 		peerInfo := us.Members[peerNdx]
 		peerID := peerInfo.Peer.GetNodeID().Value()
@@ -218,7 +218,7 @@ func (us *UpaxServer) Run(interval time.Duration, lifespan int) (err error) {
 	us.Interval = interval
 	us.Lifespan = lifespan
 
-	clusterSize := us.ClusterSize
+	clusterSize := us.ClusterMaxSize
 	us.PeerCnx = make([]xt.ConnectionI, clusterSize)
 	serverHasAcked := make([]chan bool, clusterSize)
 	for i := uint32(0); i < clusterSize; i++ {
