@@ -4,8 +4,8 @@ package upax_go
 
 import (
 	"fmt"
-	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
 	xcl "github.com/jddixon/xlCluster_go"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
 	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xu "github.com/jddixon/xlU_go"
@@ -31,9 +31,9 @@ var (
 )
 
 type ClientInHandler struct {
-	us         *UpaxServer
-	uDir       xu.UI
-	peerInfo   *xcl.MemberInfo
+	us       *UpaxServer
+	uDir     xu.UI
+	peerInfo *xcl.MemberInfo
 
 	myMsgN   uint64 // first message 1, then increment on each send
 	peerMsgN uint64 // expect this to be 1 on the first message
@@ -43,7 +43,7 @@ type ClientInHandler struct {
 	exitState  int
 	msgIn      *UpaxClientMsg
 	msgOut     *UpaxClientMsg
-	errOut	   error
+	errOut     error
 
 	ClientCnxHandler
 }
@@ -72,7 +72,7 @@ func NewClientInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-// Convert a protobuf op into a zero-based tag for use in the 
+// Convert a protobuf op into a zero-based tag for use in the
 // ClientInHandler's dispatch table.
 func clientOp2tag(op UpaxClientMsg_Tag) uint {
 	return uint(op - UpaxClientMsg_Intro)
@@ -143,7 +143,7 @@ func (h *ClientInHandler) Run() (err error) {
 			// XXX log any error
 			if err != nil {
 				h.us.Logger.Printf(
-					"ClientInHandler.Run: clientEncodePadEncrypt returns %s\n", 
+					"ClientInHandler.Run: clientEncodePadEncrypt returns %s\n",
 					err.Error())
 			}
 
@@ -154,7 +154,7 @@ func (h *ClientInHandler) Run() (err error) {
 				// log any error
 				if err != nil {
 					h.us.Logger.Printf(
-						"ClientInHandler.Run: WriteData returns %s\n", 
+						"ClientInHandler.Run: WriteData returns %s\n",
 						err.Error())
 				}
 			}
@@ -213,7 +213,7 @@ func handleClientHello(h *ClientInHandler) (err error) {
 	// On any error silently close the connection.
 	if err != nil {
 		// DEBUG
-		fmt.Printf("handleClientHello closing cnx, error was %s\n", 
+		fmt.Printf("handleClientHello closing cnx, error was %s\n",
 			err.Error())
 		// END
 		h.Cnx.Close()

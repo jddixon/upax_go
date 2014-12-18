@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	xr "github.com/jddixon/rnglib_go"
+	xu "github.com/jddixon/xlUtil_go"
 	. "launchpad.net/gocheck"
 	"strings"
 )
@@ -27,13 +28,17 @@ func (s *XLSuite) TestIgnorability(c *C) {
 func (s *XLSuite) TestPathRE(c *C) {
 	// XXX STUB XXX
 }
-func (s *XLSuite) doTestRegexes(c *C, rng *xr.PRNG, usingSHA1 bool) {
+func (s *XLSuite) doTestRegexes(c *C, rng *xr.PRNG, whichSHA int) {
 	t := rng.Int63()
 	var length int
-	if usingSHA1 {
-		length = 20
-	} else {
-		length = 32
+	switch whichSHA {
+	case xu.USING_SHA1:
+		length = xu.SHA1_BIN_LEN
+	case xu.USING_SHA2:
+		length = xu.SHA2_BIN_LEN
+	case xu.USING_SHA3:
+		length = xu.SHA3_BIN_LEN
+		// XXX DEFAULT = ERROR
 	}
 	key := make([]byte, length)
 	rng.NextBytes(key)
@@ -52,7 +57,8 @@ func (s *XLSuite) doTestRegexes(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	expected := fmt.Sprintf("%d %s %s \"%s\" %s",
 		t, hexKey, hexNodeID, src, path)
 
-	if usingSHA1 {
+	switch whichSHA {
+	case xu.USING_SHA1:
 		c.Assert(bodyLine1RE.MatchString(expected), Equals, true)
 		groups := bodyLine1RE.FindStringSubmatch(expected)
 		c.Assert(groups, Not(IsNil))
@@ -60,7 +66,15 @@ func (s *XLSuite) doTestRegexes(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 		c.Assert(bodyLine3RE.MatchString(expected), Equals, false)
 
-	} else {
+	case xu.USING_SHA2:
+		c.Assert(bodyLine2RE.MatchString(expected), Equals, true)
+		groups := bodyLine2RE.FindStringSubmatch(expected)
+		c.Assert(groups, Not(IsNil))
+		c.Assert(len(groups), Equals, 6) // 5 fields + match on all
+
+		c.Assert(bodyLine1RE.MatchString(expected), Equals, false)
+
+	case xu.USING_SHA3:
 		// DEBUG
 		if !bodyLine3RE.MatchString(expected) {
 			fmt.Printf("DOESN'T MATCH PATTERN: %s\n", expected)
@@ -72,13 +86,15 @@ func (s *XLSuite) doTestRegexes(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		c.Assert(len(groups), Equals, 6)
 
 		c.Assert(bodyLine1RE.MatchString(expected), Equals, false)
+		// XXX DEFAULT = ERROR
 	}
 }
 
 func (s *XLSuite) TestRegexes(c *C) {
 	rng := xr.MakeSimpleRNG()
 	for i := 0; i < 8; i++ {
-		s.doTestRegexes(c, rng, true)
-		s.doTestRegexes(c, rng, false)
+		s.doTestRegexes(c, rng, xu.USING_SHA1)
+		s.doTestRegexes(c, rng, xu.USING_SHA2)
+		s.doTestRegexes(c, rng, xu.USING_SHA3)
 	}
 }

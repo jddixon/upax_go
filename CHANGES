@@ -1,5 +1,11 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.5.0
+    2014-12-18
+        * add SHA256 support, use xlUtil_go SHA constants           SLOC 3816
+0.4.1
+    2014-12-02
+        * add version.go, adjust code to lower-level API changes    SLOC 3785
 0.4.0
     2014-11-19
         * API changes: xlCluster_go split from xlReg_go             SLOC 3784

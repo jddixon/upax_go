@@ -9,6 +9,7 @@ import (
 	xr "github.com/jddixon/rnglib_go"
 	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
+	xu "github.com/jddixon/xlUtil_go"
 	xf "github.com/jddixon/xlUtil_go/lfs"
 	"io/ioutil"
 	. "launchpad.net/gocheck"
@@ -21,8 +22,9 @@ var _ = fmt.Print
 
 func (s *XLSuite) TestCluster(c *C) {
 	rng := xr.MakeSimpleRNG()
-	s.doTestCluster(c, rng, true)  // usingSHA1
-	s.doTestCluster(c, rng, false) // not
+	s.doTestCluster(c, rng, xu.USING_SHA1)
+	s.doTestCluster(c, rng, xu.USING_SHA2)
+	s.doTestCluster(c, rng, xu.USING_SHA3)
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -38,10 +40,10 @@ func (s *XLSuite) TestCluster(c *C) {
 // build of xlReg; and an instance of that build must be running.
 /////////////////////////////////////////////////////////////////////
 
-func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
+func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, whichSHA int) {
 
 	if VERBOSITY > 0 {
-		fmt.Printf("TEST_CLUSTER usingSHA1 = %v\n", usingSHA1)
+		fmt.Printf("TEST_CLUSTER whichSHA = %v\n", whichSHA)
 	}
 
 	// read regCred.dat to get keys etc for a registry --------------
@@ -183,7 +185,7 @@ func (s *XLSuite) doTestCluster(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		err = uc[i].PersistClusterMember()
 		c.Assert(err, IsNil)
 		us[i], err = NewUpaxServer(
-			ckPriv[i], skPriv[i], &uc[i].ClusterMember, usingSHA1)
+			ckPriv[i], skPriv[i], &uc[i].ClusterMember, whichSHA)
 		c.Assert(err, IsNil)
 		c.Assert(us[i], NotNil)
 	}

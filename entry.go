@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	xc "github.com/jddixon/xlCrypto_go"
+	xu "github.com/jddixon/xlUtil_go"
 	"strconv"
 	"strings"
 	"time"
@@ -23,7 +23,7 @@ var (
 
 type LogEntry struct {
 	timestamp int64  // nanoseconds from the Epoch (1 Jan 1970 0:0:0)
-	key       []byte // SHA 1 or 3 content key
+	key       []byte // SHA 1/2/3 content key
 	nodeID    []byte // of the committer
 	src       string // free-form
 	path      string // POSIX path, email address, and similar
@@ -37,8 +37,8 @@ func NewLogEntry(t int64, key []byte, nodeID []byte,
 	}
 	if key == nil || nodeID == nil {
 		err = NilKeyOrNodeID
-	} else if (len(key) != xc.SHA1_BYTE_LEN && len(key) != xc.SHA3_BYTE_LEN) ||
-		(len(nodeID) != xc.SHA1_BYTE_LEN && len(nodeID) != xc.SHA3_BYTE_LEN) {
+	} else if (len(key) != xu.SHA1_BIN_LEN && len(key) != xu.SHA3_BIN_LEN) ||
+		(len(nodeID) != xu.SHA1_BIN_LEN && len(nodeID) != xu.SHA3_BIN_LEN) {
 		err = InvalidKeyOrNodeID
 	}
 	if err == nil {
@@ -90,7 +90,7 @@ func (e *LogEntry) Timestamp() int64 {
 
 // Whether the key is an SHA1 key.
 func (e *LogEntry) UsingSHA1() bool {
-	return len(e.key) == xc.SHA1_BYTE_LEN
+	return len(e.key) == xu.SHA1_BIN_LEN
 }
 
 // EQUAL ////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ func (e *LogEntry) String() string {
 		e.src, e.path)
 }
 
-func ParseLogEntry(s string, usingSHA1 bool) (e *LogEntry, err error) {
+func ParseLogEntry(s string, whichSHA int) (e *LogEntry, err error) {
 	var groups []string
 	var t, key, nodeID, src, path string
 	var tInt int
@@ -140,10 +140,14 @@ func ParseLogEntry(s string, usingSHA1 bool) (e *LogEntry, err error) {
 	var keyBuf, nodeIDBuf []byte
 
 	s = strings.TrimSpace(s)
-	if usingSHA1 {
+	switch whichSHA {
+	case xu.USING_SHA1:
 		groups = bodyLine1RE.FindStringSubmatch(s)
-	} else {
+	case xu.USING_SHA2:
+		groups = bodyLine2RE.FindStringSubmatch(s)
+	case xu.USING_SHA3:
 		groups = bodyLine3RE.FindStringSubmatch(s)
+		// XXX DEFAULT = ERROR
 	}
 	if groups == nil {
 		err = NotAValidLogEntry

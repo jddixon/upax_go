@@ -14,6 +14,7 @@ import (
 	xr "github.com/jddixon/rnglib_go"
 	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
+	xu "github.com/jddixon/xlUtil_go"
 	xf "github.com/jddixon/xlUtil_go/lfs"
 	"io/ioutil"
 	. "launchpad.net/gocheck"
@@ -26,17 +27,18 @@ var _ = fmt.Print
 
 func (s *XLSuite) TestPair(c *C) {
 	rng := xr.MakeSimpleRNG()
-	s.doTestPair(c, rng, true)  // usingSHA1
-	s.doTestPair(c, rng, false) // not
+	s.doTestPair(c, rng, xu.USING_SHA1)
+	s.doTestPair(c, rng, xu.USING_SHA2)
+	s.doTestPair(c, rng, xu.USING_SHA3)
 }
 
 // This was copied from cluster_test.go and minimal changes have been
 // made.
 //
-func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
+func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, whichSHA int) {
 
 	if VERBOSITY > 0 {
-		fmt.Printf("TEST_PAIR usingSHA1 = %v\n", usingSHA1)
+		fmt.Printf("TEST_PAIR whichSHA = %v\n", whichSHA)
 	}
 
 	// read regCred.dat to get keys etc for a registry --------------
@@ -187,7 +189,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, usingSHA1 bool) {
 		err = uc[i].PersistClusterMember() // sometimes panics
 		c.Assert(err, IsNil)
 		us[i], err = NewUpaxServer(
-			ckPriv[i], skPriv[i], &uc[i].ClusterMember, usingSHA1)
+			ckPriv[i], skPriv[i], &uc[i].ClusterMember, whichSHA)
 		c.Assert(err, IsNil)
 		c.Assert(us[i], NotNil)
 	}

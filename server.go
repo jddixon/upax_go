@@ -6,8 +6,8 @@ import (
 	"bufio"
 	"crypto/rsa"
 	"fmt"
-	xi "github.com/jddixon/xlNodeID_go"
 	xcl "github.com/jddixon/xlCluster_go"
+	xi "github.com/jddixon/xlNodeID_go"
 	xt "github.com/jddixon/xlTransport_go"
 	u "github.com/jddixon/xlU_go"
 	xu "github.com/jddixon/xlUtil_go"
@@ -32,7 +32,7 @@ const (
 //
 // We are guaranteed that the file exists and that m is not nil.
 //
-func loadEntries(pathToFTLog string, m *xi.IDMap, usingSHA1 bool) (
+func loadEntries(pathToFTLog string, m *xi.IDMap, whichSHA int) (
 	count int, err error) {
 
 	f, err := os.OpenFile(pathToFTLog, os.O_RDONLY, 0600)
@@ -42,7 +42,7 @@ func loadEntries(pathToFTLog string, m *xi.IDMap, usingSHA1 bool) (
 		for scanner.Scan() {
 			var entry *LogEntry
 			line := scanner.Text()
-			entry, err = ParseLogEntry(line, usingSHA1)
+			entry, err = ParseLogEntry(line, whichSHA)
 			if err != nil {
 				break
 			}
@@ -83,7 +83,7 @@ type UpaxServer struct {
 }
 
 func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *xcl.ClusterMember,
-	usingSHA1 bool) (us *UpaxServer, err error) {
+	whichSHA int) (us *UpaxServer, err error) {
 
 	var (
 		count     int
@@ -150,7 +150,7 @@ func NewUpaxServer(ckPriv, skPriv *rsa.PrivateKey, cm *xcl.ClusterMember,
 		if err == nil {
 			if found {
 				fmt.Printf("ftLog file exists\n")
-				count, err = loadEntries(pathToFTLog, entries, usingSHA1)
+				count, err = loadEntries(pathToFTLog, entries, whichSHA)
 				if err == nil {
 					// reopen it 0600 for appending
 					ftLogFile, err = os.OpenFile(pathToFTLog,

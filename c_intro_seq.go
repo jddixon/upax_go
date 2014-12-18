@@ -33,13 +33,13 @@ func doCIntroMsg(h *ClientInHandler) {
 	}()
 	// Examine incoming message -------------------------------------
 	var (
-		peerMsg                         *UpaxClientMsg
+		peerMsg                           *UpaxClientMsg
 		name                              string
 		token                             *UpaxClientMsg_Token
 		rawID, ckRaw, skRaw, salt, digSig []byte
-		peerCK, peerSK                *rsa.PublicKey
-		peerID                          *xi.NodeID
-		peerInfo                        *xcl.MemberInfo
+		peerCK, peerSK                    *rsa.PublicKey
+		peerID                            *xi.NodeID
+		peerInfo                          *xcl.MemberInfo
 	)
 	// expect peerMsgN to be 1
 	err = checkCMsgN(h)
@@ -86,8 +86,8 @@ func doCIntroMsg(h *ClientInHandler) {
 	}
 	if err == nil {
 		var (
-			attrs uint64	// XXX should be set!
-			peer *xn.Peer
+			attrs uint64 // XXX should be set!
+			peer  *xn.Peer
 		)
 		peer, err = xn.NewPeer(name, peerID, peerCK, peerSK, nil, nil)
 		if err == nil {

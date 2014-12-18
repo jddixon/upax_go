@@ -8,6 +8,7 @@ import (
 	"fmt"
 	xr "github.com/jddixon/rnglib_go"
 	xi "github.com/jddixon/xlNodeID_go"
+	xu "github.com/jddixon/xlUtil_go"
 	xf "github.com/jddixon/xlUtil_go/lfs"
 	. "launchpad.net/gocheck"
 	"os"
@@ -18,15 +19,19 @@ import (
 // for loadEntries()
 import ()
 
-func (s *XLSuite) makeEntryData(c *C, rng *xr.PRNG, usingSHA1 bool) (
+func (s *XLSuite) makeEntryData(c *C, rng *xr.PRNG, whichSHA int) (
 	t int64, key, nodeID []byte, src, path string) {
 
 	t = rng.Int63() // timestamp
 	var length int
-	if usingSHA1 {
-		length = 20
-	} else {
-		length = 32
+	switch whichSHA {
+	case xu.USING_SHA1:
+		length = xu.SHA1_BIN_LEN
+	case xu.USING_SHA2:
+		length = xu.SHA2_BIN_LEN
+	case xu.USING_SHA3:
+		length = xu.SHA3_BIN_LEN
+		// XXX DEFAULT = ERROR
 	}
 	key = make([]byte, length)
 	rng.NextBytes(key)
@@ -41,9 +46,9 @@ func (s *XLSuite) makeEntryData(c *C, rng *xr.PRNG, usingSHA1 bool) (
 	}
 	return
 }
-func (s *XLSuite) doTestEntry(c *C, rng *xr.PRNG, usingSHA1 bool) {
+func (s *XLSuite) doTestEntry(c *C, rng *xr.PRNG, whichSHA int) {
 
-	t, key, nodeID, src, path := s.makeEntryData(c, rng, usingSHA1)
+	t, key, nodeID, src, path := s.makeEntryData(c, rng, whichSHA)
 	hexKey := hex.EncodeToString(key)
 	hexNodeID := hex.EncodeToString(nodeID)
 
@@ -62,7 +67,7 @@ func (s *XLSuite) doTestEntry(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	serialization := entry.String()
 	c.Assert(serialization, Equals, expected)
 
-	backAgain, err := ParseLogEntry(serialization, usingSHA1)
+	backAgain, err := ParseLogEntry(serialization, whichSHA)
 	c.Assert(err, IsNil)
 	reserialization := backAgain.String()
 	c.Assert(reserialization, Equals, serialization)
@@ -70,8 +75,9 @@ func (s *XLSuite) doTestEntry(c *C, rng *xr.PRNG, usingSHA1 bool) {
 
 func (s *XLSuite) TestEntry(c *C) {
 	rng := xr.MakeSimpleRNG()
-	s.doTestEntry(c, rng, true)
-	s.doTestEntry(c, rng, false)
+	s.doTestEntry(c, rng, xu.USING_SHA1)
+	s.doTestEntry(c, rng, xu.USING_SHA2)
+	s.doTestEntry(c, rng, xu.USING_SHA3)
 }
 
 // Test the function used by the server to load log entries from
@@ -80,10 +86,11 @@ func (s *XLSuite) TestEntry(c *C) {
 //
 func (s *XLSuite) TestLoadEntries(c *C) {
 	rng := xr.MakeSimpleRNG()
-	s.doTestLoadEntries(c, rng, true)  // using SHA1
-	s.doTestLoadEntries(c, rng, false) // not using SHA1
+	s.doTestLoadEntries(c, rng, xu.USING_SHA1)
+	s.doTestLoadEntries(c, rng, xu.USING_SHA2)
+	s.doTestLoadEntries(c, rng, xu.USING_SHA3)
 }
-func (s *XLSuite) doTestLoadEntries(c *C, rng *xr.PRNG, usingSHA1 bool) {
+func (s *XLSuite) doTestLoadEntries(c *C, rng *xr.PRNG, whichSHA int) {
 	K := 16 + rng.Intn(16)
 
 	// create a unique name for a scratch file
@@ -102,7 +109,7 @@ func (s *XLSuite) doTestLoadEntries(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// to disk
 	var entries []*LogEntry
 	for i := 0; i < K; i++ {
-		t, key, nodeID, src, path := s.makeEntryData(c, rng, usingSHA1)
+		t, key, nodeID, src, path := s.makeEntryData(c, rng, whichSHA)
 		entry, err := NewLogEntry(t, key, nodeID, src, path)
 		c.Assert(err, IsNil)
 		strEntry := entry.String()
@@ -118,7 +125,7 @@ func (s *XLSuite) doTestLoadEntries(c *C, rng *xr.PRNG, usingSHA1 bool) {
 	// use UpaxServer.LoadEntries to load the stuff in the file.
 	m, err := xi.NewNewIDMap()
 	c.Assert(err, IsNil)
-	count, err := loadEntries(pathToFile, m, usingSHA1)
+	count, err := loadEntries(pathToFile, m, whichSHA)
 	c.Assert(err, IsNil)
 	c.Assert(count, Equals, K) // K entries loaded.
 

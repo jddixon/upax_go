@@ -27,10 +27,10 @@ type Memory struct {
 	RunningXOR []byte // of Memory.Values
 	Pending    []*Datum
 	DataFile   *os.File // open in append mode
-	UsingSHA1  bool
+	WhichSHA   int
 }
 
-func NewMemory(pathToDataFile string, usingSHA1 bool) (m *Memory, err error) {
+func NewMemory(pathToDataFile string, whichSHA int) (m *Memory, err error) {
 
 	// XXX open the data file in binary append mode; we will want this to
 	// be flushed on every write with a call to f.Sync() and eventually
@@ -38,8 +38,8 @@ func NewMemory(pathToDataFile string, usingSHA1 bool) (m *Memory, err error) {
 	f, err := os.OpenFile(pathToDataFile, os.O_CREATE|os.O_APPEND, 0666)
 	if err == nil {
 		m = &Memory{
-			DataFile:  f,
-			UsingSHA1: usingSHA1,
+			DataFile: f,
+			WhichSHA: whichSHA,
 		}
 	}
 	return

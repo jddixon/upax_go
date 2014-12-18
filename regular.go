@@ -17,6 +17,9 @@ const (
 	BODY_LINE_1_PAT = `^(\d+) ([0-9a-fA-F]{40}) ([0-9a-fA-F]{40}) "([^"]*)" (` +
 		PATH_PAT + `)$`
 
+	BODY_LINE_2_PAT = `^(\d+) ([0-9a-fA-F]{64}) ([0-9a-fA-F]{64}) "([^"]*)" (` +
+		PATH_PAT + `)$`
+
 	BODY_LINE_3_PAT = `^(\d+) ([0-9a-fA-F]{64}) ([0-9a-fA-F]{64}) "([^"]*)" (` +
 		PATH_PAT + `)$`
 
@@ -27,6 +30,7 @@ var (
 	ignorableRE = regexp.MustCompile(IGNORABLE_PAT)
 	pathRE      = regexp.MustCompile(PATH_PAT)
 	bodyLine1RE = regexp.MustCompile(BODY_LINE_1_PAT)
+	bodyLine2RE = regexp.MustCompile(BODY_LINE_2_PAT)
 	bodyLine3RE = regexp.MustCompile(BODY_LINE_3_PAT)
 )
 
@@ -42,6 +46,10 @@ func PathRE() *regexp.Regexp {
 
 func BodyLine1RE() *regexp.Regexp {
 	return bodyLine1RE
+}
+
+func BodyLine2RE() *regexp.Regexp {
+	return bodyLine2RE
 }
 
 func BodyLine3RE() *regexp.Regexp {
