@@ -11,44 +11,25 @@
 <div class="content">
 <h1 class="appTop">upax_go</h1>
 
-<p>A distributed content-keyed data storage system written in the <strong>Go</strong>
-programming language.</p>
+<p>A distributed content-keyed data storage system.</p>
 
-<p>Currently the implementation has three parts:</p>
-
-<ul>
-<li><a href="upaxServer.html">server</a>,</li>
-<li><a href="upaxClient.html">client</a>, and</li>
-<li><a href="ftLog.html">fault-tolerant log</a>.<br /></li>
-</ul>
-
-<p>All of these are written
-in the Go programming language and will make use of the
+<p>In the short term, the implementation will have three parts: server,
+client, and fault-tolerant log (ftlog).  All of these will be written
+in Go and will make use of the
 <a href="https://github.com/jddixon/xlattice_go">xlattice_go</a> communications library.
 (More extensive information on XLattice, although somewhat dated,
-is available at the <a href="http://www.xlattice.org">XLattice website</a>.)</p>
-
-<p>A later implementation of upax_go
-is expected to add a <a href="upaxMirror.html">UpaxMirror</a>
-which will be capable of dealing with client queries but not able to add
-to the data store.  That is, clients can use the UpaxMirror as a fast
-local cache, but to add files to the distributed storage system
-they will have to go through a UpaxServer instead.</p>
+is available at the XLattice <a href="http://www.xlattice.org">website</a>.)</p>
 
 <p>Upax accepts and stores data files of arbitrary size.  These are
-identified by their SHA3-256 content key instead of a file name.
-This is the 256-bit version of Secure Hash Algorithm 3, also known
-as Keccak.  The content key is the hash of the contents of the file.</p>
-
-<p>Early versions of Upax
+identified by their SHA3-256 content key.  Early versions of Upax
 will store a copy of a file on each participating server node.
 Later versions will store fewer copies, probably at least three,
-deleting the least recently used where storage capacity limits are neared
+deleting the least recently used where storage capacity is neared
 and in effect migrating data to machines where it is more frequently
 used.</p>
 
 <p>Upax servers and clients are XLattice nodes and so are identified by
-unique 256 bit keys, NodeIDs.  Each node has a pair of RSA keys, one used
+unique 256 bit keys, NodeIDs.  Each has a pair of RSA keys, one used
 for encryption and one used for digital signatures.  At least in the
 near term Upax servers will only accept messages from known hosts.
 Specifically, a client must prove that it has the private RSA key
