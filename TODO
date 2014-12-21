@@ -1,5 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
+2014-12-20
+    * the versions of README.md and and ghpDoc/index.md on github
+        are better than the current versions and so the latter should
+        be brought into conformit with the github versions.
+
 2014-11-19
     * intro_seq.t IntroMsg should set attrs
 
