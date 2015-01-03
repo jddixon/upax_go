@@ -1,1 +1,4 @@
+echo "Copying regCred.dat from /var/app/xlReg.'
+echo 'This will NOT help unless that information is current!'
+echo 'You may need to rebuild, install, and restart xlReg.'
 cp /var/app/xlReg/regCred.dat .

@@ -5,6 +5,8 @@ github.com/jddixon/upax_go/TODO
         handleHello closing cnx, error was crypto/rsa: decryption error	* OK
         - regCred.dat did not match current xlReg						* OK
 
+    * version.go and CHANGES are out of sync on github, need to update
+
 2014-12-20
     * the versions of README.md and and ghpDoc/index.md on github
         are more recent than the current versions and so the latter 
