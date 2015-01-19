@@ -1,6 +1,7 @@
 upax_go
 =======
 
+
 A distributed content-keyed data storage system written in the Go
 programming language..
 
@@ -48,5 +49,5 @@ is likely that upax_go will retain these characteristics in the near
 term.
 
 ## On-line Documentation
-
-More information on the **upax_go** project can be found [here](https://jddixon.github.io/upax_go)
+More information on the **upax_go** project can be found 
+[here](https://jddixon.github.io/upax_go)

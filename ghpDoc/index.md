@@ -1,4 +1,5 @@
-<h1 class="appTop">upax_go</h1>
+<h1 class="libTop">upax_go</h1>
+
 
 A distributed content-keyed data storage system written in the Go
 programming language..
