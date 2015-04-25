@@ -1,5 +1,9 @@
 github.com/jddixon/upax_go/TODO
 
+2015-04-24
+    * modify to be conpatible with xlProtocol_go/aes_cnx changes        * DONE
+    * all tests mush succeed! (currently causes xlReg to panic)
+
 2014-12-31
     * test go returns two instances of						            * OK
         handleHello closing cnx, error was crypto/rsa: decryption error	* OK

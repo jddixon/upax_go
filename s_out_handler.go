@@ -29,10 +29,10 @@ func init() {
 // Each Upax server opens a connection to each other server in the cluster.
 //
 type ClusterOutHandler struct {
-	iv1, key1, iv2, key2, salt1, salt2 []byte
-	engineS                            cipher.Block
-	encrypterS                         cipher.BlockMode
-	decrypterS                         cipher.BlockMode
+	key1, key2, salt1, salt2 []byte
+	engineS                  cipher.Block
+	encrypterS               cipher.BlockMode
+	decrypterS               cipher.BlockMode
 
 	us       *UpaxServer
 	uDir     u.UI
@@ -125,26 +125,24 @@ func (h *ClusterOutHandler) Run() (err error) {
 //
 func handleOutPeerHello(h *ClusterOutHandler) (err error) {
 	var (
-		ciphertext, iv1, key1, salt1 []byte
-		version1                     uint32
+		ciphertext, key1, salt1 []byte
+		version1                uint32
 	)
 	ciphertext, err = h.ReadData()
 	if err == nil {
-		iv1, key1, salt1, version1,
-			err = xa.ServerDecodeHello(ciphertext, h.us.ckPriv)
+		key1, salt1, version1,
+			err = xa.ServerDecryptHello(ciphertext, h.us.ckPriv)
 		_ = version1 // ignore whatever version they propose
 	}
 	if err == nil {
 		version2 := serverVersion
-		iv2, key2, salt2, ciphertextOut, err := xa.ServerEncodeHelloReply(
-			iv1, key1, salt1, uint32(version2))
+		key2, salt2, ciphertextOut, err := xa.ServerEncryptHelloReply(
+			key1, salt1, uint32(version2))
 		if err == nil {
 			err = h.WriteData(ciphertextOut)
 		}
 		if err == nil {
-			h.iv1 = iv1
 			h.key1 = key1
-			h.iv2 = iv2
 			h.key2 = key2
 			h.salt1 = salt1
 			h.salt2 = salt2

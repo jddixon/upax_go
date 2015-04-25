@@ -5,7 +5,7 @@ package upax_go
 import (
 	"crypto"
 	"crypto/aes"
-	"crypto/cipher"
+	//"crypto/cipher"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
@@ -46,8 +46,8 @@ func (upc *UpaxClient) writeMsg(m *UpaxClientMsg) (err error) {
 func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 	upcx *xt.TcpConnection, decidedVersion uint32, err error) {
 	var (
-		ciphertext1, iv1, key1, salt1, salt1c []byte
-		ciphertext2, iv2, key2, salt2         []byte
+		ciphertext1, key1, salt1, salt1c []byte
+		ciphertext2, key2, salt2         []byte
 	)
 	// Set up connection to server. -----------------------------
 	ctor, err := xt.NewTcpConnector(upc.serverEnd)
@@ -61,8 +61,8 @@ func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 	// Send HELLO -----------------------------------------------
 	if err == nil {
 		upc.Cnx = upcx
-		ciphertext1, iv1, key1, salt1,
-			err = xa.ClientEncodeHello(proposedVersion, upc.serverCK)
+		ciphertext1, key1, salt1,
+			err = xa.ClientEncryptHello(proposedVersion, upc.serverCK)
 	}
 	if err == nil {
 		err = upc.WriteData(ciphertext1)
@@ -72,22 +72,21 @@ func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 		ciphertext2, err = upc.ReadData()
 	}
 	if err == nil {
-		iv2, key2, salt2, salt1c, decidedVersion,
-			err = xa.ClientDecodeHelloReply(ciphertext2, iv1, key1)
+		key2, salt2, salt1c, decidedVersion,
+			err = xa.ClientDecryptHelloReply(ciphertext2, key1)
 		_ = salt1c // XXX
 	}
 	// Set up AES engines ---------------------------------------
 	if err == nil {
 		upc.salt1 = salt1
-		upc.iv2 = iv2
 		upc.key2 = key2
 		upc.salt2 = salt2
 		upc.Version = xu.DecimalVersion(decidedVersion)
 		upc.engine, err = aes.NewCipher(key2)
-		if err == nil {
-			upc.encrypter = cipher.NewCBCEncrypter(upc.engine, iv2)
-			upc.decrypter = cipher.NewCBCDecrypter(upc.engine, iv2)
-		}
+		//if err == nil {
+		//	upc.encrypter = cipher.NewCBCEncrypter(upc.engine, iv2)
+		//	upc.decrypter = cipher.NewCBCDecrypter(upc.engine, iv2)
+		//}
 	}
 	return
 }
