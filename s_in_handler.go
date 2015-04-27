@@ -4,6 +4,7 @@ package upax_go
 
 import (
 	"fmt"
+	xr "github.com/jddixon/rnglib_go"
 	xcl "github.com/jddixon/xlCluster_go"
 	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
 	reg "github.com/jddixon/xlReg_go"
@@ -92,10 +93,6 @@ func (h *ClusterInHandler) Run() (err error) {
 
 	// This adds an AES key2 to the handler.
 	err = handleClusterHello(h)
-	if err == nil {
-		// Given key2 create encrypt and decrypt engines.
-		err = h.SetupSessionKey()
-	}
 	for err == nil {
 		var (
 			tag uint
@@ -105,7 +102,7 @@ func (h *ClusterInHandler) Run() (err error) {
 		var ciphertext []byte
 		ciphertext, err = h.ReadData()
 		if err == nil {
-			h.msgIn, err = clusterDecryptUnpadDecode(ciphertext, h.decrypter)
+			h.msgIn, err = h.clusterDecryptUnpadDecode(ciphertext)
 		}
 		if err != nil {
 			break
@@ -138,7 +135,7 @@ func (h *ClusterInHandler) Run() (err error) {
 
 		// encode, pad, and encrypt the UpaxClusterMsg object
 		if h.msgOut != nil {
-			ciphertext, err = clusterEncodePadEncrypt(h.msgOut, h.encrypter)
+			ciphertext, err = h.clusterEncodePadEncrypt(h.msgOut)
 
 			// XXX log any error
 			if err != nil {
@@ -183,28 +180,27 @@ func (h *ClusterInHandler) Run() (err error) {
 // one-time key+iv.
 func handleClusterHello(h *ClusterInHandler) (err error) {
 	var (
-		ciphertext, key1, salt1 []byte
-		version1                uint32
+		ciphertext, ciphertextOut []byte
+		version1, version2        uint32
+		sOneShot, sSession        *xa.AesSession
 	)
+	rng := xr.MakeSystemRNG()
 	ciphertext, err = h.ReadData()
 	if err == nil {
-		key1, salt1, version1,
-			err = xa.ServerDecryptHello(ciphertext, h.us.ckPriv)
-		_ = version1 // ignore whatever version they propose
+		sOneShot, version1, err = xa.ServerDecryptHello(
+			ciphertext, h.us.ckPriv, rng)
+		_ = version1 // we don't actually use this
 	}
 	if err == nil {
-		version2 := serverVersion
-		key2, salt2, ciphertextOut, err := xa.ServerEncryptHelloReply(
-			key1, salt1, uint32(version2))
+		version2 = uint32(serverVersion) // a global !
+		sSession, ciphertextOut, err = xa.ServerEncryptHelloReply(
+			sOneShot, version2)
 		if err == nil {
+			h.AesSession = *sSession
 			err = h.WriteData(ciphertextOut)
 		}
 		if err == nil {
-			h.key1 = key1
-			h.key2 = key2
-			h.salt1 = salt1
-			h.salt2 = salt2
-			h.version = uint32(version2)
+			h.version = version2
 			h.State = S_HELLO_RCVD
 		}
 	}

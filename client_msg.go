@@ -4,8 +4,6 @@ package upax_go
 
 import (
 	"crypto"
-	"crypto/aes"
-	//"crypto/cipher"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
@@ -22,7 +20,7 @@ import (
 func (upc *UpaxClient) readMsg() (m *UpaxClientMsg, err error) {
 	inBuf, err := upc.ReadData()
 	if err == nil && inBuf != nil {
-		m, err = clientDecryptUnpadDecode(inBuf, upc.decrypter)
+		m, err = upc.clientDecryptUnpadDecode(inBuf)
 	}
 	return
 }
@@ -31,7 +29,7 @@ func (upc *UpaxClient) readMsg() (m *UpaxClientMsg, err error) {
 func (upc *UpaxClient) writeMsg(m *UpaxClientMsg) (err error) {
 	var data []byte
 	// serialize, marshal the message
-	data, err = clientEncodePadEncrypt(m, upc.encrypter)
+	data, err = upc.clientEncodePadEncrypt(m)
 	if err == nil {
 		err = upc.WriteData(data)
 	}
@@ -46,9 +44,10 @@ func (upc *UpaxClient) writeMsg(m *UpaxClientMsg) (err error) {
 func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 	upcx *xt.TcpConnection, decidedVersion uint32, err error) {
 	var (
-		ciphertext1, key1, salt1, salt1c []byte
-		ciphertext2, key2, salt2         []byte
+		ciphertext1, ciphertext2 []byte
+		cOneShot, cSession       *xa.AesSession
 	)
+	rng := xr.MakeSystemRNG()
 	// Set up connection to server. -----------------------------
 	ctor, err := xt.NewTcpConnector(upc.serverEnd)
 	if err == nil {
@@ -61,8 +60,8 @@ func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 	// Send HELLO -----------------------------------------------
 	if err == nil {
 		upc.Cnx = upcx
-		ciphertext1, key1, salt1,
-			err = xa.ClientEncryptHello(proposedVersion, upc.serverCK)
+		cOneShot, ciphertext1, err = xa.ClientEncryptHello(
+			proposedVersion, upc.serverCK, rng)
 	}
 	if err == nil {
 		err = upc.WriteData(ciphertext1)
@@ -72,21 +71,13 @@ func (upc *UpaxClient) SessionSetup(proposedVersion uint32) (
 		ciphertext2, err = upc.ReadData()
 	}
 	if err == nil {
-		key2, salt2, salt1c, decidedVersion,
-			err = xa.ClientDecryptHelloReply(ciphertext2, key1)
-		_ = salt1c // XXX
+		cSession, decidedVersion, err = xa.ClientDecryptHelloReply(
+			cOneShot, ciphertext2)
 	}
 	// Set up AES engines ---------------------------------------
 	if err == nil {
-		upc.salt1 = salt1
-		upc.key2 = key2
-		upc.salt2 = salt2
+		upc.AesSession = *cSession
 		upc.Version = xu.DecimalVersion(decidedVersion)
-		upc.engine, err = aes.NewCipher(key2)
-		//if err == nil {
-		//	upc.encrypter = cipher.NewCBCEncrypter(upc.engine, iv2)
-		//	upc.decrypter = cipher.NewCBCDecrypter(upc.engine, iv2)
-		//}
 	}
 	return
 }

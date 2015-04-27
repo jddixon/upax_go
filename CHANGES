@@ -1,8 +1,12 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.5.2
+    2015-04-27
+        * further changes to aes_cnx, some absorbing code here      SLOC 3208
 0.5.1
     2015-04-24
         * modify to be compatible with changes in aes_cnx           SLOC 3278
+        * cause of SLOC changes unknown
 0.5.0
     2014-12-18
         * add SHA256 support, use xlUtil_go SHA constants           SLOC 3816

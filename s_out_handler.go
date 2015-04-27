@@ -3,9 +3,8 @@ package upax_go
 // upax_go/s_out_handler.go
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
 	"fmt"
+	xr "github.com/jddixon/rnglib_go"
 	xcl "github.com/jddixon/xlCluster_go"
 	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
 	xt "github.com/jddixon/xlTransport_go"
@@ -29,10 +28,10 @@ func init() {
 // Each Upax server opens a connection to each other server in the cluster.
 //
 type ClusterOutHandler struct {
-	key1, key2, salt1, salt2 []byte
-	engineS                  cipher.Block
-	encrypterS               cipher.BlockMode
-	decrypterS               cipher.BlockMode
+	//key1, key2, salt1, salt2 []byte
+	//engineS                  cipher.Block
+	//encrypterS               cipher.BlockMode
+	//decrypterS               cipher.BlockMode
 
 	us       *UpaxServer
 	uDir     u.UI
@@ -72,14 +71,14 @@ func NewClusterOutHandler(us *UpaxServer, conn xt.ConnectionI) (
 // XXX This duplicates ClusterInHandler.SetupPeerSessionKey: some
 // refactoring is needed.
 //
-func SetupPeerSessionOutKey(h *ClusterOutHandler) (err error) {
-	h.engineS, err = aes.NewCipher(h.key2)
-	if err == nil {
-		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
-		h.decrypterS = cipher.NewCBCDecrypter(h.engineS, h.iv2)
-	}
-	return
-}
+//func SetupPeerSessionOutKey(h *ClusterOutHandler) (err error) {
+//	h.engineS, err = aes.NewCipher(h.key2)
+//	if err == nil {
+//		h.encrypterS = cipher.NewCBCEncrypter(h.engineS, h.iv2)
+//		h.decrypterS = cipher.NewCBCDecrypter(h.engineS, h.iv2)
+//	}
+//	return
+//}
 
 // This is unnecessary if only one thread steps the message number.
 //
@@ -102,12 +101,12 @@ func (h *ClusterOutHandler) Run() (err error) {
 		}
 	}()
 
-	// This adds an AES iv2 and key2 to the handler.
+	// This adds an sSession (AES key2) to the handler.
 	err = handleOutPeerHello(h)
-	if err == nil {
-		// Given iv2, key2 create encrypt and decrypt engines.
-		err = SetupPeerSessionOutKey(h)
-	}
+	//if err == nil {
+	//	// Given iv2, key2 create encrypt and decrypt engines.
+	//	err = SetupPeerSessionOutKey(h)
+	//}
 	return
 }
 
@@ -125,27 +124,27 @@ func (h *ClusterOutHandler) Run() (err error) {
 //
 func handleOutPeerHello(h *ClusterOutHandler) (err error) {
 	var (
-		ciphertext, key1, salt1 []byte
-		version1                uint32
+		ciphertext, ciphertextOut []byte
+		version1                  uint32
+		sOneShot, sSession        *xa.AesSession
+		rng                       *xr.PRNG
 	)
 	ciphertext, err = h.ReadData()
 	if err == nil {
-		key1, salt1, version1,
-			err = xa.ServerDecryptHello(ciphertext, h.us.ckPriv)
-		_ = version1 // ignore whatever version they propose
+		rng = xr.MakeSystemRNG()
+		sOneShot, version1, err = xa.ServerDecryptHello(
+			ciphertext, h.us.ckPriv, rng)
 	}
 	if err == nil {
-		version2 := serverVersion
-		key2, salt2, ciphertextOut, err := xa.ServerEncryptHelloReply(
-			key1, salt1, uint32(version2))
+		_ = version1 // just ignored for now
+		version2 := uint32(serverVersion)
+		sSession, ciphertextOut, err = xa.ServerEncryptHelloReply(
+			sOneShot, version2)
 		if err == nil {
+			h.AesSession = *sSession
 			err = h.WriteData(ciphertextOut)
 		}
 		if err == nil {
-			h.key1 = key1
-			h.key2 = key2
-			h.salt1 = salt1
-			h.salt2 = salt2
 			h.version = uint32(version2)
 			h.State = S_HELLO_RCVD
 		}
