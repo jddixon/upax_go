@@ -1,30 +1,29 @@
 github.com/jddixon/upax_go/TODO
 
+2015-06-10
+    * unresolved API problems in node/
+
 2015-04-27
     * code needs cleaning up after changes to match new aes_cnx API
     
 2015-04-24
     * modify to be conpatible with xlProtocol_go/aes_cnx changes        * DONE
-    * all tests must succeed! (currently causes xlReg to panic)
+    * all tests must succeed! (currently causes xlReg to panic)         * FIXED
 
 2014-12-31
     * test go returns two instances of						            * OK
         handleHello closing cnx, error was crypto/rsa: decryption error	* OK
         - regCred.dat did not match current xlReg						* OK
-
-    * version.go and CHANGES are out of sync on github, need to update
-
+    * version.go and CHANGES are out of sync on github, need to update  * DONE
 2014-12-20
-    * the versions of README.md and and ghpDoc/index.md on github
-        are more recent than the current versions and so the latter 
-        should be brought into conformance with the github versions.
+    * the versions of README.md and and ghpDoc/index.md on github       * DONE
+        are more recent than the current versions and so the latter     * DONE
+        should be brought into conformance with the github versions.    * DONE
 
 2014-11-19
     * intro_seq.t IntroMsg should set attrs
-
 2014-11-11
     * needs commit, NewAdminClient() renames NewAdminMember()           * DONE
-
 2014-10-23
     * if xlReg is not running, server invocation fails in SessionSetup,
         getting a connection refused, which causes a panic; need more

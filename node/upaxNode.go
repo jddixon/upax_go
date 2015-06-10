@@ -3,10 +3,10 @@ package node
 import (
 	"crypto/rsa"
 
-	xn "github.com/jddixon/xlattice_go/node"
-	xi "github.com/jddixon/xlattice_go/nodeID"
-	xo "github.com/jddixon/xlattice_go/overlay"
-	xt "github.com/jddixon/xlattice_go/transport"
+	xn "github.com/jddixon/xlNode_go"
+	xi "github.com/jddixon/xlNodeID_go"
+	xo "github.com/jddixon/xlOverlay_go"
+	xt "github.com/jddixon/xlTransport_go"
 
 	"strings"
 )
@@ -36,7 +36,7 @@ type NodeOptions struct {
 
 func New(name string, id *xi.NodeID, lfs string,
 	commsKey, sigKey *rsa.PrivateKey,
-	o []xo.OverlayI, e []xt.EndPointI, p []xn.Peer) (
+	o []xo.OverlayI, e []xt.EndPointI, p []*xn.Peer) (
 	uNode *UpaxNode, err error) {
 
 	n, err := xn.New(name, id, lfs, commsKey, sigKey, o, e, p)
