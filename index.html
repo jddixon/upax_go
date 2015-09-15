@@ -12,9 +12,11 @@
 <h1 class="libTop">upax_go</h1>
 
 <p>A distributed content-keyed data storage system written in the Go
-programming language..</p>
+programming language.</p>
 
-<p>Currently the implementation has three parts:</p>
+<h2>Current Implementationi</h2>
+
+<p>The implementation has three parts:</p>
 
 <ul>
 <li><a href="upaxServer.html">server</a>,</li>
@@ -24,8 +26,10 @@ programming language..</p>
 
 <p>All of these are written in the Go programming language and make use of the
 <a href="https://github.com/jddixon/xlattice_go">xlattice_go</a> communications library.
-(More extensive information on XLattice, although somewhat dated,
-is available at the XLattice <a href="http://www.xlattice.org">website</a>.)</p>
+(More extensive information on Java implmentation of XLattice, although
+somewhat dated,
+is available at the
+<a href="http://www.xlattice.org">XLattice website</a>.)</p>
 
 <p>Upax accepts and stores data files of arbitrary size.  A data file is
 identified by its 256-bit/32-byte (SHA-256 or SHA3-256) content key.<br />
@@ -39,7 +43,8 @@ and in effect migrating data to machines where it is more frequently
 used.</p>
 
 <p>A later implementation of upax_go
-is expected to add a <a href="upaxMirror.html">UpaxMirror</a>
+is expected to add a
+<a href="upaxMirror.html">UpaxMirror</a>
 which will be capable of dealing with client queries but not able to add
 to the data store.  That is, clients can use the UpaxMirror as a fast
 local cache, but to add files to the distributed storage system
@@ -58,6 +63,10 @@ to commit them.  There is no notion of privacy.  Any client may
 request a copy of any file - but only the owner may delete it.  It
 is likely that upax_go will retain these characteristics in the near
 term.</p>
+
+<h2>Project Status</h2>
+
+<p>An early and partial implementation.  Tests succeed but are very chatty.</p>
 
 <h2>Licensing</h2>
 <p><a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />The material on this github.io website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</p>
