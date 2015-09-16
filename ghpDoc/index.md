@@ -1,10 +1,11 @@
 <h1 class="libTop">upax_go</h1>
 
-
 A distributed content-keyed data storage system written in the Go
-programming language..
+programming language.
 
-Currently the implementation has three parts: 
+## Current Implementationi
+
+The implementation has three parts: 
 
 * [server](upaxServer.html),
 * [client](upaxClient.html), and 
@@ -12,8 +13,10 @@ Currently the implementation has three parts:
 
 All of these are written in the Go programming language and make use of the 
 [xlattice_go](https://github.com/jddixon/xlattice_go) communications library.
-(More extensive information on XLattice, although somewhat dated, 
-is available at the XLattice [website](http://www.xlattice.org).)
+(More extensive information on Java implmentation of XLattice, although 
+somewhat dated, 
+is available at the 
+[XLattice website](http://www.xlattice.org).)
 
 Upax accepts and stores data files of arbitrary size.  A data file is 
 identified by its 256-bit/32-byte (SHA-256 or SHA3-256) content key.  
@@ -27,7 +30,8 @@ and in effect migrating data to machines where it is more frequently
 used.
 
 A later implementation of upax_go 
-is expected to add a [UpaxMirror](upaxMirror.html)
+is expected to add a 
+[UpaxMirror](upaxMirror.html)
 which will be capable of dealing with client queries but not able to add
 to the data store.  That is, clients can use the UpaxMirror as a fast
 local cache, but to add files to the distributed storage system 
@@ -46,3 +50,8 @@ to commit them.  There is no notion of privacy.  Any client may
 request a copy of any file - but only the owner may delete it.  It
 is likely that upax_go will retain these characteristics in the near
 term.
+
+## Project Status
+
+An early and partial implementation.  Tests succeed but are very chatty.
+
