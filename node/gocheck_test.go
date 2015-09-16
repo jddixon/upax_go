@@ -5,12 +5,13 @@ import (
 	"crypto/rsa"
 	"encoding/hex"
 	"fmt"
-	xc "github.com/jddixon/xlattice_go/crypto"
-	xn "github.com/jddixon/xlattice_go/node"
-	xi "github.com/jddixon/xlattice_go/nodeID"
-	"github.com/jddixon/xlattice_go/reg"
-	xr "github.com/jddixon/xlattice_go/rnglib"
-	xt "github.com/jddixon/xlattice_go/transport"
+	xcl "github.com/jddixon/xlCluster_go"
+	xn "github.com/jddixon/xlNode_go"
+	xi "github.com/jddixon/xlNodeID_go"
+	reg "github.com/jddixon/xlReg_go"
+	xr "github.com/jddixon/rnglib_go"
+	xt "github.com/jddixon/xlTransport_go"
+	xu "github.com/jddixon/xlUtil_go"
 	. "launchpad.net/gocheck"
 	"strings"
 	"testing"
@@ -34,7 +35,7 @@ const (
 // going to be used here.
 
 func (s *XLSuite) makeAnID(c *C, rng *xr.PRNG) (id []byte) {
-	id = make([]byte, xc.SHA3_LEN)
+	id = make([]byte, xu.SHA3_BIN_LEN)
 	rng.NextBytes(id)
 	return
 }
@@ -104,7 +105,7 @@ func (s *XLSuite) makeHostAndKeys(c *C, rng *xr.PRNG) (
 
 // Using functions must check to ensure members have unique names
 
-func (s *XLSuite) makeAMemberInfo(c *C, rng *xr.PRNG) *reg.MemberInfo {
+func (s *XLSuite) makeAMemberInfo(c *C, rng *xr.PRNG) *xcl.MemberInfo {
 	attrs := uint64(rng.Int63())
 	bn, err := xn.NewBaseNode(
 		rng.NextFileName(8),
@@ -113,7 +114,7 @@ func (s *XLSuite) makeAMemberInfo(c *C, rng *xr.PRNG) *reg.MemberInfo {
 		&s.makeAnRSAKey(c).PublicKey,
 		nil) // overlays
 	c.Assert(err, IsNil)
-	return &reg.MemberInfo{
+	return &xcl.MemberInfo{
 		Attrs:    attrs,
 		BaseNode: *bn,
 	}

@@ -1,5 +1,12 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.5.4
+    2015-09-15
+        * minor formatting changes
+        * added three missing *.md files                            SLOC 3209
+0.5.3
+    2015-06-10
+        * changes reflecting API changes elsewhere
 0.5.2
     2015-04-27
         * further changes to aes_cnx, some absorbing code here      SLOC 3208
