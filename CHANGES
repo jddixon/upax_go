@@ -1,5 +1,8 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+0.5.5
+    2015-11-20
+        * minor edits to *.md                                       SLOC 3200
 0.5.4
     2015-09-15
         * minor formatting changes
