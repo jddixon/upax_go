@@ -59,4 +59,4 @@ An early and partial implementation.  Tests succeed but are very chatty.
 ## On-line Documentation
 
 More information on the **upax_go** project can be found
-[here](://jddixon.github.io/upax_go)
+[here](:https//jddixon.github.io/upax_go)

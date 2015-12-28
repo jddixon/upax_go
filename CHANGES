@@ -1,5 +1,8 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+v0.5.6
+    2015-12-27
+        * fix dead link
 0.5.5
     2015-11-20
         * minor edits to *.md                                       SLOC 3200
@@ -63,3 +66,4 @@
 0.1.0
     2013-10-26
         * rearranaged initial sketch                                SLOC  839 
+
