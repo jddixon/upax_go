@@ -1,5 +1,15 @@
 github.com/jddixon/upax_go/TODO
 
+2016-01-19
+    * UpaxClient, defined in client.go, needs encrypter and decrypter
+        fields, which will be used by clientDecrytUnpadDecode and
+        clientEncrytPadEncode
+        - added to the data structure but not initialized XXX ERROR XXX
+
+    * countem is not counting upaxServer.go
+2016-01-11
+    * code differs from github, presumbably because of 'new aes_cnx XPI 
+
 2015-06-10
     * unresolved API problems in node/
 

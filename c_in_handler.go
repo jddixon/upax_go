@@ -5,8 +5,8 @@ package upax_go
 import (
 	"fmt"
 	xr "github.com/jddixon/rnglib_go"
-	xcl "github.com/jddixon/xlCluster_go"
 	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
+	xcl "github.com/jddixon/xlCluster_go"
 	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xu "github.com/jddixon/xlU_go"
@@ -32,9 +32,9 @@ var (
 )
 
 type ClientInHandler struct {
-	us       *UpaxServer
-	uDir     xu.UI
-	peerInfo *xcl.MemberInfo
+	us         *UpaxServer
+	uDir       xu.UI
+	peerInfo   *xcl.MemberInfo
 
 	myMsgN   uint64 // first message 1, then increment on each send
 	peerMsgN uint64 // expect this to be 1 on the first message
@@ -44,7 +44,7 @@ type ClientInHandler struct {
 	exitState  int
 	msgIn      *UpaxClientMsg
 	msgOut     *UpaxClientMsg
-	errOut     error
+	errOut	   error
 
 	ClientCnxHandler
 }
@@ -73,7 +73,7 @@ func NewClientInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-// Convert a protobuf op into a zero-based tag for use in the
+// Convert a protobuf op into a zero-based tag for use in the 
 // ClientInHandler's dispatch table.
 func clientOp2tag(op UpaxClientMsg_Tag) uint {
 	return uint(op - UpaxClientMsg_Intro)
@@ -102,7 +102,8 @@ func (h *ClientInHandler) Run() (err error) {
 		var ciphertext []byte
 		ciphertext, err = h.ReadData()
 		if err == nil {
-			h.msgIn, err = h.clientDecryptUnpadDecode(ciphertext)
+			h.msgIn, err = clientDecryptUnpadDecode(
+										ciphertext, h.decrypter)
 		}
 		if err != nil {
 			break
@@ -135,12 +136,12 @@ func (h *ClientInHandler) Run() (err error) {
 
 		// encode, pad, and encrypt the UpaxClientMsg object
 		if h.msgOut != nil {
-			ciphertext, err = h.clientEncodePadEncrypt(h.msgOut)
+			ciphertext, err = clientEncodePadEncrypt(h.msgOut, h.encrypter)
 
 			// XXX log any error
 			if err != nil {
 				h.us.Logger.Printf(
-					"ClientInHandler.Run: clientEncodePadEncrypt returns %s\n",
+					"ClientInHandler.Run: clientEncodePadEncrypt returns %s\n", 
 					err.Error())
 			}
 
@@ -151,7 +152,7 @@ func (h *ClientInHandler) Run() (err error) {
 				// log any error
 				if err != nil {
 					h.us.Logger.Printf(
-						"ClientInHandler.Run: WriteData returns %s\n",
+						"ClientInHandler.Run: WriteData returns %s\n", 
 						err.Error())
 				}
 			}
@@ -181,18 +182,18 @@ func (h *ClientInHandler) Run() (err error) {
 func handleClientHello(h *ClientInHandler) (err error) {
 	var (
 		ciphertext, ciphertextOut []byte
-		version1, version2        uint32
-		sOneShot, sSession        *xa.AesSession
+		version1, version2                uint32
+		sOneShot, sSession	*xa.AesSession
 	)
 	rng := xr.MakeSystemRNG()
 	ciphertext, err = h.ReadData()
 	if err == nil {
-		sOneShot, version1, err = xa.ServerDecryptHello(
+		sOneShot, version1,	err = xa.ServerDecryptHello(
 			ciphertext, h.us.ckPriv, rng)
-		_ = version1 // we don't actually use this
+		_ = version1		// we don't actually use this
 	}
 	if err == nil {
-		version2 = uint32(serverVersion) // a global !
+		version2 = uint32(serverVersion)		// a global !
 		sSession, ciphertextOut, err = xa.ServerEncryptHelloReply(
 			sOneShot, version2)
 		if err == nil {
@@ -207,7 +208,7 @@ func handleClientHello(h *ClientInHandler) (err error) {
 	// On any error silently close the connection.
 	if err != nil {
 		// DEBUG
-		fmt.Printf("handleClientHello closing cnx, error was %s\n",
+		fmt.Printf("handleClientHello closing cnx, error was %s\n", 
 			err.Error())
 		// END
 		h.Cnx.Close()

@@ -3,6 +3,7 @@ package upax_go
 // upax_go/client.go
 
 import (
+	"crypto/cipher"
 	"crypto/rsa"
 	xcl "github.com/jddixon/xlCluster_go"
 	xi "github.com/jddixon/xlNodeID_go"
@@ -27,6 +28,11 @@ type UpaxClient struct {
 
 	// this side
 	ckPriv, skPriv *rsa.PrivateKey
+
+	// XXX THESE ARE NOT EING INITIALIZED
+	encrypter                         cipher.BlockMode
+	decrypter                         cipher.BlockMode
+	
 	ClientCnxHandler
 	xn.Node
 }

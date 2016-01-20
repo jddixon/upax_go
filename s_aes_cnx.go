@@ -1,10 +1,13 @@
-package upax_go
+package upax_go 
 
 // upax_go/s_aes_cnx.go
 
 import (
-	"code.google.com/p/goprotobuf/proto"
-	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
+	"github.com/golang/protobuf/proto"
+	"crypto/aes"
+	"crypto/cipher"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"	// jdd 16-01-11
+	xc "github.com/jddixon/xlCrypto_go"
 	xt "github.com/jddixon/xlTransport_go"
 )
 
@@ -15,10 +18,23 @@ const (
 type ClusterCnxHandler struct {
 	State int
 	Cnx   *xt.TcpConnection
-	xa.AesSession
+	xa.AesSession									// jdd 16-01-11
+	engine                            cipher.Block
+	encrypter                         cipher.BlockMode
+	decrypter                         cipher.BlockMode
+	iv1, key1, iv2, key2, salt1, salt2 []byte
 }
 
-// Read data from the connection.
+func (a *ClusterCnxHandler) SetupSessionKey() (err error) {
+	a.engine, err = aes.NewCipher(a.key2)
+	if err == nil {
+		a.encrypter = cipher.NewCBCEncrypter(a.engine, a.iv2)
+		a.decrypter = cipher.NewCBCDecrypter(a.engine, a.iv2)
+	}
+	return
+}
+
+// Read data from the connection.  
 // XXX This will not handle partial reads correctly
 func (h *ClusterCnxHandler) ReadData() (data []byte, err error) {
 	data = make([]byte, S_MSG_BUF_LEN)
@@ -50,33 +66,30 @@ func encodeClusterPacket(msg *UpaxClusterMsg) (
 	return proto.Marshal(msg)
 }
 
-func (h *ClusterCnxHandler) clusterEncodePadEncrypt(msg *UpaxClusterMsg) (
+func clusterEncodePadEncrypt(msg *UpaxClusterMsg, engine cipher.BlockMode) (
 	ciphertext []byte, err error) {
 
+	var paddedData []byte
 	cData, err := encodeClusterPacket(msg)
 	if err == nil {
-		ciphertext, err = h.Encrypt(cData)
+		paddedData, err = xc.AddPKCS7Padding(cData, aes.BlockSize)
 	}
-	//if err == nil {
-	//	paddedData, err = xc.AddPKCS7Padding(cData, aes.BlockSize)
-	//}
-	//if err == nil {
-	//	msgLen := len(paddedData)
-	//	nBlocks := (msgLen + aes.BlockSize - 2) / aes.BlockSize
-	//	ciphertext = make([]byte, nBlocks*aes.BlockSize)
-	//	engine.CryptBlocks(ciphertext, paddedData) // dest <- src
-	//}
+	if err == nil {
+		msgLen := len(paddedData)
+		nBlocks := (msgLen + aes.BlockSize - 2) / aes.BlockSize
+		ciphertext = make([]byte, nBlocks*aes.BlockSize)
+		engine.CryptBlocks(ciphertext, paddedData) // dest <- src
+	}
 	return
 }
 
-func (h *ClusterCnxHandler) clusterDecryptUnpadDecode(ciphertext []byte) (
+func clusterDecryptUnpadDecode(ciphertext []byte, engine cipher.BlockMode) (
 	msg *UpaxClusterMsg, err error) {
 
-	unpaddedCData, err := h.Decrypt(ciphertext)
-	//plaintext := make([]byte, len(ciphertext))
-	//engine.CryptBlocks(plaintext, ciphertext) // dest <- src
-	//unpaddedCData, err := xc.StripPKCS7Padding(plaintext, aes.BlockSize)
+	plaintext := make([]byte, len(ciphertext))
+	engine.CryptBlocks(plaintext, ciphertext) // dest <- src
 
+	unpaddedCData, err := xc.StripPKCS7Padding(plaintext, aes.BlockSize)
 	if err == nil {
 		msg, err = decodeClusterPacket(unpaddedCData)
 	}

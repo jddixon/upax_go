@@ -3,8 +3,8 @@ package node
 import (
 	"crypto/rsa"
 
-	xn "github.com/jddixon/xlNode_go"
 	xi "github.com/jddixon/xlNodeID_go"
+	xn "github.com/jddixon/xlNode_go"
 	xo "github.com/jddixon/xlOverlay_go"
 	xt "github.com/jddixon/xlTransport_go"
 

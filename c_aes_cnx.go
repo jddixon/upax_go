@@ -1,10 +1,13 @@
-package upax_go
+package upax_go 
 
 // upax_go/c_aes_cnx.go
 
 import (
-	"code.google.com/p/goprotobuf/proto"
-	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
+	"github.com/golang/protobuf/proto"
+	"crypto/aes"
+	"crypto/cipher"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"	// jdd 16-01-11
+	xc "github.com/jddixon/xlCrypto_go"
 	xt "github.com/jddixon/xlTransport_go"
 )
 
@@ -15,25 +18,23 @@ const (
 type ClientCnxHandler struct {
 	State int
 	Cnx   *xt.TcpConnection
-	xa.AesSession
-
-	// XXX TO BE DROPPED:
-	//engine                             cipher.Block
-	//encrypter                          cipher.BlockMode
-	//decrypter                          cipher.BlockMode
-	//iv1, key1, iv2, key2, salt1, salt2 []byte
+	xa.AesSession									// jdd 16-01-11
+	engine                            cipher.Block
+	encrypter                         cipher.BlockMode
+	decrypter                         cipher.BlockMode
+	iv1, key1, iv2, key2, salt1, salt2 []byte
 }
 
-//func (a *ClientCnxHandler) SetupSessionKey() (err error) {
-//	a.engine, err = aes.NewCipher(a.key2)
-//	if err == nil {
-//		a.encrypter = cipher.NewCBCEncrypter(a.engine, a.iv2)
-//		a.decrypter = cipher.NewCBCDecrypter(a.engine, a.iv2)
-//	}
-//	return
-//}
+func (a *ClientCnxHandler) SetupSessionKey() (err error) {
+	a.engine, err = aes.NewCipher(a.key2)
+	if err == nil {
+		a.encrypter = cipher.NewCBCEncrypter(a.engine, a.iv2)
+		a.decrypter = cipher.NewCBCDecrypter(a.engine, a.iv2)
+	}
+	return
+}
 
-// Read data from the connection.
+// Read data from the connection.  
 // XXX This will not handle partial reads correctly
 func (h *ClientCnxHandler) ReadData() (data []byte, err error) {
 	data = make([]byte, C_MSG_BUF_LEN)
@@ -65,35 +66,30 @@ func encodeClientPacket(msg *UpaxClientMsg) (
 	return proto.Marshal(msg)
 }
 
-func (h *ClientCnxHandler) clientEncodePadEncrypt(msg *UpaxClientMsg) (
+func clientEncodePadEncrypt(msg *UpaxClientMsg, engine cipher.BlockMode) (
 	ciphertext []byte, err error) {
 
+	var paddedData []byte
 	cData, err := encodeClientPacket(msg)
 	if err == nil {
-		ciphertext, err = h.Encrypt(cData)
+		paddedData, err = xc.AddPKCS7Padding(cData, aes.BlockSize)
 	}
-
-	//if err == nil {
-	//	paddedData, err = xc.AddPKCS7Padding(cData, aes.BlockSize)
-	//}
-	//if err == nil {
-	//	msgLen := len(paddedData)
-	//	nBlocks := (msgLen + aes.BlockSize - 2) / aes.BlockSize
-	//	ciphertext = make([]byte, nBlocks*aes.BlockSize)
-	//	//engine.CryptBlocks(ciphertext, paddedData) // dest <- src
-	//}
+	if err == nil {
+		msgLen := len(paddedData)
+		nBlocks := (msgLen + aes.BlockSize - 2) / aes.BlockSize
+		ciphertext = make([]byte, nBlocks*aes.BlockSize)
+		engine.CryptBlocks(ciphertext, paddedData) // dest <- src
+	}
 	return
 }
 
-func (h *ClientCnxHandler) clientDecryptUnpadDecode(ciphertext []byte) (
+func clientDecryptUnpadDecode(ciphertext []byte, engine cipher.BlockMode) (
 	msg *UpaxClientMsg, err error) {
 
-	unpaddedCData, err := h.Decrypt(ciphertext)
+	plaintext := make([]byte, len(ciphertext))
+	engine.CryptBlocks(plaintext, ciphertext) // dest <- src
 
-	//plaintext := make([]byte, len(ciphertext))
-	//engine.CryptBlocks(plaintext, ciphertext) // dest <- src
-	// unpaddedCData, err := xc.StripPKCS7Padding(plaintext, aes.BlockSize)
-
+	unpaddedCData, err := xc.StripPKCS7Padding(plaintext, aes.BlockSize)
 	if err == nil {
 		msg, err = decodeClientPacket(unpaddedCData)
 	}

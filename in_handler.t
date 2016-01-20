@@ -1,4 +1,4 @@
-package ${pkgName}
+package upax_go
 
 // xlattice_go/${pkgName}/${filePrefix}in_handler.go
 
@@ -102,7 +102,8 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 		var ciphertext []byte
 		ciphertext, err = h.ReadData()
 		if err == nil {
-			h.msgIn, err = h.${funcPrefix}DecryptUnpadDecode(ciphertext)
+			h.msgIn, err = ${funcPrefix}DecryptUnpadDecode(
+										ciphertext, h.decrypter)
 		}
 		if err != nil {
 			break
@@ -135,7 +136,7 @@ func (h *${TypePrefix}InHandler) Run() (err error) {
 
 		// encode, pad, and encrypt the Upax${TypePrefix}Msg object
 		if h.msgOut != nil {
-			ciphertext, err = h.${funcPrefix}EncodePadEncrypt(h.msgOut)
+			ciphertext, err = ${funcPrefix}EncodePadEncrypt(h.msgOut, h.encrypter)
 
 			// XXX log any error
 			if err != nil {
