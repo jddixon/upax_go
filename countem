@@ -1,0 +1,12 @@
+cd ~/dev/go/src/github.com/jddixon/upax_go
+
+rm -rf tmp/*
+
+pySloc -v -X '\.dat$|\.swp$|^upaxMirror$|^upaxServer$' $@      \
+    bash:countem                        \
+
+
+# NOT YET
+#	cmd/upaxServer/upaxServer.go        \
+#   cmd/upaxMirror/upaxMirror.go        \
+

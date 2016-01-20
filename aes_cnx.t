@@ -3,11 +3,12 @@ package ${pkgName}
 // ${pkgName}/${filePrefix}aes_cnx.go
 
 import (
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 	"crypto/aes"
 	"crypto/cipher"
-	xc "github.com/jddixon/xlattice_go/crypto"
-	xt "github.com/jddixon/xlattice_go/transport"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"	// jdd 16-01-11
+	xc "github.com/jddixon/xlCrypto_go"
+	xt "github.com/jddixon/xlTransport_go"
 )
 
 const (
@@ -17,6 +18,7 @@ const (
 type ${TypePrefix}CnxHandler struct {
 	State int
 	Cnx   *xt.TcpConnection
+	xa.AesSession									// jdd 16-01-11
 	engine                            cipher.Block
 	encrypter                         cipher.BlockMode
 	decrypter                         cipher.BlockMode

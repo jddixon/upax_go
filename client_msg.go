@@ -20,7 +20,7 @@ import (
 func (upc *UpaxClient) readMsg() (m *UpaxClientMsg, err error) {
 	inBuf, err := upc.ReadData()
 	if err == nil && inBuf != nil {
-		m, err = upc.clientDecryptUnpadDecode(inBuf)
+		m, err = clientDecryptUnpadDecode(inBuf, upc.decrypter)
 	}
 	return
 }
@@ -29,7 +29,7 @@ func (upc *UpaxClient) readMsg() (m *UpaxClientMsg, err error) {
 func (upc *UpaxClient) writeMsg(m *UpaxClientMsg) (err error) {
 	var data []byte
 	// serialize, marshal the message
-	data, err = upc.clientEncodePadEncrypt(m)
+	data, err = clientEncodePadEncrypt(m, upc.encrypter)
 	if err == nil {
 		err = upc.WriteData(data)
 	}

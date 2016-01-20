@@ -2,15 +2,22 @@
 // source: s.proto
 // DO NOT EDIT!
 
+/*
+Package upax_go is a generated protocol buffer package.
+
+It is generated from these files:
+	s.proto
+
+It has these top-level messages:
+	UpaxClusterMsg
+*/
 package upax_go
 
-import proto "code.google.com/p/goprotobuf/proto"
-import json "encoding/json"
+import proto "github.com/golang/protobuf/proto"
 import math "math"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type UpaxClusterMsg_Tag int32
@@ -23,10 +30,11 @@ const (
 	UpaxClusterMsg_IHave     UpaxClusterMsg_Tag = 4
 	UpaxClusterMsg_Put       UpaxClusterMsg_Tag = 5
 	UpaxClusterMsg_Bye       UpaxClusterMsg_Tag = 6
-	UpaxClusterMsg_Ack       UpaxClusterMsg_Tag = 10
-	UpaxClusterMsg_Data      UpaxClusterMsg_Tag = 11
-	UpaxClusterMsg_NotFound  UpaxClusterMsg_Tag = 12
-	UpaxClusterMsg_Error     UpaxClusterMsg_Tag = 13
+	// Valid tags for replies to peers.
+	UpaxClusterMsg_Ack      UpaxClusterMsg_Tag = 10
+	UpaxClusterMsg_Data     UpaxClusterMsg_Tag = 11
+	UpaxClusterMsg_NotFound UpaxClusterMsg_Tag = 12
+	UpaxClusterMsg_Error    UpaxClusterMsg_Tag = 13
 )
 
 var UpaxClusterMsg_Tag_name = map[int32]string{
@@ -64,9 +72,6 @@ func (x UpaxClusterMsg_Tag) Enum() *UpaxClusterMsg_Tag {
 func (x UpaxClusterMsg_Tag) String() string {
 	return proto.EnumName(UpaxClusterMsg_Tag_name, int32(x))
 }
-func (x UpaxClusterMsg_Tag) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *UpaxClusterMsg_Tag) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(UpaxClusterMsg_Tag_value, data, "UpaxClusterMsg_Tag")
 	if err != nil {
@@ -101,7 +106,7 @@ func (m *UpaxClusterMsg) GetOp() UpaxClusterMsg_Tag {
 	if m != nil && m.Op != nil {
 		return *m.Op
 	}
-	return 0
+	return UpaxClusterMsg_ItsMe
 }
 
 func (m *UpaxClusterMsg) GetMsgN() uint64 {

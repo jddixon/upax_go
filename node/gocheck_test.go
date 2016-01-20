@@ -5,11 +5,11 @@ import (
 	"crypto/rsa"
 	"encoding/hex"
 	"fmt"
-	xcl "github.com/jddixon/xlCluster_go"
-	xn "github.com/jddixon/xlNode_go"
-	xi "github.com/jddixon/xlNodeID_go"
-	reg "github.com/jddixon/xlReg_go"
 	xr "github.com/jddixon/rnglib_go"
+	xcl "github.com/jddixon/xlCluster_go"
+	xi "github.com/jddixon/xlNodeID_go"
+	xn "github.com/jddixon/xlNode_go"
+	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xu "github.com/jddixon/xlUtil_go"
 	. "launchpad.net/gocheck"
@@ -114,9 +114,13 @@ func (s *XLSuite) makeAMemberInfo(c *C, rng *xr.PRNG) *xcl.MemberInfo {
 		&s.makeAnRSAKey(c).PublicKey,
 		nil) // overlays
 	c.Assert(err, IsNil)
+		
+	asPeer := &xn.Peer {
+		xn.BaseNode: *bn,
+	}
 	return &xcl.MemberInfo{
-		Attrs:    attrs,
-		BaseNode: *bn,
+		Attrs:	attrs,
+		Peer:	asPeer,
 	}
 }
 
@@ -144,7 +148,6 @@ func (s *XLSuite) makeACluster(c *C, rng *xr.PRNG, epCount, size uint) (
 				cm = s.makeAMemberInfo(c, rng)
 			} else {
 				err = rc.AddMember(cm)
-				c.Assert(err, IsNil)
 				break
 			}
 		}

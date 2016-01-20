@@ -2,20 +2,28 @@
 // source: c.proto
 // DO NOT EDIT!
 
+/*
+Package upax_go is a generated protocol buffer package.
+
+It is generated from these files:
+	c.proto
+
+It has these top-level messages:
+	UpaxClientMsg
+*/
 package upax_go
 
-import proto "code.google.com/p/goprotobuf/proto"
-import json "encoding/json"
+import proto "github.com/golang/protobuf/proto"
 import math "math"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type UpaxClientMsg_Tag int32
 
 const (
+	// messages received by the server
 	UpaxClientMsg_Intro     UpaxClientMsg_Tag = 0
 	UpaxClientMsg_ItsMe     UpaxClientMsg_Tag = 1
 	UpaxClientMsg_KeepAlive UpaxClientMsg_Tag = 2
@@ -24,10 +32,11 @@ const (
 	UpaxClientMsg_IHave     UpaxClientMsg_Tag = 5
 	UpaxClientMsg_Put       UpaxClientMsg_Tag = 6
 	UpaxClientMsg_Bye       UpaxClientMsg_Tag = 7
-	UpaxClientMsg_Ack       UpaxClientMsg_Tag = 10
-	UpaxClientMsg_Data      UpaxClientMsg_Tag = 11
-	UpaxClientMsg_NotFound  UpaxClientMsg_Tag = 12
-	UpaxClientMsg_Error     UpaxClientMsg_Tag = 13
+	// replies sent by the server
+	UpaxClientMsg_Ack      UpaxClientMsg_Tag = 10
+	UpaxClientMsg_Data     UpaxClientMsg_Tag = 11
+	UpaxClientMsg_NotFound UpaxClientMsg_Tag = 12
+	UpaxClientMsg_Error    UpaxClientMsg_Tag = 13
 )
 
 var UpaxClientMsg_Tag_name = map[int32]string{
@@ -67,9 +76,6 @@ func (x UpaxClientMsg_Tag) Enum() *UpaxClientMsg_Tag {
 func (x UpaxClientMsg_Tag) String() string {
 	return proto.EnumName(UpaxClientMsg_Tag_name, int32(x))
 }
-func (x UpaxClientMsg_Tag) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *UpaxClientMsg_Tag) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(UpaxClientMsg_Tag_value, data, "UpaxClientMsg_Tag")
 	if err != nil {
@@ -105,7 +111,7 @@ func (m *UpaxClientMsg) GetOp() UpaxClientMsg_Tag {
 	if m != nil && m.Op != nil {
 		return *m.Op
 	}
-	return 0
+	return UpaxClientMsg_Intro
 }
 
 func (m *UpaxClientMsg) GetMsgN() uint64 {
@@ -200,13 +206,14 @@ func (m *UpaxClientMsg) GetClientInfo() *UpaxClientMsg_Token {
 }
 
 type UpaxClientMsg_Token struct {
-	Name             *string `protobuf:"bytes,1,opt" json:"Name,omitempty"`
-	ID               []byte  `protobuf:"bytes,3,opt" json:"ID,omitempty"`
-	CommsKey         []byte  `protobuf:"bytes,4,opt" json:"CommsKey,omitempty"`
-	SigKey           []byte  `protobuf:"bytes,5,opt" json:"SigKey,omitempty"`
-	Salt             []byte  `protobuf:"bytes,6,opt" json:"Salt,omitempty"`
-	DigSig           []byte  `protobuf:"bytes,7,opt" json:"DigSig,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Name *string `protobuf:"bytes,1,opt" json:"Name,omitempty"`
+	// no Attrs
+	ID               []byte `protobuf:"bytes,3,opt" json:"ID,omitempty"`
+	CommsKey         []byte `protobuf:"bytes,4,opt" json:"CommsKey,omitempty"`
+	SigKey           []byte `protobuf:"bytes,5,opt" json:"SigKey,omitempty"`
+	Salt             []byte `protobuf:"bytes,6,opt" json:"Salt,omitempty"`
+	DigSig           []byte `protobuf:"bytes,7,opt" json:"DigSig,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (m *UpaxClientMsg_Token) Reset()         { *m = UpaxClientMsg_Token{} }
