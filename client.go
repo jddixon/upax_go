@@ -30,9 +30,9 @@ type UpaxClient struct {
 	ckPriv, skPriv *rsa.PrivateKey
 
 	// XXX THESE ARE NOT EING INITIALIZED
-	encrypter                         cipher.BlockMode
-	decrypter                         cipher.BlockMode
-	
+	encrypter cipher.BlockMode
+	decrypter cipher.BlockMode
+
 	ClientCnxHandler
 	xn.Node
 }

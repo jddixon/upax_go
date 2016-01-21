@@ -12,7 +12,7 @@ import (
 	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xu "github.com/jddixon/xlUtil_go"
-	. "launchpad.net/gocheck"
+	. "gopkg.in/check.v1"
 	"strings"
 	"testing"
 )
@@ -114,20 +114,20 @@ func (s *XLSuite) makeAMemberInfo(c *C, rng *xr.PRNG) *xcl.MemberInfo {
 		&s.makeAnRSAKey(c).PublicKey,
 		nil) // overlays
 	c.Assert(err, IsNil)
-		
-	asPeer := &xn.Peer {
-		xn.BaseNode: *bn,
+
+	asPeer := &xn.Peer{
+		BaseNode: *bn,
 	}
 	return &xcl.MemberInfo{
-		Attrs:	attrs,
-		Peer:	asPeer,
+		Attrs: attrs,
+		Peer:  asPeer,
 	}
 }
 
 // Make a RegCluster for test purposes.  Cluster member names are guaranteed
 // to be unique but the name of the cluster itself may not be.
 
-func (s *XLSuite) makeACluster(c *C, rng *xr.PRNG, epCount, size uint) (
+func (s *XLSuite) makeACluster(c *C, rng *xr.PRNG, epCount, size uint32) (
 	rc *reg.RegCluster) {
 
 	var err error
@@ -140,14 +140,25 @@ func (s *XLSuite) makeACluster(c *C, rng *xr.PRNG, epCount, size uint) (
 	rc, err = reg.NewRegCluster(name, id, attrs, size, epCount)
 	c.Assert(err, IsNil)
 
-	for count := uint(0); count < size; count++ {
+	for count := uint32(0); count < size; count++ {
 		cm := s.makeAMemberInfo(c, rng)
 		for {
-			if _, ok := rc.MembersByName[cm.GetName()]; ok {
+			if _, ok := rc.MembersByName[cm.Peer.GetName()]; ok {
 				// name is in use, so try again
 				cm = s.makeAMemberInfo(c, rng)
 			} else {
-				err = rc.AddMember(cm)
+				// copy the connector list as strings
+				myEnds := make([]string, 0, 0)
+				for endCount := 0; endCount < int(size); endCount++ {
+					thisEnd := cm.Peer.GetConnector(endCount).String()
+					myEnds = append(myEnds, thisEnd)
+				}
+				asClient := &reg.ClientInfo{
+					Attrs:    cm.Attrs,
+					MyEnds:   myEnds,
+					BaseNode: cm.Peer.BaseNode,
+				}
+				err = rc.AddMember(asClient)
 				break
 			}
 		}

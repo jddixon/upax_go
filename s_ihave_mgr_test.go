@@ -6,7 +6,7 @@ import (
 	"fmt"
 	xr "github.com/jddixon/rnglib_go"
 	xi "github.com/jddixon/xlNodeID_go"
-	. "launchpad.net/gocheck"
+	. "gopkg.in/check.v1"
 	"time"
 )
 

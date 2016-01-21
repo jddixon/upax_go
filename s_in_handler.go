@@ -5,8 +5,8 @@ package upax_go
 import (
 	"fmt"
 	xr "github.com/jddixon/rnglib_go"
-	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
 	xcl "github.com/jddixon/xlCluster_go"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx"
 	reg "github.com/jddixon/xlReg_go"
 	xt "github.com/jddixon/xlTransport_go"
 	xu "github.com/jddixon/xlU_go"
@@ -32,9 +32,9 @@ var (
 )
 
 type ClusterInHandler struct {
-	us         *UpaxServer
-	uDir       xu.UI
-	peerInfo   *xcl.MemberInfo
+	us       *UpaxServer
+	uDir     xu.UI
+	peerInfo *xcl.MemberInfo
 
 	myMsgN   uint64 // first message 1, then increment on each send
 	peerMsgN uint64 // expect this to be 1 on the first message
@@ -44,7 +44,7 @@ type ClusterInHandler struct {
 	exitState  int
 	msgIn      *UpaxClusterMsg
 	msgOut     *UpaxClusterMsg
-	errOut	   error
+	errOut     error
 
 	ClusterCnxHandler
 }
@@ -73,7 +73,7 @@ func NewClusterInHandler(us *UpaxServer, conn xt.ConnectionI) (
 	return
 }
 
-// Convert a protobuf op into a zero-based tag for use in the 
+// Convert a protobuf op into a zero-based tag for use in the
 // ClusterInHandler's dispatch table.
 func clusterOp2tag(op UpaxClusterMsg_Tag) uint {
 	return uint(op - UpaxClusterMsg_ItsMe)
@@ -103,7 +103,7 @@ func (h *ClusterInHandler) Run() (err error) {
 		ciphertext, err = h.ReadData()
 		if err == nil {
 			h.msgIn, err = clusterDecryptUnpadDecode(
-										ciphertext, h.decrypter)
+				ciphertext, h.decrypter)
 		}
 		if err != nil {
 			break
@@ -141,7 +141,7 @@ func (h *ClusterInHandler) Run() (err error) {
 			// XXX log any error
 			if err != nil {
 				h.us.Logger.Printf(
-					"ClusterInHandler.Run: clusterEncodePadEncrypt returns %s\n", 
+					"ClusterInHandler.Run: clusterEncodePadEncrypt returns %s\n",
 					err.Error())
 			}
 
@@ -152,7 +152,7 @@ func (h *ClusterInHandler) Run() (err error) {
 				// log any error
 				if err != nil {
 					h.us.Logger.Printf(
-						"ClusterInHandler.Run: WriteData returns %s\n", 
+						"ClusterInHandler.Run: WriteData returns %s\n",
 						err.Error())
 				}
 			}
@@ -182,18 +182,18 @@ func (h *ClusterInHandler) Run() (err error) {
 func handleClusterHello(h *ClusterInHandler) (err error) {
 	var (
 		ciphertext, ciphertextOut []byte
-		version1, version2                uint32
-		sOneShot, sSession	*xa.AesSession
+		version1, version2        uint32
+		sOneShot, sSession        *xa.AesSession
 	)
 	rng := xr.MakeSystemRNG()
 	ciphertext, err = h.ReadData()
 	if err == nil {
-		sOneShot, version1,	err = xa.ServerDecryptHello(
+		sOneShot, version1, err = xa.ServerDecryptHello(
 			ciphertext, h.us.ckPriv, rng)
-		_ = version1		// we don't actually use this
+		_ = version1 // we don't actually use this
 	}
 	if err == nil {
-		version2 = uint32(serverVersion)		// a global !
+		version2 = uint32(serverVersion) // a global !
 		sSession, ciphertextOut, err = xa.ServerEncryptHelloReply(
 			sOneShot, version2)
 		if err == nil {
@@ -208,7 +208,7 @@ func handleClusterHello(h *ClusterInHandler) (err error) {
 	// On any error silently close the connection.
 	if err != nil {
 		// DEBUG
-		fmt.Printf("handleClusterHello closing cnx, error was %s\n", 
+		fmt.Printf("handleClusterHello closing cnx, error was %s\n",
 			err.Error())
 		// END
 		h.Cnx.Close()

@@ -1,13 +1,13 @@
-package upax_go 
+package upax_go
 
 // upax_go/c_aes_cnx.go
 
 import (
-	"github.com/golang/protobuf/proto"
 	"crypto/aes"
 	"crypto/cipher"
-	xa "github.com/jddixon/xlProtocol_go/aes_cnx"	// jdd 16-01-11
+	"github.com/golang/protobuf/proto"
 	xc "github.com/jddixon/xlCrypto_go"
+	xa "github.com/jddixon/xlProtocol_go/aes_cnx" // jdd 16-01-11
 	xt "github.com/jddixon/xlTransport_go"
 )
 
@@ -16,12 +16,12 @@ const (
 )
 
 type ClientCnxHandler struct {
-	State int
-	Cnx   *xt.TcpConnection
-	xa.AesSession									// jdd 16-01-11
-	engine                            cipher.Block
-	encrypter                         cipher.BlockMode
-	decrypter                         cipher.BlockMode
+	State                              int
+	Cnx                                *xt.TcpConnection
+	xa.AesSession                      // jdd 16-01-11
+	engine                             cipher.Block
+	encrypter                          cipher.BlockMode
+	decrypter                          cipher.BlockMode
 	iv1, key1, iv2, key2, salt1, salt2 []byte
 }
 
@@ -34,7 +34,7 @@ func (a *ClientCnxHandler) SetupSessionKey() (err error) {
 	return
 }
 
-// Read data from the connection.  
+// Read data from the connection.
 // XXX This will not handle partial reads correctly
 func (h *ClientCnxHandler) ReadData() (data []byte, err error) {
 	data = make([]byte, C_MSG_BUF_LEN)
