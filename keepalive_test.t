@@ -4,8 +4,8 @@ package ${pkgName}
 
 import (
 	"fmt"
-	xr "github.com/jddixon/xlattice_go/rnglib"
-	. "launchpad.net/gocheck"
+	xr "github.com/jddixon/rnglib_go"
+	. "gopkg.in/check.v1"
 	"time"
 )
 

@@ -10,7 +10,7 @@ import (
 	xi "github.com/jddixon/xlNodeID_go"
 	xu "github.com/jddixon/xlUtil_go"
 	xf "github.com/jddixon/xlUtil_go/lfs"
-	. "launchpad.net/gocheck"
+	. "gopkg.in/check.v1"
 	"os"
 	"path/filepath"
 	"strings"

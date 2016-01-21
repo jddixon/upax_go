@@ -5,7 +5,7 @@ package upax_go
 import (
 	"fmt"
 	xr "github.com/jddixon/rnglib_go"
-	. "launchpad.net/gocheck"
+	. "gopkg.in/check.v1"
 	"time"
 )
 

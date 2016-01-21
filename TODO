@@ -1,5 +1,10 @@
 github.com/jddixon/upax_go/TODO
 
+2016-01-20
+    * upax{Client,Mirror,Server}.md at top level are not being used;
+        drop
+        - make sure there are links to ghpDoc *.md from README.md
+
 2016-01-19
     * UpaxClient, defined in client.go, needs encrypter and decrypter
         fields, which will be used by clientDecrytUnpadDecode and
@@ -7,6 +12,10 @@ github.com/jddixon/upax_go/TODO
         - added to the data structure but not initialized XXX ERROR XXX
 
     * countem is not counting upaxServer.go
+
+    * after fixes to gocheck_test.go, possibly unrelated shower of
+        errors in compilation
+
 2016-01-11
     * code differs from github, presumbably because of 'new aes_cnx XPI 
 
