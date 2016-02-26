@@ -1,8 +1,8 @@
 github.com/jddixon/upax_go/TODO
 
 2016-01-20
-    * upax{Client,Mirror,Server}.md at top level are not being used;
-        drop
+    * upax{Client,Mirror,Server}.md at top level are not being used;    * DONE
+        drop                                                            * DONE
         - make sure there are links to ghpDoc *.md from README.md
 
 2016-01-19
