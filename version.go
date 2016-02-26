@@ -1,6 +1,6 @@
 package upax_go
 
 const (
-	VERSION      = "0.5.8"
-	VERSION_DATE = "2016-01-21"
+	VERSION      = "0.5.9"
+	VERSION_DATE = "2016-02-26"
 )

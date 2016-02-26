@@ -8,9 +8,9 @@ programming language.
 
 The implementation has three parts:
 
-* [server](upaxServer.html),
-* [client](upaxClient.html), and
-* [fault-tolerant log](ftLog.html).
+* [server](https://jddixon.github.io/upax_go/upaxServer.html),
+* [client](https://jddixon.github.io/upax_go/upaxClient.html), and
+* [fault-tolerant log](https://jddixon.github.io/upax_go/ftLog.html).
 
 All of these are written in the Go programming language and make use of the
 [xlattice_go](https://github.com/jddixon/xlattice_go) communications library.
@@ -32,7 +32,7 @@ used.
 
 A later implementation of upax_go
 is expected to add a
-[UpaxMirror](upaxMirror.html)
+[UpaxMirror](https://jddixon.github.io/upax_go/upaxMirror.html)
 which will be capable of dealing with client queries but not able to add
 to the data store.  That is, clients can use the UpaxMirror as a fast
 local cache, but to add files to the distributed storage system
