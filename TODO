@@ -1,9 +1,14 @@
 github.com/jddixon/upax_go/TODO
 
+2016-06-02
+    * test.all gets failures
+
+2016-02-26
+    * add appropriate text and link from README to upaxMirror.html
 2016-01-20
     * upax{Client,Mirror,Server}.md at top level are not being used;    * DONE
         drop                                                            * DONE
-        - make sure there are links to ghpDoc *.md from README.md
+        - make sure there are links to ghpDoc *.md from README.md       * DONE
 
 2016-01-19
     * UpaxClient, defined in client.go, needs encrypter and decrypter
