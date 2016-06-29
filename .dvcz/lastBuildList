@@ -1,0 +1,127 @@
+-----BEGIN RSA PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoM2sBgX0ChP2JriXkOxS
+e2FjHYVzBGkNvgf0vIAa7FFYZi2pWmxBAVXgl3tTiB3quqqud/MbKqdejM6gkKBK
+v8f7hlcBQLD6BLIZ/RRfhIElc+WlDVfKSnBTB4va5qTQAgvuq5i8+oMj7G8WEy5d
+7cYucWyUJMtHvT4pCDtBWeeqQ62tByWjv34Ud/+A9Mjf0leiWxM3tiToVsqIKb4s
+zPjEShF9rvcNa9XEy1dKpcDz9Szbm2SlxOgM83fDDGtOq4SSCSqndtxrOvXXPB57
+H1mJV/FmerbXRPm5ERJVNIxtLk7Gr2Ce45FVlWyJGMhpfVlKkkk+bRQ02OFfazJI
+GQIDAQAB
+-----END RSA PUBLIC KEY-----
+upax_go v0.5.11
+2016-06-29 16:58:52
+# START CONTENT #
+upax_go
+ .copyright 27543643e5e7a76b5d770e321c1d5e1940c95635
+ .dvcz
+  builds c3aae4f729c4fabfc3ef7305c185809e249e1702
+  lastBuildList 1afd7721414c1552dd7324204e7fdf2eda23a615
+  projCfg 763e4e14427bbd009e9cedb6829720a573ec83df
+  projCfg.local d799567f66d0c8cf602dfa86bbc8b26184ccfc11
+  version eeaaac530566d93470df3fa0a3eeaaff1a99c7e9
+ .gitignore ec0f9002629753cd248c6a672ef3de695c30f4b7
+ CHANGES 2887776f849789fc8e88ff470b758f4a16975fa7
+ LICENSE.md 50a6fc1b15e967d1dc37ba7559cf121a66240830
+ Makefile 1cd5f85c030a313408a4d8ec806bcf20a3073e3f
+ README.jdd 3453c6d2896b4d5ced506f67186f20235bde4ac9
+ README.md d9982c243b7868ca81f2d6a9533fc511d4f0300c
+ TODO fe5038b6d8234cb71a034aabc231134250055a41
+ aes_cnx.t d32c48de5660b1b17150f80c2173958dae6afbc8
+ bkp2U 11a1cd7b1f31c3b09fd1011eb0013b9bcd968f4b
+ c.pb.go f6a1d37e0c59b4561db52aedbfe4fadbfb58ab14
+ c.proto 351451114cfb0df40c411f1ccd7f044ce48c6a03
+ c_aes_cnx.go be4a52764558c1e067e3644d85bfc02aee62891a
+ c_context 62dba2d155c63fff616fa2779f65892c252401a4
+ c_ihave_mgr.go 13b69e37d954e38d45c69163528e277c93b5a014
+ c_ihave_mgr_test.go 6c73eb0c6adc6278d2d197304296c3fb662127d9
+ c_in_handler.go 5245dd7131eab7a38d873c924e41b66a28fc5896
+ c_intro_seq.go 50ecabbc5454fb02b8920dd4882c5913cba295ec
+ c_keepalive.go 6e4b326afeb17170c4936be01544126dce833aae
+ c_keepalive_test.go af6fe53f65551ec1ed5cc88e91a048d82b98c8fd
+ c_msg_handlers.go 71e58752f03148d123373118f25776cefefcf3b0
+ c_msg_util.go efd859c150a93a18e32a5f013f425028f5477db4
+ c_states.go 44b52e74a72451e9f28aa2062c07f71e2dc54f86
+ c_tag_test.go f201530611303d7504edebad4c7c370480c345c2
+ c_var.go edfecc4a4fef2ce5baeaa629834eaebbaf6f1854
+ client.go d0b6cf4673ac309130b515a01b01c5ba7a8afa62
+ client_msg.go 60dcf64bcf654a6c999c5697093ab7c9b1c5bd3a
+ cluster_test.go 5cb0671bb8ff63fd4f8b0d57ffaf05c665b9a51a
+ cmd
+  upaxMirror
+   TODO 8eb30d9888406d967f53214a14f32454967eb3f6
+  upaxServer
+   TODO 9dbaaca532a86fea14fcd808791f7bd04db47a93
+   regCred.dat db953f37a7633a6ec7c598977e99923a3f6586b7
+   upaxServer.go a2af0efad86863b1ddba1df0ce758399addd789e
+ const.go aa2168c8e4c2569aa6913590d4dfadb4a9137a16
+ countem d9602e9bd9838f70e5b926099ae4a2bf8a3c5767
+ entry.go 336d5f6447574c1e7b55002a9acab02b64d420c4
+ entry_test.go 924d73102ba5cd3b3ac4ee63020daaff4dfe9f9d
+ errors.go 27dbb600b306feeb3db9ce15d4af5a7f69700e8c
+ ghpDoc
+  TODO fc13e9e272a1d7aee4908334384c6110e43d7df7
+  css
+   LICENSE.html5-boilerplate.md ded771b3245b190da0e81c76de5a80d41392c0a6
+   ghp.css 1d6ebe8a6cf8f61f4645a793cb087dfae2420f33
+   main.css 018ed80b8a6e6607bc7c08595fa5a7fa56853885
+   normalize.css cba40c7ce3d558d00ff79d7505ac3d348015ec9c
+  ftLog.md 038ed618f73e283b883ff8adf86afd7637ebf064
+  img
+   GitHub-Mark-32px.png fabe53eb72f9b6d3d47cd95aff31ffc45c2fdbf8
+   chunk.jpg de2b27e41f1547fc14b13399f5906b4303b49657
+   chunk2.jpg d0593d312dbb8ea837c17b28cb639726e29ea93b
+   cluster-with-clients.jpg c167d04c0c6b5736ef9fe4cdc3fcce1956fdea78
+   simple-cluster.jpg 6b223ddd25937c1ef75ef328f36fc3436f10bd62
+   xl-registration.jpg 15cbf951f9db173a45428b32dcec87aca83bbdf0
+   xlattice-2014.jpg f185aaad06db71acd9454f31054c62c56d36f37f
+   xlattice.batik.jpg debe9220564203118dc53df0f5a48d77669fe367
+  index.md 2a762894cc6b97568c1b218a69dccca6eb8d69d7
+  upaxClient.md 1263366bced93cce5e391ed7c108712a1933d107
+  upaxMirror.md e8b36870308856a6c5a3379f53a0b6d08b9c9980
+  upaxServer.md 15f33286df6984b552f67e2702af0830b189801c
+ gocheck_test.go 923ecd37cb16779f7f07c896859e923a670687cd
+ ihave_mgr.t c7156b606be521c0acae277831e66725cf53caa2
+ ihave_mgr_test.t 838c78348e3697d4955eba1e67e2cb870d26fabc
+ ihave_obj.go 69802ed739f7401741122942a5854da493a5d8c2
+ in_handler.t c87efb02c4f8f14eef057fef51fec3277c87b924
+ installit 0fc26ac377eddca6330284d375645a9bc5379162
+ intro_seq.t 1323df76c2f7a56c90ca4f323ce5bff34cc653b8
+ keepalive.t 5c23c17013bee618818cff47af6f2983f23555e5
+ keepalive_test.t a527f7a34962ba267ea4077d1eac6e1a9048e04d
+ lfs
+ log.go a6601fbf45f52043ae8a142e461bbb6a99b1f8e5
+ memory.go eed3635fa768ce54d7ad56ce4d0076149036ebe3
+ mock_client_test.go e09e2af452734cb7e9a0ee548e18eefab9d61401
+ msg_handlers.t c49ed7c25a12dcd361c630739f5c486859a9b71a
+ msg_util.t e08cf59ba41663a3e8ff4d6162afb8227101fa6c
+ myApp
+ node
+  gocheck_test.go d33a19335372ae5e49e300113eb6aa5ff61daa10
+  node_test.go 278a9200342aa1f24a5ef1a5470e0b9b17d470ff
+  upaxNode.go 094263f34fbf0d6ff2864757cfbb150952f6e98f
+ pair_test.go 5a9a84111acac81e18da824876c4e3a9d4509e87
+ regCred.dat f800c61fef73374a46372fed5137fc66b42ed659
+ regular.go 66a580b51f7f7afa03422aa00fcc651423122b67
+ regular_test.go 420825fe3ec47747879916cede7f3f71fea3b96f
+ s.pb.go ac554620c3ff43da964503629d4576b0b01ee6c0
+ s.proto 10b76d953e360a41bdad9bd2d6a47700bd7df69b
+ s_aes_cnx.go 7117551dafac48ccbaee0dee2529046ff0157653
+ s_context 200393d3828d78c46249f8b8c48fcd9646c9ef88
+ s_ihave_mgr.go d9816d0b62e3a90a2bc11188330485d3905dd072
+ s_ihave_mgr_test.go 4268b5c02363c76adf4aa7e4ad7748e02063e6d9
+ s_in_handler.go 177a568bebcdc8f4ea9baa29181b8573bc37e1f7
+ s_keepalive.go 0307bfcaa5f5c442310e3cbd03b9aaa6623829a2
+ s_keepalive_test.go 2957678510ab78f80413606439c74deeb766b5fb
+ s_msg_handlers.go ee7e5c474116614666155bf75c54a14396c843a9
+ s_msg_util.go 3ce404117718b32435912cf36992f4e1cfe53cd4
+ s_out_handler.go f5bb9ac3483cc955d28706eca96e898b854a293a
+ s_states.go a1b994e9666e8c5be76d26ea7ee6e4631aee0021
+ s_tag_test.go 32b2a88ead12e3458a66493eb88cfcdf27394e33
+ s_var.go f3edd6b2bd5ee76b84c07e956b45cc637a8938b6
+ server.go 15a6409e4646a0ab2304dc25192ce81c303a8d1d
+ styleit ee9f5d7f4b77aa59c0b31bccc38a0a8de6d375d7
+ test.all ef919976be3a39723850405deff5eb7b27b1f7c0
+ updateRegCred e3a9a1b21f7f005ee1e7b4e8ea377b88d886b8f0
+ version.go b8c629abc95f65baa66fecfc1534f940ac3d1b4f
+# END CONTENT #
+
+UAwZjFC2kRrWZ6Gx83drr5D9hpAmFTIUCMkrqDGS4zYXZtcyTtvShbOCGEnLyNlhpuU6z7Z/ddOCoIOKMOGan6Jqb7ZEBpNOii7g65BRR1CEoT8fjV/oVP+wFzQWqKFK5+PyuU12B1DozfrlLEtaXJT3CsclP1G7puPb8CCmsHFCGhrLfwNOsp3eD0+o5Jz2YeTVg5CrRYr2xcAONq0U9nj1IWXIvPvGVfxH1+5NxZYw1ZQcP3SerWFR1yBLckT6z0izkMr2PK/2l3bh2c+QVEF469clP1FwpurnCQcKhyiRAIHaGnGxr1e8YUnZeIrONAcMRJL7GUGSfbWWw4/ImA==

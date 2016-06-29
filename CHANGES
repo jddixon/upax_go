@@ -1,5 +1,8 @@
 ~/dev/go/src/github.com/jddixon/upax_go/CHANGES
 
+v0.5.11
+    2016-06-29
+        * add ghpDoc/{css,img}/                                     SLOC 5179
 v0.5.10
     2016-06-02
         * add bkp2U, other bash scripts                             SLOC 4618
@@ -80,6 +83,7 @@ v0.5.6
 0.1.0
     2013-10-26
         * rearranaged initial sketch                                SLOC  839 
+
 
 
 
