@@ -2,8 +2,8 @@
 project:upax_go
 package:upax_go
 mainlang:go
-version:0.5.9
-versionDate:2016-02-26
+version:0.5.10
+versionDate:2016-06-02
 :?dirs?:
 dir:std:ghpDoc
 dir:std:.dvcz
@@ -18,6 +18,9 @@ code:std:.dvcz/projCfg
 code:std:.dvcz/projCfg.local
 code:std:.dvcz/builds
 code:std:.dvcz/lastBuildList
+code:std:.dvcz/version
+code:std:.dvczignore
+code:std:.dvczignore.local
 code:std:.gitignore
 code:std:.gitignore.local
 code:std:/var/app/sharedev/config/projCfg
