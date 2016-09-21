@@ -2,8 +2,8 @@
 project:upax_go
 package:upax_go
 mainlang:go
-version:0.5.10
-versionDate:2016-06-02
+version:0.5.11
+versionDate:2016-06-29
 :?dirs?:
 dir:std:ghpDoc
 dir:std:.dvcz
@@ -40,9 +40,8 @@ code:local:msg_handlers.t
 code:local:msg_util.t
 code:local:regCred.dat
 code:local:cmd/upaxServer/regCred.dat
-txt:std:.copyright
+txt:std:LICENSE-MIT.md
 txt:std:CHANGES
-txt:std:LICENSE.md
 txt:std:README.jdd
 txt:std:README.md
 txt:std:TODO
