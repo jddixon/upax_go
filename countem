@@ -6,7 +6,7 @@ then
   
   rm -rf myApp/* tmp/* 
   
-  pySloc -L go  -X *.pb.go -v $@
+  pySloc -L go cmd/upaxServer/upaxServer.go  -X c.pb.go -X s.pb.go -v $@
 else
   echo "DEV_BASE is not defined"
 fi
