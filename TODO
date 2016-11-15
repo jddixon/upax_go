@@ -1,7 +1,12 @@
 github.com/jddixon/upax_go/TODO
 
+2016-11-15
+    * fix: need to manually copy /var/app/xlReg/regCred.dat to 
+        work dir and then edit to use 127.0.0.1:56789 to get tests
+        to succeed
+
 2016-06-02
-    * test.all gets failures
+    * test.all gets failures                                            * FIXED
 
 2016-02-26
     * add appropriate text and link from README to upaxMirror.html

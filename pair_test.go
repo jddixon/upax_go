@@ -89,7 +89,7 @@ func (s *XLSuite) doTestPair(c *C, rng *xr.PRNG, whichSHA int) {
 	if clusterID == nil {
 		fmt.Println("NIL CLUSTER ID: is xlReg running??")
 	}
-	c.Assert(clusterID, NotNil)
+	c.Assert(clusterID, NotNil) // FAILS 2016-11-13
 	clusterSize := cn.ClusterMaxSize
 	c.Assert(clusterSize, Equals, uint32(K1))
 	epCount := cn.EPCount
