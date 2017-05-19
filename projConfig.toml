@@ -1,0 +1,23 @@
+projConfig.toml for upax_go
+
+[meta]
+    version = '0.1.0'
+
+[project]
+    name = 'upax_go'  # distro name
+    package = 'upax_go'  # internal name
+    main_lang = 'go'
+    version = '0.5.14'
+    version_date = '2017-05-19'
+    author = 'Jim Dixon'
+    author_email = 'jddixon@gmail.com'
+    copyright = '2013-2016'
+    description = 'full mesh of U store servers'
+    dev_status = 'pre-alpha'
+    license = 'mit'
+    relpath = 'go/src/github.com/jddixon/upax_go'
+    state = 'shared'
+    url = 'https://jddixon.github.io/upax_go'
+
+[go]
+    cmds=['upaxMirror', 'upaxServer']
