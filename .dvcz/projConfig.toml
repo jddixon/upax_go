@@ -1,4 +1,4 @@
-projConfig.toml for upax_go
+# projConfig.toml for upax_go
 
 [meta]
     version = '0.1.0'
@@ -7,11 +7,11 @@ projConfig.toml for upax_go
     name = 'upax_go'  # distro name
     package = 'upax_go'  # internal name
     main_lang = 'go'
-    version = '0.5.14'
-    version_date = '2017-05-19'
+    version = '0.5.15'
+    version_date = '2017-11-08'
     author = 'Jim Dixon'
     author_email = 'jddixon@gmail.com'
-    copyright = '2013-2016'
+    copyright = '2013-2017'
     description = 'full mesh of U store servers'
     dev_status = 'pre-alpha'
     license = 'mit'
